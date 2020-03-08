@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace Episememe.Api.Controllers
 {
     [ApiController]
     [Route("api")]
+    [Authorize]
     public class HelloController : ControllerBase
     {
         private readonly ILogger<HelloController> _logger;
