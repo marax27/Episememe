@@ -1,5 +1,4 @@
-import Vue from 'vue';
-import Component from 'vue-class-component';
+import { Vue, Component } from 'vue-property-decorator';
 import router from '../router';
 import { useAuth0 } from '.';
 import { domain, clientId } from '../../auth.config.json';
