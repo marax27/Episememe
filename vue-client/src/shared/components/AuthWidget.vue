@@ -11,13 +11,14 @@
 </template>
 
 <script lang='ts'>
-import { Component, Mixins, Vue } from 'vue-property-decorator';
-import AuthService from '../../auth/auth.service';
+import { Vue, Component } from 'vue-property-decorator';
 
 @Component({
   name: 'AuthWidget'
 })
-export default class AuthWidget extends Mixins(AuthService) {
+export default class AuthWidget extends Vue {
+  $auth: any;
+
   login() {
     this.$auth.loginWithRedirect();
   }
