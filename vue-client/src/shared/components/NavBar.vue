@@ -12,15 +12,16 @@
 </template>
 
 <script lang='ts'>
-import Vue from 'vue';
+import { Vue, Component } from 'vue-property-decorator';
 import AuthWidget from './AuthWidget.vue';
 
-export default Vue.extend({
+@Component({
   name: 'NavBar',
   components: {
     AuthWidget
   }
-});
+})
+export default class NavBar extends Vue {}
 </script>
 
 <style scoped>
