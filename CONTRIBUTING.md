@@ -14,4 +14,4 @@ git checkout -b task/task-name
 4. Once a feature is implemented, ensure that all changes have been pushed to GitHub.
 5. Open a Pull Request and assign another team member to a **Reviewer** role.
 6. Resolve Code Review comments should any appear.
-7. Once the Pull Request is approved, merge your changes with the base branch and close the Pull Request.
+7. Once the Pull Request is approved, merge the Pull Request.
