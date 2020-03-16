@@ -1,4 +1,5 @@
 {
     "domain": "dev-xz51ud1j.eu.auth0.com",
-    "clientId": "lqkqjvPcQhlRovoLoBeYJvwdUN3iC8XW"
+    "clientId": "lqkqjvPcQhlRovoLoBeYJvwdUN3iC8XW",
+    "audience": "https://episememe.kacpertonia.pl"
 }

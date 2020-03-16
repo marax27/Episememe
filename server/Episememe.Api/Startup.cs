@@ -29,6 +29,11 @@ namespace Episememe.Api
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseCors(o => {
+                    o.AllowAnyOrigin();
+                    o.AllowAnyHeader();
+                    o.AllowAnyMethod();
+                });
             }
 
             app.UseRouting();

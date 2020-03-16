@@ -1,14 +1,15 @@
-import Vue from 'vue'
-import App from './App.vue'
-import router from './router'
-import store from './store'
+import Vue from 'vue';
+import App from './App.vue';
+import router from './router';
+import store from './store';
 
-import { domain, clientId } from '../auth.config.json'
+import { domain, clientId, audience } from '../auth.config.json'
 import { Auth0Plugin } from './auth'
 
 Vue.use(Auth0Plugin, {
   domain,
   clientId,
+  audience,
   onRedirectCallback: (appState: any) => {
     router.push(
       appState && appState.targetUrl
@@ -18,10 +19,10 @@ Vue.use(Auth0Plugin, {
   }
 });
 
-Vue.config.productionTip = false
+Vue.config.productionTip = false;
 
 new Vue({
   router,
   store,
   render: h => h(App)
-}).$mount('#app')
+}).$mount('#app');
