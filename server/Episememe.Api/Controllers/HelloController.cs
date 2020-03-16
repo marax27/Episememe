@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Episememe.Api.Utilities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -19,7 +20,8 @@ namespace Episememe.Api.Controllers
         [HttpGet]
         public string Get()
         {
-            return "Hello world!";
+            var userId = User.GetUserId();
+            return string.IsNullOrEmpty(userId) ? "Who are you?" : $"Hello, {userId}!";
         }
     }
 }
