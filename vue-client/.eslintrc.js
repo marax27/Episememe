@@ -1,5 +1,6 @@
 module.exports = {
   root: true,
+  singleQuote: true,
   env: {
     node: true
   },
