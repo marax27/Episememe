@@ -1,14 +1,27 @@
 <template>
-  <nav>
-    <div class="left">
-      <router-link to="/">Home</router-link> | 
-      <router-link to="/about">About</router-link>
-    </div>
-    <div class="right" style='height: 100%'>
+  <v-app-bar app color="primary" dark id="nav-bar">
+      <div class="d-flex align-center">
+        <v-img
+          alt="Vuetify Logo"
+          class="shrink mr-2"
+          contain
+          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
+          transition="scale-transition"
+          width="40"/>
+      </div>
+
+      <v-btn to="/" class="title" text>
+        <span>Episememe</span>
+      </v-btn>
+
+      <v-btn to="/about" text>
+        <span>About</span>
+      </v-btn>
+
+      <v-spacer></v-spacer>
+
       <AuthWidget/>
-    </div>
-    <div style='clear: both'></div>
-  </nav>
+    </v-app-bar>
 </template>
 
 <script lang='ts'>
@@ -23,19 +36,3 @@ import AuthWidget from './AuthWidget.vue';
 })
 export default class NavBar extends Vue {}
 </script>
-
-<style scoped>
-nav {
-  padding: 30px;
-  border-bottom: solid 1px #42b983;
-}
-
-nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-nav a.router-link-exact-active {
-  color: #42b983;
-}
-</style>

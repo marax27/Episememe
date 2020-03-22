@@ -1,8 +1,16 @@
 <template>
-  <div id="app">
+  <v-app>
     <NavBar/>
-    <router-view/>
-  </div>
+    <v-content>
+      <v-container>
+        <v-row class="text-center">
+          <v-col cols="12">
+            <router-view/>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-content>
+  </v-app>
 </template>
 
 <script lang="ts">
@@ -17,13 +25,3 @@ import NavBar from './shared/components/NavBar.vue';
 })
 export default class App extends Vue {}
 </script>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-</style>
