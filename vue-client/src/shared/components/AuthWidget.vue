@@ -1,6 +1,6 @@
 <template>
   <v-icon v-if="$auth.loading">mdi-loading mdi-spin</v-icon>
-  <div v-else>
+  <div v-else class="d-flex align-center">
     <div v-if="$auth.isAuthenticated">
       <v-btn text @click="logout">
         <v-icon>mdi-logout</v-icon>

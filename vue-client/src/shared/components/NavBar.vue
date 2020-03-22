@@ -1,14 +1,13 @@
 <template>
   <v-app-bar app color="primary" dark id="nav-bar">
-      <div class="d-flex align-center">
-        <v-img
-          alt="Vuetify Logo"
-          class="shrink mr-2"
-          contain
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-          transition="scale-transition"
-          width="40"/>
-      </div>
+    <div class="d-flex align-center">
+      <v-img
+        alt="Vuetify Logo"
+        class="shrink mr-2"
+        contain
+        src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
+        transition="scale-transition"
+        width="40"/>
 
       <v-btn to="/" class="title" text>
         <span>Episememe</span>
@@ -17,11 +16,12 @@
       <v-btn to="/about" text>
         <span>About</span>
       </v-btn>
+    </div>
 
-      <v-spacer></v-spacer>
+    <v-spacer></v-spacer>
 
-      <AuthWidget/>
-    </v-app-bar>
+    <AuthWidget/>
+  </v-app-bar>
 </template>
 
 <script lang='ts'>
