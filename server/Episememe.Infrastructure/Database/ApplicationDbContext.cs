@@ -12,9 +12,9 @@ namespace Episememe.Infrastructure.Database
         public ApplicationDbContext(DbContextOptions options)
             : base(options) { }
 
-        public DbSet<MediaInstance> MediaInstances { get; set; }
-        public DbSet<Tag> Tags { get; set; }
-        public DbSet<MediaTag> MediaTags { get; set; }
+        public DbSet<MediaInstance> MediaInstances { get; set; } = null!;
+        public DbSet<Tag> Tags { get; set; } = null!;
+        public DbSet<MediaTag> MediaTags { get; set; } = null!;
 
         public void Migrate() => Database.Migrate();
 
