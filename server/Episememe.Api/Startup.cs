@@ -1,4 +1,5 @@
 using Episememe.Api.Configuration;
+using Episememe.Application;
 using Episememe.Infrastructure;
 using Episememe.Infrastructure.Database;
 using Microsoft.AspNetCore.Builder;
@@ -21,6 +22,7 @@ namespace Episememe.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddApplication();
             services.AddInfrastructure(Configuration);
 
             services.AddJwtAuthentication(Configuration);
