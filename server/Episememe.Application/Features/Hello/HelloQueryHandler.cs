@@ -8,7 +8,6 @@ namespace Episememe.Application.Features.Hello
         {
             var userId = request.UserId;
             return string.IsNullOrEmpty(userId) ? "Who are you?" : $"Hello, {userId}!";
-
         }
     }
 }
