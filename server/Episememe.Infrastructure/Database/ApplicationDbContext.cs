@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Reflection;
+using System.Threading.Tasks;
 using Episememe.Application.Interfaces;
 using Episememe.Domain.Entities;
 using Episememe.Domain.HelperEntities;
@@ -23,16 +24,7 @@ namespace Episememe.Infrastructure.Database
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<MediaTag>()
-                .HasKey(mt => new { mt.MediaInstanceId, mt.TagId });
-            modelBuilder.Entity<MediaTag>()
-                .HasOne(mt => mt.MediaInstance)
-                .WithMany(mi => mi.MediaTags)
-                .HasForeignKey(mt => mt.MediaInstanceId);
-            modelBuilder.Entity<MediaTag>()
-                .HasOne(mt => mt.Tag)
-                .WithMany(t => t.MediaTags)
-                .HasForeignKey(mt => mt.TagId);
+            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
     }
 }

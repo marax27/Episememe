@@ -13,9 +13,10 @@ namespace Episememe.Infrastructure.Migrations
                 {
                     Id = table.Column<string>(nullable: false),
                     Timestamp = table.Column<DateTime>(nullable: false),
-                    DataType = table.Column<string>(nullable: true),
-                    Path = table.Column<string>(nullable: true),
-                    RevisionCount = table.Column<int>(nullable: false)
+                    DataType = table.Column<string>(nullable: false),
+                    Path = table.Column<string>(nullable: false),
+                    RevisionCount = table.Column<int>(nullable: false, defaultValue: 0)
+                        .Annotation("Sqlite:Autoincrement", true)
                 },
                 constraints: table =>
                 {
@@ -28,8 +29,8 @@ namespace Episememe.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(nullable: true),
-                    Description = table.Column<string>(nullable: true)
+                    Name = table.Column<string>(nullable: false),
+                    Description = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
