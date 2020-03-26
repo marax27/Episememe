@@ -1,12 +1,24 @@
 <template>
-  <span v-if="$auth.loading">
-    Loading...
-  </span>
-  <div v-else>
+  <v-icon v-if="$auth.loading">mdi-loading mdi-spin</v-icon>
+  <div v-else class="d-flex align-center">
     <div v-if="$auth.isAuthenticated">
-      <button @click="logout">Log out</button>
+      <v-btn text @click="logout">
+        <v-icon>mdi-logout</v-icon>
+        <span>Logout</span>
+      </v-btn>
+
+      <a href="#">
+      <v-avatar class="profile-image">
+        <v-img
+          :src="$auth.user.picture" :alt="$auth.user.name"
+          transition="scale-transition"/>
+      </v-avatar>
+      </a>
     </div>
-    <button v-else @click="login">Log in</button>
+    <v-btn v-else text @click="login">
+      <v-icon>mdi-login</v-icon>
+      <span>Login</span>
+    </v-btn>
   </div>
 </template>
 

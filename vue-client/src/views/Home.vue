@@ -1,7 +1,9 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-  </div>
+  <v-container>
+    <v-img
+      :src="require('../assets/logo.svg')"
+      contain height="200"/>
+  </v-container>
 </template>
 
 <script lang='ts'>
