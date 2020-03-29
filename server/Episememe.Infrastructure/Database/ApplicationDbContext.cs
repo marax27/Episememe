@@ -18,10 +18,6 @@ namespace Episememe.Infrastructure.Database
 
         public void Migrate() => Database.Migrate();
 
-        public void Update() => SaveChanges();
-
-        public Task UpdateAsync() => SaveChangesAsync();
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
