@@ -12,9 +12,12 @@ namespace Episememe.Api
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private readonly IWebHostEnvironment _env;
+
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
+            _env = env;
         }
 
         public IConfiguration Configuration { get; }
@@ -25,16 +28,21 @@ namespace Episememe.Api
             services.AddApplication();
             services.AddInfrastructure(Configuration);
 
+            if (_env.IsDevelopment())
+            {
+                services.ConfigureSwagger();
+            }
+
             services.AddJwtAuthentication(Configuration);
             services.AddControllers();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IDatabaseMigrationService databaseMigration)
+        public void Configure(IApplicationBuilder app, IDatabaseMigrationService databaseMigration)
         {
             databaseMigration.Migrate();
 
-            if (env.IsDevelopment())
+            if (_env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseCors(o => {
@@ -42,6 +50,7 @@ namespace Episememe.Api
                     o.AllowAnyHeader();
                     o.AllowAnyMethod();
                 });
+                app.ExposeSwagger();
             }
 
             app.UseRouting();
