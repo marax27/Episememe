@@ -45,11 +45,7 @@ namespace Episememe.Api
             if (_env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseCors(o => {
-                    o.AllowAnyOrigin();
-                    o.AllowAnyHeader();
-                    o.AllowAnyMethod();
-                });
+                app.EnableCors();
                 app.ExposeSwagger();
             }
 
