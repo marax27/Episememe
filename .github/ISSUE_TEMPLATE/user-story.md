@@ -7,14 +7,15 @@ assignees: ''
 
 ---
 
-**The story**
+## The story
+
 As a user,
 I want to ...,
 so that I can ...
 
-**Acceptance criteria**
+### Acceptance criteria
 - The page is accessible from the navigation bar
 - The button opens a popup that contains ...
 - Etc.
 
-**Additional notes**
+### Additional notes
