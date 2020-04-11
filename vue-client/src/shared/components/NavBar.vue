@@ -9,13 +9,9 @@
         transition="scale-transition"
         width="40"/>
 
-      <v-btn to="/" class="title" text>
-        <span>Episememe</span>
-      </v-btn>
+      <router-link to="/" class="title nav-link white--text">Episememe</router-link>
 
-      <v-btn to="/about" text>
-        <span>About</span>
-      </v-btn>
+      <router-link to="/about" class="nav-link white--text">About</router-link>
     </div>
 
     <v-spacer></v-spacer>
@@ -36,3 +32,21 @@ import AuthWidget from './AuthWidget.vue';
 })
 export default class NavBar extends Vue {}
 </script>
+
+<style scoped>
+.nav-link {
+  text-decoration: none;
+  border-bottom: solid 1px;
+  border-bottom-color: transparent;
+}
+.nav-link:hover {
+  border-bottom-color: rgba(256, 256, 256, 0.7);
+}
+.nav-link:active {
+  border-bottom-color: rgba(256, 256, 256, 1);
+}
+
+.nav-link + .nav-link {
+  margin-left: 10px;
+}
+</style>
