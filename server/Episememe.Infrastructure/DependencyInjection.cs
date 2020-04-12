@@ -1,5 +1,7 @@
-﻿using Episememe.Application.Interfaces;
+﻿using System.IO.Abstractions;
+using Episememe.Application.Interfaces;
 using Episememe.Infrastructure.Database;
+using Episememe.Infrastructure.FileSystem;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,6 +22,11 @@ namespace Episememe.Infrastructure
                 => provider.GetService<ApplicationDbContext>());
 
             services.AddTransient<IDatabaseMigrationService, ApplicationDbContext>();
+
+            services.Configure<FileStorageSettings>(options
+                => configuration.GetSection("FileStorage").Bind(options));
+            services.AddScoped<IFileSystem, System.IO.Abstractions.FileSystem>();
+            services.AddScoped<IFileStorage, FileStorage>();
 
             return services;
         }
