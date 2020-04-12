@@ -4,17 +4,21 @@ using System.IO.Abstractions;
 using System.Linq;
 using Episememe.Application.Exceptions;
 using Episememe.Application.Interfaces;
+using Microsoft.Extensions.Options;
 
 namespace Episememe.Infrastructure.FileSystem
 {
     public class FileStorage : IFileStorage
     {
         private readonly IFileSystem _fileSystem;
-        private readonly string _rootDirectory;
+        private readonly FileStorageSettings _settings;
 
-        public FileStorage(string rootDirectory, IFileSystem fileSystem)
+        public FileStorage(IOptions<FileStorageSettings> settings, IFileSystem fileSystem)
         {
-            _rootDirectory = rootDirectory;
+            if(settings.Value.RootDirectory == null)
+                throw new ArgumentNullException(nameof(settings.Value.RootDirectory));
+
+            _settings = settings.Value;
             _fileSystem = fileSystem;
         }
 
@@ -73,7 +77,7 @@ namespace Episememe.Infrastructure.FileSystem
                 throw new ArgumentException($"Filename '{filename}' is too short (<= 2)");
             }
 
-            return Path.Combine(_rootDirectory, filename[0].ToString(), filename[1].ToString(), filename[2..]);
+            return Path.Combine(_settings.RootDirectory, filename[0].ToString(), filename[1].ToString(), filename[2..]);
         }
     }
 }

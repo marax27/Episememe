@@ -13,9 +13,10 @@ namespace Episememe.Infrastructure.Tests.FileSystem
         [Fact]
         public void GivenTheFileExists_ThenFileIsDeleted()
         {
+            var givenOptions = OptionsFactory.Create("");
             var fileSystem = new MockFileSystem()
                 .WithFile("q/w/erty", "Sample content");
-            var sut = new FileStorage("", fileSystem);
+            var sut = new FileStorage(givenOptions, fileSystem);
 
             sut.Delete("qwerty");
 
@@ -25,8 +26,9 @@ namespace Episememe.Infrastructure.Tests.FileSystem
         [Fact]
         public void GivenTheFileDoesNotExist_FileDoesNotExistExceptionIsThrown()
         {
+            var givenOptions = OptionsFactory.Create("");
             var fileSystem = new MockFileSystem();
-            var sut = new FileStorage("", fileSystem);
+            var sut = new FileStorage(givenOptions, fileSystem);
 
             Action act = () => sut.Delete("qwerty");
 

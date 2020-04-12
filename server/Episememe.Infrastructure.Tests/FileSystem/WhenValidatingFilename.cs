@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO.Abstractions.TestingHelpers;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using Episememe.Infrastructure.FileSystem;
+using Episememe.Infrastructure.Tests.Helpers;
 using FluentAssertions;
 using Xunit;
 
@@ -17,9 +17,9 @@ namespace Episememe.Infrastructure.Tests.FileSystem
         [InlineData("CamelCase")]
         public void GivenLongAlphanumericFilename_FileIsCreated(string givenFilename)
         {
-            var rootDirectory = "";
+            var givenOptions = OptionsFactory.Create("");
             var fileSystem = new MockFileSystem();
-            var sut = new FileStorage(rootDirectory, fileSystem);
+            var sut = new FileStorage(givenOptions, fileSystem);
             var initialFileCount = fileSystem.AllFiles.Count();
 
             sut.CreateNew(givenFilename)
@@ -34,9 +34,9 @@ namespace Episememe.Infrastructure.Tests.FileSystem
         [InlineData("0000.txt")]
         public void GivenFilenameWithNonAlphanumericCharacters_ArgumentExceptionIsThrown(string givenFilename)
         {
-            var rootDirectory = "";
+            var givenOptions = OptionsFactory.Create("");
             var fileSystem = new MockFileSystem();
-            var sut = new FileStorage(rootDirectory, fileSystem);
+            var sut = new FileStorage(givenOptions, fileSystem);
 
             Action act = () => sut.CreateNew(givenFilename).Close();
 
@@ -48,9 +48,9 @@ namespace Episememe.Infrastructure.Tests.FileSystem
         [InlineData("xy")]
         public void GivenShortFilename_ArgumentExceptionIsThrown(string givenFilename)
         {
-            var rootDirectory = "";
+            var givenOptions = OptionsFactory.Create("");
             var fileSystem = new MockFileSystem();
-            var sut = new FileStorage(rootDirectory, fileSystem);
+            var sut = new FileStorage(givenOptions, fileSystem);
 
             Action act = () => sut.CreateNew(givenFilename).Close();
 

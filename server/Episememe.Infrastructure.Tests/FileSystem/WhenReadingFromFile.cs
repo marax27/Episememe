@@ -14,10 +14,11 @@ namespace Episememe.Infrastructure.Tests.FileSystem
         [Fact]
         public void GivenTheFileExists_FileContentIsRead()
         {
+            var givenOptions = OptionsFactory.Create("");
             var givenFileContent = "SampleContent";
             var fileSystem = new MockFileSystem()
                 .WithFile("q/w/erty", givenFileContent);
-            var sut = new FileStorage("", fileSystem);
+            var sut = new FileStorage(givenOptions, fileSystem);
 
             var stream = sut.Read("qwerty");
             var actualFileContent = new StreamReader(stream).ReadToEnd();
@@ -28,8 +29,9 @@ namespace Episememe.Infrastructure.Tests.FileSystem
         [Fact]
         public void GivenTheFileDoesNotExist_FileDoesNotExistExceptionIsThrown()
         {
+            var givenOptions = OptionsFactory.Create("");
             var fileSystem = new MockFileSystem();
-            var sut = new FileStorage("", fileSystem);
+            var sut = new FileStorage(givenOptions, fileSystem);
 
             Action act = () => sut.Read("qwerty").Close();
 
