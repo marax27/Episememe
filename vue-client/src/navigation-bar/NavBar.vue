@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar app color="primary" dark id="nav-bar">
+  <v-app-bar app id="nav-bar">
     <div class="d-flex align-center">
       <v-img
         alt="Vuetify Logo"
@@ -11,7 +11,8 @@
 
       <router-link to="/" class="title nav-link white--text">Episememe</router-link>
 
-      <router-link to="/about" class="nav-link white--text">About</router-link>
+      <router-link to="/upload" class="nav-link white--text">Upload</router-link>
+      <router-link to="/revision" class="nav-link white--text">Revision</router-link>
     </div>
 
     <v-spacer></v-spacer>
@@ -22,7 +23,7 @@
 
 <script lang='ts'>
 import { Vue, Component } from 'vue-property-decorator';
-import AuthWidget from './AuthWidget.vue';
+import AuthWidget from './components/AuthWidget.vue';
 
 @Component({
   name: 'NavBar',
@@ -47,6 +48,10 @@ export default class NavBar extends Vue {}
 }
 
 .nav-link + .nav-link {
-  margin-left: 10px;
+  margin-left: 1em;
+}
+
+a:active, a:focus {
+  outline: 0;
 }
 </style>

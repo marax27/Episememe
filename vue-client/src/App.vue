@@ -15,7 +15,7 @@
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
-import NavBar from './shared/components/NavBar.vue';
+import NavBar from './navigation-bar/NavBar.vue';
 
 @Component({
   name: 'App',

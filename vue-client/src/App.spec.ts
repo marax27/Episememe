@@ -3,7 +3,7 @@ import VueRouter from 'vue-router';
 import vuetify from 'vuetify';
 import Vue from 'vue';
 import App from './App.vue';
-import NavBar from './shared/components/NavBar.vue';
+import NavBar from './navigation-bar/NavBar.vue';
 
 describe('App Test', () => {
   let wrapper: ReturnType<typeof shallowMount>;
