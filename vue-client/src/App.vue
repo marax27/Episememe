@@ -2,13 +2,7 @@
   <v-app>
     <NavBar/>
     <v-content>
-      <v-container>
-        <v-row class="text-center">
-          <v-col cols="12">
-            <router-view/>
-          </v-col>
-        </v-row>
-      </v-container>
+      <router-view/>
     </v-content>
   </v-app>
 </template>
