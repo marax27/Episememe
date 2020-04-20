@@ -45,7 +45,7 @@ export default class Home extends Vue {
   values = ['Poland', 'History']
 
   search() {
-    console.log('val');
+    router.push({ name: 'Gallery', params: { data: '123' } });
   }
 
   onInputChange($event: string) {
