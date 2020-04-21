@@ -21,7 +21,7 @@ namespace Episememe.Infrastructure.Tests.FileSystem
             sut.CreateNew("abcdef")
                 .Close();
 
-            fileSystem.GetFile("a/b/cdef").Should().NotBeNull();
+            fileSystem.GetFile("a/b/abcdef").Should().NotBeNull();
         }
 
         [Fact]
@@ -35,7 +35,7 @@ namespace Episememe.Infrastructure.Tests.FileSystem
             sut.CreateNew("abcdef")
                 .Close();
 
-            fileSystem.GetFile("a/b/cdef").Should().NotBeNull();
+            fileSystem.GetFile("a/b/abcdef").Should().NotBeNull();
         }
 
         [Fact]
@@ -43,7 +43,7 @@ namespace Episememe.Infrastructure.Tests.FileSystem
         {
             var givenOptions = OptionsFactory.Create("");
             var fileSystem = new MockFileSystem()
-                .WithFile("a/b/cdef", "");
+                .WithFile("a/b/abcdef", "");
             var sut = new FileStorage(givenOptions, fileSystem);
 
             Action act = () => sut.CreateNew("abcdef").Close();
@@ -63,7 +63,7 @@ namespace Episememe.Infrastructure.Tests.FileSystem
             sut.CreateNew("abcdef")
                 .Close();
 
-            var expectedPath = Path.Combine(rootDirectory, "a", "b", "cdef");
+            var expectedPath = Path.Combine(rootDirectory, "a", "b", "abcdef");
             fileSystem.GetFile(expectedPath).Should().NotBeNull();
         }
     }

@@ -17,7 +17,7 @@ namespace Episememe.Infrastructure.Tests.FileSystem
             var givenOptions = OptionsFactory.Create("");
             var givenFileContent = "SampleContent";
             var fileSystem = new MockFileSystem()
-                .WithFile("q/w/erty", givenFileContent);
+                .WithFile("q/w/qwerty", givenFileContent);
             var sut = new FileStorage(givenOptions, fileSystem);
 
             var stream = sut.Read("qwerty");
