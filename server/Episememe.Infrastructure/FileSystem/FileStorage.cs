@@ -72,12 +72,12 @@ namespace Episememe.Infrastructure.FileSystem
                 throw new ArgumentException($"Filename '{filename}' contains non-alphanumeric characters.");
             }
 
-            if (filename.Length <= 2)
+            if (filename.Length < 2)
             {
-                throw new ArgumentException($"Filename '{filename}' is too short (<= 2)");
+                throw new ArgumentException($"Filename '{filename}' is too short (< 2)");
             }
 
-            return Path.Combine(_settings.RootDirectory, filename[0].ToString(), filename[1].ToString(), filename[2..]);
+            return Path.Combine(_settings.RootDirectory, filename[0].ToString(), filename[1].ToString(), filename);
         }
     }
 }

@@ -45,7 +45,6 @@ namespace Episememe.Infrastructure.Tests.FileSystem
 
         [Theory]
         [InlineData("x")]
-        [InlineData("xy")]
         public void GivenShortFilename_ArgumentExceptionIsThrown(string givenFilename)
         {
             var givenOptions = OptionsFactory.Create("");
