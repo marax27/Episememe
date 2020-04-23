@@ -15,12 +15,12 @@ namespace Episememe.Infrastructure.Tests.FileSystem
         {
             var givenOptions = OptionsFactory.Create("");
             var fileSystem = new MockFileSystem()
-                .WithFile("q/w/erty", "Sample content");
+                .WithFile("q/w/qwerty", "Sample content");
             var sut = new FileStorage(givenOptions, fileSystem);
 
             sut.Delete("qwerty");
 
-            fileSystem.GetFile("q/w/erty").Should().BeNull();
+            fileSystem.GetFile("q/w/qwerty").Should().BeNull();
         }
 
         [Fact]
