@@ -1,11 +1,14 @@
 <template>
   <div class='wrapper'>
 
-    <div class='media-gallery'>
-      <img v-for='(item, index) in mediaInstances' :key='item.id'
-          class='media-instance'
-          v-bind:class='{ "currently-browsed": index === currentlyBrowsedIndex }'
-          :src='item.address' alt='Cannot display media'/>
+    <div v-if='isQueryEmpty' class='media-gallery'>
+      <p>Search query is empty</p>
+    </div>
+    <div v-else class='media-gallery'>
+      <img v-for='(item, index) in instances' :key='item.id'
+           class='media-instance'
+           v-show='index === currentlyBrowsedIndex'
+           :src='item.address' alt='Cannot display media'/>
     </div>
 
     <v-btn class='previous-instance' x-large icon color='secondary'
@@ -26,27 +29,25 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component
 export default class MediaGallery extends Vue {
-  mediaInstances: any[] = [
-    { id: '1', address: 'http://localhost:18888/0.jpg' },
-    { id: '2', address: 'http://localhost:18888/1.jpg' },
-    { id: '3', address: 'http://localhost:18888/2.pdf' },
-    { id: '4', address: 'http://localhost:18888/3.jpg' },
-    { id: '5', address: 'http://localhost:18888/4.jpg' },
-    { id: '6', address: 'http://localhost:18888/5.mp4' },
-  ];
+  @Prop({ default: [] })
+  instances!: any[];
+
+  public get isQueryEmpty(): boolean {
+    return this.instances == null || this.instances.length === 0;
+  }
 
   currentlyBrowsedIndex = 0;
 
   movePrevious() {
     --this.currentlyBrowsedIndex;
     if (this.currentlyBrowsedIndex < 0)
-      this.currentlyBrowsedIndex += this.mediaInstances.length;
+      this.currentlyBrowsedIndex += this.instances.length;
   }
 
   moveNext() {
     ++this.currentlyBrowsedIndex;
-    if (this.currentlyBrowsedIndex >= this.mediaInstances.length)
-      this.currentlyBrowsedIndex -= this.mediaInstances.length;
+    if (this.currentlyBrowsedIndex >= this.instances.length)
+      this.currentlyBrowsedIndex -= this.instances.length;
   }
 }
 </script>
@@ -68,13 +69,8 @@ export default class MediaGallery extends Vue {
 }
 
 .media-gallery .media-instance {
-  display: none;
   object-fit: contain;
   max-height: 90vh;
-}
-
-.media-gallery .currently-browsed.media-instance {
-  display: unset;
 }
 
 .previous-instance, .next-instance {
