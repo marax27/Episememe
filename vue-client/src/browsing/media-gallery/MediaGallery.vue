@@ -8,7 +8,7 @@
       <img v-for='(item, index) in instances' :key='item.id'
            class='media-instance'
            v-show='index === currentlyBrowsedIndex'
-           :src='item.address' alt='Cannot display media'/>
+           :src='item.address' :alt='`Cannot display #${item.id}`'/>
     </div>
 
     <v-btn class='previous-instance' x-large icon color='secondary'
