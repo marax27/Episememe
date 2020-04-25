@@ -1,5 +1,8 @@
-﻿using Episememe.Application.Features.MediaFiltering;
+﻿using Episememe.Application.DataTransfer;
+using Episememe.Application.Features.MediaFiltering;
 using Episememe.Application.Tests.Helpers;
+using Episememe.Application.Tests.Helpers.Contexts;
+using Episememe.Domain.Entities;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -15,14 +18,9 @@ namespace Episememe.Application.Tests.Filtering
         [Fact]
         public void GivenNullFilterArguments_AllMediaAreReturned()
         {
-            var mediaInstances = DbSetMockFactory.SampleMediaInstancesDbSet();
+            var mediaInstances = new GivenThreeMediaInstancesDbSet().MediaInstances;
 
-            var filteredMedia = new MediaFilter(mediaInstances)
-                .IncludeTags(null)
-                .ExcludeTags(null)
-                .InTimeRange(null, null)
-                .Result()
-                .AsEnumerable();
+            var filteredMedia = GetFilteredMedia(null, null, null, null);
 
             filteredMedia.Count().Should().Be(mediaInstances.Count());
         }
@@ -30,13 +28,9 @@ namespace Episememe.Application.Tests.Filtering
         [Fact]
         public void GivenExistingTag_ConnectedMediaAreReturned()
         {
-            var mediaInstances = DbSetMockFactory.SampleMediaInstancesDbSet();
             string[] includedTags = { "usa" };
 
-            var filteredMedia = new MediaFilter(mediaInstances)
-                .IncludeTags(includedTags)
-                .Result()
-                .AsEnumerable();
+            var filteredMedia = GetFilteredMedia(includedTags, null, null, null);
 
             filteredMedia.Should().NotBeEmpty();
             filteredMedia.Count().Should().Be(1);
@@ -46,13 +40,9 @@ namespace Episememe.Application.Tests.Filtering
         [Fact]
         public void GivenNonexistentTag_NoMediaIsReturned()
         {
-            var mediaInstances = DbSetMockFactory.SampleMediaInstancesDbSet();
             string[] includedTags = {"politics"};
 
-            var filteredMedia = new MediaFilter(mediaInstances)
-                .IncludeTags(includedTags)
-                .Result()
-                .AsEnumerable();
+            var filteredMedia = GetFilteredMedia(includedTags, null, null, null);
 
             filteredMedia.Should().BeEmpty();
         }
@@ -60,13 +50,9 @@ namespace Episememe.Application.Tests.Filtering
         [Fact]
         public void GivenTagsToExclude_MediaWithoutExcludedTagsAreReturned()
         {
-            var mediaInstances = DbSetMockFactory.SampleMediaInstancesDbSet();
             string[] excludedTags = { "usa", "sport" };
 
-            var filteredMedia = new MediaFilter(mediaInstances)
-                .ExcludeTags(excludedTags)
-                .Result()
-                .AsEnumerable();
+            var filteredMedia = GetFilteredMedia(null, excludedTags, null, null);
 
             filteredMedia.Count().Should().Be(1);
             filteredMedia.Single().Id.Should().Be("3");
@@ -75,15 +61,10 @@ namespace Episememe.Application.Tests.Filtering
         [Fact]
         public void GivenBothIncludedAndExcludedTags_CorrectMediaAreReturned()
         {
-            var mediaInstances = DbSetMockFactory.SampleMediaInstancesDbSet();
             string[] includedTags = { "university" };
             string[] excludedTags = { "usa", "sport" };
 
-            var filteredMedia = new MediaFilter(mediaInstances)
-                .IncludeTags(includedTags)
-                .ExcludeTags(excludedTags)
-                .Result()
-                .AsEnumerable();
+            var filteredMedia = GetFilteredMedia(includedTags, excludedTags, null, null);
 
             filteredMedia.Count().Should().Be(1);
             filteredMedia.Single().Id.Should().Be("3");
@@ -92,15 +73,10 @@ namespace Episememe.Application.Tests.Filtering
         [Fact]
         public void GivenIncludedAndExcludedTagsBelongingToTheSameMedia_NoMediaAreReturned()
         {
-            var mediaInstances = DbSetMockFactory.SampleMediaInstancesDbSet();
             string[] includedTags = { "germany" };
             string[] excludedTags = { "usa", "sport" };
 
-            var filteredMedia = new MediaFilter(mediaInstances)
-                .IncludeTags(includedTags)
-                .ExcludeTags(excludedTags)
-                .Result()
-                .AsEnumerable();
+            var filteredMedia = GetFilteredMedia(includedTags, excludedTags, null, null);
 
             filteredMedia.Should().BeEmpty();
         }
@@ -108,14 +84,10 @@ namespace Episememe.Application.Tests.Filtering
         [Fact]
         public void GivenTimeRange_MediaCreatedInTimeRangeAreReturned()
         {
-            var mediaInstances = DbSetMockFactory.SampleMediaInstancesDbSet();
             var timeRangeStart = DateTime.Today.AddYears(-2).AddMonths(-6);
             var timeRangeEnd = DateTime.Today.AddYears(-1).AddMonths(-3);
 
-            var filteredMedia = new MediaFilter(mediaInstances)
-                .InTimeRange(timeRangeStart, timeRangeEnd)
-                .Result()
-                .AsEnumerable();
+            var filteredMedia = GetFilteredMedia(null, null, timeRangeStart, timeRangeEnd);
 
             filteredMedia.Count().Should().Be(2);
         }
@@ -123,13 +95,9 @@ namespace Episememe.Application.Tests.Filtering
         [Fact]
         public void GivenTimeRangeStart_MediaCreatedAfterAreReturned()
         {
-            var mediaInstances = DbSetMockFactory.SampleMediaInstancesDbSet();
             var timeRangeStart = DateTime.Today.AddYears(-1).AddMonths(-9);
 
-            var filteredMedia = new MediaFilter(mediaInstances)
-                .InTimeRange(timeRangeStart, null)
-                .Result()
-                .AsEnumerable();
+            var filteredMedia = GetFilteredMedia(null, null, timeRangeStart, null);
 
             filteredMedia.Count().Should().Be(2);
         }
@@ -137,15 +105,19 @@ namespace Episememe.Application.Tests.Filtering
         [Fact]
         public void GivenTimeRangeEnd_MediaCreatedBeforeAreReturned()
         {
-            var mediaInstances = DbSetMockFactory.SampleMediaInstancesDbSet();
             var timeRangeEnd = DateTime.Today.AddYears(-1).AddMonths(-3);
 
-            var filteredMedia = new MediaFilter(mediaInstances)
-                .InTimeRange(null, timeRangeEnd)
-                .Result()
-                .AsEnumerable();
+            var filteredMedia = GetFilteredMedia(null, null, null, timeRangeEnd);
 
             filteredMedia.Count().Should().Be(2);
+        }
+
+        private IEnumerable<MediaInstance> GetFilteredMedia(IEnumerable<string> includedTags, IEnumerable<string> excludedTags,
+            DateTime? timeRangeStart, DateTime? timeRangeEnd)
+        {
+            var mediaInstances = new GivenThreeMediaInstancesDbSet().MediaInstances;
+            var searchMedia = new SearchMediaDto(includedTags, excludedTags, timeRangeStart, timeRangeEnd);
+            return new MediaFilter(searchMedia).Filter(mediaInstances);
         }
     }
 }
