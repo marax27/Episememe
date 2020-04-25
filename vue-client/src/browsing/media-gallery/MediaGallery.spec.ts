@@ -1,5 +1,4 @@
 import { shallowMount } from '@vue/test-utils';
-import VueRouter from 'vue-router';
 import vuetify from 'vuetify';
 import Vue from 'vue';
 import MediaGallery from './MediaGallery.vue';
@@ -15,7 +14,6 @@ import * as ctx from './test-contexts';
 
     beforeAll(() => {
       Vue.use(vuetify);
-      Vue.use(VueRouter);
     });
 
     beforeEach(() => {
