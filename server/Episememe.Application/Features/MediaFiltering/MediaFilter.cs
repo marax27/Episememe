@@ -1,4 +1,5 @@
-﻿using Episememe.Domain.Entities;
+﻿using Episememe.Application.DataTransfer;
+using Episememe.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,53 +9,57 @@ namespace Episememe.Application.Features.MediaFiltering
 {
     public class MediaFilter
     {
-        private IQueryable<MediaInstance> MediaInstances;
+        private SearchMediaDto SearchMedia;
 
-        public MediaFilter(IQueryable<MediaInstance> mediaInstances)
+        public MediaFilter(SearchMediaDto searchMedia)
         {
-            MediaInstances = mediaInstances;
+            SearchMedia = searchMedia;
         }
 
-        public MediaFilter IncludeTags(IEnumerable<string> includedTags)
+        public IQueryable<MediaInstance> Filter(IQueryable<MediaInstance> mediaInstances)
         {
-            if (includedTags != null)
+            IncludeTags(ref mediaInstances)
+                .ExcludeTags(ref mediaInstances)
+                .InTimeRange(ref mediaInstances);
+
+            return mediaInstances;
+        }
+
+        private MediaFilter IncludeTags(ref IQueryable<MediaInstance> mediaInstances)
+        {
+            if (SearchMedia.IncludedTags != null)
             {
-                MediaInstances = MediaInstances.Where(mi =>
-                    includedTags.All(t => mi.MediaTags.Select(mt => mt.Tag.Name).Contains(t))
+                mediaInstances = mediaInstances.Where(mi =>
+                    SearchMedia.IncludedTags.All(t => mi.MediaTags.Select(mt => mt.Tag.Name).Contains(t))
                 );
             }
 
             return this;
         }
 
-        public MediaFilter ExcludeTags(IEnumerable<string> excludedTags)
+        private MediaFilter ExcludeTags(ref IQueryable<MediaInstance> mediaInstances)
         {
-            if (excludedTags != null)
+            if (SearchMedia.ExcludedTags != null)
             {
-                MediaInstances = MediaInstances.Where(mi =>
-                    !excludedTags.Any(t => mi.MediaTags.Select(mt => mt.Tag.Name).Contains(t))
+                mediaInstances = mediaInstances.Where(mi =>
+                    !SearchMedia.ExcludedTags.Any(t => mi.MediaTags.Select(mt => mt.Tag.Name).Contains(t))
                 );
             }
 
             return this;
         }
 
-        public MediaFilter InTimeRange(DateTime? timeRangeStart, DateTime? timeRangeEnd)
+        private MediaFilter InTimeRange(ref IQueryable<MediaInstance> mediaInstances)
         {
-            MediaInstances = (timeRangeStart, timeRangeEnd) switch
+            mediaInstances = (SearchMedia.TimeRangeStart, SearchMedia.TimeRangeEnd) switch
             {
-                (null, null) => MediaInstances,
-                (null, _) => MediaInstances.Where(mi => mi.Timestamp <= timeRangeEnd),
-                (_, null) => MediaInstances.Where(mi => mi.Timestamp >= timeRangeStart),
-                (_, _) => MediaInstances.Where(mi => mi.Timestamp >= timeRangeStart && mi.Timestamp <= timeRangeEnd)
+                (null, null) => mediaInstances,
+                (null, _) => mediaInstances.Where(mi => mi.Timestamp <= SearchMedia.TimeRangeEnd),
+                (_, null) => mediaInstances.Where(mi => mi.Timestamp >= SearchMedia.TimeRangeStart),
+                (_, _) => mediaInstances.Where(mi => mi.Timestamp >= SearchMedia.TimeRangeStart && mi.Timestamp <= SearchMedia.TimeRangeEnd)
             };
 
             return this;
-        }
-
-        public IQueryable<MediaInstance> Result()
-        {
-            return MediaInstances;
         }
     }
 }
