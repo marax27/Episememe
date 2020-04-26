@@ -1,4 +1,4 @@
-import { shallowMount } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import vuetify from 'vuetify';
 import Vue from 'vue';
 import MediaComponent from '../MediaComponent.vue';
@@ -10,16 +10,17 @@ import * as ctx from './contexts';
 ].forEach(context => {
 
   describe(`MediaComponent Test: ${context.constructor.name}`, () => {
-    let wrapper: ReturnType<typeof shallowMount>;
+    let wrapper: ReturnType<typeof mount>;
   
     beforeAll(() => {
       Vue.use(vuetify);
     });
   
     beforeEach(() => {
-      wrapper = shallowMount(MediaComponent, {
+      wrapper = mount(MediaComponent, {
         propsData: {
-          instance: context.givenInstance
+          instance: context.givenInstance,
+          active: context.givenActive
         }
       })
     });
