@@ -26,11 +26,12 @@
 
 <script lang='ts'>
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import { IMediaInstance } from '../../shared/models/IMediaInstance';
 
 @Component
 export default class MediaGallery extends Vue {
   @Prop({ default: [] })
-  instances!: any[];
+  instances!: IMediaInstance[];
 
   public get isQueryEmpty(): boolean {
     return this.instances == null || this.instances.length === 0;

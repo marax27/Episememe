@@ -9,6 +9,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import MediaGallery from '@/browsing/media-gallery/MediaGallery.vue';
 import SettingsMenu from '@/browsing/SettingsMenu.vue';
+import { IMediaInstance } from '../shared/models/IMediaInstance';
 
 @Component({
   components: {
@@ -18,13 +19,13 @@ import SettingsMenu from '@/browsing/SettingsMenu.vue';
 })
 export default class Gallery extends Vue {
 
-  mediaInstances = [
-    { id: '1', address: 'http://localhost:18888/0.jpg' },
-    { id: '2', address: 'http://localhost:18888/1.jpg' },
-    { id: '3', address: 'http://localhost:18888/2.pdf' },
-    { id: '4', address: 'http://localhost:18888/3.jpg' },
-    { id: '5', address: 'http://localhost:18888/4.jpg' },
-    { id: '6', address: 'http://localhost:18888/5.mp4' },
+  mediaInstances: IMediaInstance[] = [
+    { id: '0.jpg', dataType: 'jpg', tags: [] },
+    { id: '1.jpg', dataType: 'jpg', tags: [] },
+    { id: '2.pdf', dataType: 'pdf', tags: [] },
+    { id: '3.jpg', dataType: 'jpg', tags: [] },
+    { id: '4.jpg', dataType: 'jpg', tags: [] },
+    { id: '5.mp4', dataType: 'mp4', tags: [] },
   ];
 
   speedDialIsOpen = false;
