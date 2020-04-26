@@ -1,8 +1,16 @@
 <template>
-  <div>
-    <p>{{ "#" + identifier }}</p>
-    <p>Download</p>
-  </div>
+  <v-card>
+    <v-card-title>{{ "#" + identifier }}</v-card-title>
+
+    <v-card-text>
+      <a :href='url' download target='_blank'>
+        <v-btn text>
+          <v-icon>mdi-download</v-icon>
+          <span>Download</span>
+        </v-btn>
+      </a>
+    </v-card-text>
+  </v-card>
 </template>
 
 <script lang='ts'>
@@ -12,6 +20,9 @@ import { IMediaInstance } from '../../../../shared/models/IMediaInstance';
 @Component
 export default class DownloadLinkComponent extends Vue {
   @Prop()
-  identifier?: IMediaInstance;
+  url?: string;
+
+  @Prop()
+  identifier?: string;
 }
 </script>

@@ -15,6 +15,7 @@
 
   <DownloadLinkComponent v-else
     v-show='active'
+    :url='mediaUrl'
     :identifier='instance.id'>
   </DownloadLinkComponent>
 </template>
