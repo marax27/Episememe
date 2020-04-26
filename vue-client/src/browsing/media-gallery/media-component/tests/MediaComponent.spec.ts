@@ -6,7 +6,11 @@ import * as ctx from './contexts';
 
 [
   new ctx.GivenSampleImage(),
-  new ctx.GivenSampleVideo()
+  new ctx.GivenSampleVideo(),
+  new ctx.GivenSamplePdf(),
+  new ctx.GivenInactiveImage(),
+  new ctx.GivenInactiveVideo(),
+  new ctx.GivenInactivePdf(),
 ].forEach(context => {
 
   describe(`MediaComponent Test: ${context.constructor.name}`, () => {
@@ -34,9 +38,10 @@ import * as ctx from './contexts';
       expect(element.exists()).toBeTruthy();
     })
 
-    it('displays an expected element', () => {
+    const displayMessage = context.expectedVisible ? 'displays' : 'does not display';
+    it(`${displayMessage} an expected element`, () => {
       const element = wrapper.find(context.expectedElementSelector);
-      expect(element.isVisible()).toBeTruthy();
+      expect(element.isVisible()).toBe(context.expectedVisible);
     });
   });
 });
