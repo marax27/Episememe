@@ -9,7 +9,8 @@
     v-show='active'
     :url='mediaUrl'
     :type='instance.dataType'
-    :alt='altMessage'>
+    :alt='altMessage'
+    :active='active'>
   </VideoComponent>
 
   <DownloadLinkComponent v-else
