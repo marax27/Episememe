@@ -1,6 +1,17 @@
 <template>
-  <img :src='mediaUrl'
-       :alt='`Cannot display #${instance.id}`'/>
+  <img v-if='isImage()'
+       :src='mediaUrl'
+       :alt='altMessage'/>
+
+  <video v-else-if='isVideo()'>
+    <source :src='mediaUrl'
+            :type='"video/" + instance.dataType'/>
+    {{ altMessage }}
+  </video>
+
+  <div v-else>
+    <p>{{ altMessage }}</p>
+  </div>
 </template>
 
 <script lang='ts'>
@@ -14,6 +25,20 @@ export default class MediaComponent extends Vue {
 
   public get mediaUrl(): string {
     return 'http://localhost:18888/' + this.instance?.id;
+  }
+
+  public get altMessage(): string {
+    return `Cannot display #${this.instance?.id}`;
+  }
+
+  public isImage(): boolean {
+    const dataType = this.instance?.dataType.toLowerCase() ?? '';
+    return ['jpg', 'png', 'bmp', 'svg', 'jpeg'].includes(dataType);
+  }
+
+  public isVideo(): boolean {
+    const dataType = this.instance?.dataType.toLowerCase() ?? '';
+    return ['mp4', 'ogg', 'avi', 'mpeg'].includes(dataType);
   }
 }
 </script>

@@ -5,7 +5,8 @@ import MediaComponent from '../MediaComponent.vue';
 import * as ctx from './contexts';
 
 [
-  new ctx.GivenSampleImage()
+  new ctx.GivenSampleImage(),
+  new ctx.GivenSampleVideo()
 ].forEach(context => {
 
   describe(`MediaComponent Test: ${context.constructor.name}`, () => {
@@ -26,6 +27,11 @@ import * as ctx from './contexts';
     it('is a Vue instance', () => {
       expect(wrapper.isVueInstance()).toBeTruthy();
     });
+
+    it('contains an expected element', () => {
+      const element = wrapper.find(context.expectedElementSelector);
+      expect(element.exists()).toBeTruthy();
+    })
 
     it('displays an expected element', () => {
       const element = wrapper.find(context.expectedElementSelector);

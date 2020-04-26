@@ -11,5 +11,14 @@ export class GivenSampleImage implements MediaComponentTestContext {
     dataType: 'jpg',
     tags: []
   };
-  expectedElementSelector = 'img'
+  expectedElementSelector = 'img';
+}
+
+export class GivenSampleVideo implements MediaComponentTestContext {
+  givenInstance = {
+    'id': '12345678',
+    dataType: 'mp4',
+    tags: []
+  };
+  expectedElementSelector = 'video';
 }
