@@ -1,27 +1,37 @@
 <template>
-  <img v-if='isImage()'
-       v-show='active'
-       :src='mediaUrl'
-       :alt='altMessage'/>
+  <ImageComponent v-if='getComponentType() === "image"'
+    v-show='active'
+    :url='mediaUrl'
+    :alt='altMessage'>
+  </ImageComponent>
 
-  <video v-else-if='isVideo()'
-         v-show='active'>
-    <source :src='mediaUrl'
-            :type='"video/" + instance.dataType'/>
-    {{ altMessage }}
-  </video>
+  <VideoComponent v-else-if='getComponentType() === "video"'
+    v-show='active'
+    :url='mediaUrl'
+    :type='instance.dataType'
+    :alt='altMessage'>
+  </VideoComponent>
 
-  <div v-else
-       v-show='active'>
-    <p>{{ altMessage }}</p>
-  </div>
+  <DownloadLinkComponent v-else
+    v-show='active'
+    :identifier='instance.id'>
+  </DownloadLinkComponent>
 </template>
 
 <script lang='ts'>
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { IMediaInstance } from '../../../shared/models/IMediaInstance';
+import ImageComponent from './subcomponents/ImageComponent.vue';
+import VideoComponent from './subcomponents/VideoComponent.vue';
+import DownloadLinkComponent from './subcomponents/DownloadLinkComponent.vue';
 
-@Component
+@Component({
+  components: {
+    ImageComponent,
+    VideoComponent,
+    DownloadLinkComponent
+  }
+})
 export default class MediaComponent extends Vue {
   @Prop()
   instance?: IMediaInstance;
@@ -37,18 +47,14 @@ export default class MediaComponent extends Vue {
     return `Cannot display #${this.instance?.id}`;
   }
 
-  public isImage(): boolean {
+  public getComponentType(): string {
     const dataType = this.instance?.dataType.toLowerCase() ?? '';
-    return ['jpg', 'png', 'bmp', 'svg', 'jpeg'].includes(dataType);
-  }
-
-  public isVideo(): boolean {
-    const dataType = this.instance?.dataType.toLowerCase() ?? '';
-    return ['mp4', 'ogg', 'avi', 'mpeg'].includes(dataType);
+    if (['jpg', 'png', 'bmp', 'svg', 'jpeg'].includes(dataType))
+      return 'image';
+    else if (['mp4', 'ogg', 'avi', 'mpeg'].includes(dataType))
+      return 'video';
+    else
+      return 'download';
   }
 }
 </script>
-
-<style scoped>
-
-</style>
