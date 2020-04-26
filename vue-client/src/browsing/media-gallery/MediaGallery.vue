@@ -7,7 +7,7 @@
     <div v-else class='media-gallery'>
       <MediaComponent
         v-for='(item, index) in instances' :key='item.id'
-        v-show='index === currentlyBrowsedIndex'
+        :active='index === currentlyBrowsedIndex'
         :instance='item'
         class='media-instance'>
       </MediaComponent>
