@@ -1,12 +1,13 @@
 import { shallowMount } from '@vue/test-utils';
 import vuetify from 'vuetify';
 import Vue from 'vue';
-import MediaGallery from './MediaGallery.vue';
-import * as ctx from './test-contexts';
+import MediaGallery from '../MediaGallery.vue';
+import * as ctx from './contexts';
 
 [
   new ctx.GivenNoMediaInstances(),
-  new ctx.GivenSingleMediaInstance()
+  new ctx.GivenSingleMediaInstance(),
+  new ctx.GivenSeveralMediaInstances()
 ].forEach(context => 
   describe(`MediaGallery Test: ${context.constructor.name}`, () => {
 

@@ -14,3 +14,12 @@ export class GivenSingleMediaInstance implements MediaGalleryTestContext {
     givenInstances = [{ id: '12345678', dataType: 'jpg', tags: [] }];
     shouldDisplayEmptyQueryWarning = false;
 }
+
+export class GivenSeveralMediaInstances implements MediaGalleryTestContext {
+    givenInstances = [
+        { id: '12345678', dataType: 'jpg', tags: [] },
+        { id: '87654321', dataType: 'png', tags: [] },
+        { id: 'abcdefgh', dataType: 'gif', tags: [] }
+    ];
+    shouldDisplayEmptyQueryWarning = false;
+}
