@@ -38,6 +38,8 @@ export default class SettingsMenu extends Vue {
     { name: 'Fill space', icon: 'mdi-arrow-expand', callback: this.foo },
   ];
 
+  speedDialIsOpen = false;
+
   foo() {
     console.log('foo');
   }

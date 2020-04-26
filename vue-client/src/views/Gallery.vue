@@ -28,8 +28,6 @@ export default class Gallery extends Vue {
     { id: '5.mp4', dataType: 'mp4', tags: [] },
   ];
 
-  speedDialIsOpen = false;
-
   public get galleryData() {
     return this.$route.params.data;
   }
