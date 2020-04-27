@@ -25,7 +25,7 @@ namespace Episememe.Api.Controllers
 
         [HttpGet]
         [Route("load")]
-        public async Task<FileStreamResult> GetSearchedMedia([FromBody] LoadMediaDto loadMediaDto)
+        public async Task<IActionResult> GetSearchedMedia([FromBody] LoadMediaDto loadMediaDto)
         {
             var query = LoadMediaQuery.Create(loadMediaDto);
             var result = await _mediator.Send(query);

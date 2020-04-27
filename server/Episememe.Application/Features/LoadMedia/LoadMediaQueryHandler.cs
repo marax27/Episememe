@@ -6,14 +6,14 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Episememe.Application.Features.LoadMedia
 {
-    public class LoadMediaQueryHandler : RequestHandler<LoadMediaQuery, FileStreamResult>
+    public class LoadMediaQueryHandler : RequestHandler<LoadMediaQuery, IActionResult>
     {
         private IFileStorage _storage;
 
         public LoadMediaQueryHandler(IFileStorage storage)
             => _storage = storage;
 
-        protected override FileStreamResult Handle(LoadMediaQuery request)
+        protected override IActionResult Handle(LoadMediaQuery request)
         {
             Stream stream = _storage.Read(request.LoadMedia.Id);
             string mimeType = "application/octet-stream";

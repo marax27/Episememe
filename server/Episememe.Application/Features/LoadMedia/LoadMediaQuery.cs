@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Episememe.Application.Features.LoadMedia
 {
-    public class LoadMediaQuery : IRequest<FileStreamResult>
+    public class LoadMediaQuery : IRequest<IActionResult>
     {
         public LoadMediaDto LoadMedia { get; }
 
