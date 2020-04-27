@@ -9,6 +9,8 @@
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="8.0.0"/>
     <PackageReference Include="System.Web.Mvc.Extensions" Version="1.1.1.2"/>
     <PackageReference Include="System.Web.Mvc.Extensions.Mvc.4" Version="1.0.9"/>
+    <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0"/>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0"/>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Episememe.Domain\Episememe.Domain.csproj"/>
