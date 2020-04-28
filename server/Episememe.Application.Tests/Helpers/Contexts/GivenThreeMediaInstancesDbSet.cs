@@ -1,16 +1,14 @@
 ﻿using Episememe.Domain.Entities;
 using Episememe.Domain.HelperEntities;
 using Microsoft.EntityFrameworkCore;
-using Moq;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Episememe.Application.Tests.Helpers.Contexts
 {
     public class GivenThreeMediaInstancesDbSet : IMediaInstanceDbSetTestContext
     {
-        public DbSet<MediaInstance> MediaInstances { get => GetMediaInstancesDbSet(); }
+        public DbSet<MediaInstance> MediaInstances => GetMediaInstancesDbSet();
 
         private DbSet<MediaInstance> GetMediaInstancesDbSet()
         {
@@ -83,11 +81,13 @@ namespace Episememe.Application.Tests.Helpers.Contexts
 
         private MediaTag GetMediaTag(MediaInstance instance, Tag tag)
         {
-            var mediaTag = new MediaTag();
-            mediaTag.MediaInstance = instance;
-            mediaTag.MediaInstanceId = instance.Id;
-            mediaTag.Tag = tag;
-            mediaTag.TagId = tag.Id;
+            var mediaTag = new MediaTag
+            {
+                MediaInstance = instance, 
+                MediaInstanceId = instance.Id, 
+                Tag = tag, 
+                TagId = tag.Id
+            };
 
             return mediaTag;
         }

@@ -1,14 +1,11 @@
 ﻿using Episememe.Application.DataTransfer;
 using Episememe.Application.Features.MediaFiltering;
-using Episememe.Application.Tests.Helpers;
 using Episememe.Application.Tests.Helpers.Contexts;
 using Episememe.Domain.Entities;
 using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Xunit;
 
 namespace Episememe.Application.Tests.Filtering
@@ -116,7 +113,13 @@ namespace Episememe.Application.Tests.Filtering
             DateTime? timeRangeStart, DateTime? timeRangeEnd)
         {
             var mediaInstances = new GivenThreeMediaInstancesDbSet().MediaInstances;
-            var searchMedia = new SearchMediaDto(includedTags, excludedTags, timeRangeStart, timeRangeEnd);
+            var searchMedia = new SearchMediaDto()
+            {
+                IncludedTags = includedTags,
+                ExcludedTags = excludedTags,
+                TimeRangeStart = timeRangeStart,
+                TimeRangeEnd = timeRangeEnd
+            };
             return new MediaFilter(searchMedia).Filter(mediaInstances);
         }
     }
