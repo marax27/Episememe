@@ -1,6 +1,7 @@
 using Episememe.Application.DataTransfer;
 using Episememe.Application.Interfaces;
 using MediatR;
+using System;
 using System.IO;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,7 +24,7 @@ namespace Episememe.Application.Features.LoadMedia
                 FileDownloadName = request.LoadMedia.Id
                 };
             }
-            catch (FileNotFoundException ex){
+            catch (ArgumentNullException ex){
                 return new NotFoundResult();
             }
             

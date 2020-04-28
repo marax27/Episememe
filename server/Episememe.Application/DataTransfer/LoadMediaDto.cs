@@ -6,7 +6,7 @@ namespace Episememe.Application.DataTransfer
 {
     public class LoadMediaDto
     {
-        public string Id { get; }
+        public string Id { get; } = null!;
 
         public LoadMediaDto(string id)
         {
