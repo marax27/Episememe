@@ -41,7 +41,7 @@ export default class SettingsMenu extends Vue {
   speedDialIsOpen = false;
 
   foo() {
-    console.log('foo');
+    return undefined;
   }
 }
 </script>
