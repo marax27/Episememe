@@ -7,13 +7,13 @@
         <span>Logout</span>
       </v-btn>
 
-      <a href="#">
-      <v-avatar class="profile-image">
-        <v-img
-          :src="$auth.user.picture" :alt="$auth.user.name"
-          transition="scale-transition"/>
-      </v-avatar>
-      </a>
+      <router-link to="/user">
+        <v-avatar class="profile-image">
+          <v-img
+            :src="$auth.user.picture" :alt="$auth.user.name"
+            transition="scale-transition"/>
+        </v-avatar>
+      </router-link>
     </div>
     <v-btn v-else text @click="login">
       <v-icon>mdi-login</v-icon>
@@ -24,6 +24,7 @@
 
 <script lang='ts'>
 import { Vue, Component } from 'vue-property-decorator';
+import store from '../../store';
 
 @Component({
   name: 'AuthWidget'
@@ -36,6 +37,7 @@ export default class AuthWidget extends Vue {
   }
 
   logout() {
+    store.commit('logout');
     this.$auth.logout({
       returnTo: window.location.origin
     });

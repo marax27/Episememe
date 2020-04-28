@@ -27,3 +27,10 @@ npm run lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+## Static file server
+Go to `vue-client/file-server/` and run
+```
+node index.js
+```
+It will serve files located in `vue-client/media/`, under `http://localhost:18888/filename`.

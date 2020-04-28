@@ -7,6 +7,9 @@ import { domain, clientId, audience } from '../auth.config.json'
 import { Auth0Plugin } from './auth'
 import vuetify from './plugins/vuetify';
 
+require('./assets/reset.css');
+require('./assets/global.css');
+
 Vue.use(Auth0Plugin, {
   domain,
   clientId,
