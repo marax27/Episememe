@@ -1,4 +1,3 @@
-using Episememe.Application.DataTransfer;
 using Episememe.Domain.Entities;
 using MediatR;
 using System;
@@ -11,16 +10,16 @@ namespace Episememe.Application.Features.LoadMedia
 {
     public class LoadMediaQuery : IRequest<IActionResult>
     {
-        public LoadMediaDto LoadMedia { get; }
+        public string Id { get; }
 
-        private LoadMediaQuery(LoadMediaDto loadMedia)
+        private LoadMediaQuery(string id)
         {
-            LoadMedia = loadMedia;
+            Id = id;
         }
 
-        public static LoadMediaQuery Create(LoadMediaDto loadMedia)
+        public static LoadMediaQuery Create(string id)
         {
-            return new LoadMediaQuery(loadMedia);
+            return new LoadMediaQuery(id);
         }
     }
 }

@@ -1,4 +1,3 @@
-using Episememe.Application.DataTransfer;
 using System.Threading.Tasks;
 using Episememe.Api.Utilities;
 using Episememe.Application.Features.LoadMedia;
@@ -25,9 +24,9 @@ namespace Episememe.Api.Controllers
 
         [HttpGet]
         [Route("files")]
-        public async Task<IActionResult> GetSearchedMedia([FromRoute] LoadMediaDto loadMediaDto)
+        public async Task<IActionResult> GetLoadedMedia([FromQuery] string id)
         {
-            var query = LoadMediaQuery.Create(loadMediaDto);
+            var query = LoadMediaQuery.Create(id);
             var result = await _mediator.Send(query);
             return result;
         }

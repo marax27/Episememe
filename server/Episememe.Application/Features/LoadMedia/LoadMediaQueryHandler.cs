@@ -1,5 +1,5 @@
-using Episememe.Application.DataTransfer;
 using Episememe.Application.Interfaces;
+using Episememe.Application.Exceptions;
 using MediatR;
 using System;
 using System.IO;
@@ -17,14 +17,14 @@ namespace Episememe.Application.Features.LoadMedia
         protected override IActionResult Handle(LoadMediaQuery request)
         {
             try{
-                Stream stream = _storage.Read(request.LoadMedia.Id);
+                Stream stream = _storage.Read(request.Id);
                 string mimeType = "application/octet-stream";
                 return new FileStreamResult(stream, mimeType)
                 {
-                FileDownloadName = request.LoadMedia.Id
+                FileDownloadName = request.Id
                 };
             }
-            catch (ArgumentNullException ex){
+            catch (FileDoesNotExistException ex){
                 return new NotFoundResult();
             }
             
