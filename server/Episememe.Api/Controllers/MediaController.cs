@@ -1,13 +1,11 @@
 ﻿using Episememe.Application.DataTransfer;
 using Episememe.Application.Features.SearchMedia;
-using Episememe.Application.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Episememe.Api.Controllers
@@ -28,8 +26,9 @@ namespace Episememe.Api.Controllers
 
         [HttpGet]
         [Route("media")]
-        public async Task<IEnumerable<MediaInstanceDto>> GetSearchedMedia([FromBody] SearchMediaDto searchMediaDto)
+        public async Task<IEnumerable<MediaInstanceDto>> GetSearchedMedia([FromQuery] string q)
         {
+            var searchMediaDto = JsonSerializer.Deserialize<SearchMediaDto>(q);
             var query = SearchMediaQuery.Create(searchMediaDto);
             var result = await _mediator.Send(query);
             return result;
