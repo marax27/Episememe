@@ -1,57 +1,56 @@
 ﻿using Episememe.Application.DataTransfer;
 using Episememe.Domain.Entities;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Episememe.Application.Features.MediaFiltering
 {
     public class MediaFilter
     {
-        private SearchMediaDto SearchMedia;
+        private SearchMediaDto SearchMedia { get; }
 
         public MediaFilter(SearchMediaDto searchMedia)
         {
             SearchMedia = searchMedia;
         }
 
-        public IQueryable<MediaInstance> Filter(IQueryable<MediaInstance> mediaInstances)
+        public IEnumerable<MediaInstance> Filter(IQueryable<MediaInstance> mediaInstances)
         {
-            IncludeTags(ref mediaInstances)
-                .ExcludeTags(ref mediaInstances)
-                .InTimeRange(ref mediaInstances);
+            IEnumerable<MediaInstance> filteredMedia = mediaInstances.ToList();
+            filteredMedia = IncludeTags(ExcludeTags(InTimeRange(filteredMedia)));
 
-            return mediaInstances;
+            return filteredMedia;
         }
 
-        private MediaFilter IncludeTags(ref IQueryable<MediaInstance> mediaInstances)
+        private IEnumerable<MediaInstance> IncludeTags(IEnumerable<MediaInstance> mediaInstances)
         {
+            var filteredMedia = mediaInstances;
             if (SearchMedia.IncludedTags != null)
             {
-                mediaInstances = mediaInstances.Where(mi =>
-                    SearchMedia.IncludedTags.All(t => mi.MediaTags.Select(mt => mt.Tag.Name).Contains(t))
+                filteredMedia = mediaInstances.Where(mi =>
+                    !SearchMedia.IncludedTags.Except(mi.MediaTags.Select(mt => mt.Tag.Name)).Any()
                 );
             }
 
-            return this;
+            return filteredMedia;
         }
 
-        private MediaFilter ExcludeTags(ref IQueryable<MediaInstance> mediaInstances)
+        private IEnumerable<MediaInstance> ExcludeTags(IEnumerable<MediaInstance> mediaInstances)
         {
+            var filteredMedia = mediaInstances;
             if (SearchMedia.ExcludedTags != null)
             {
-                mediaInstances = mediaInstances.Where(mi =>
-                    !SearchMedia.ExcludedTags.Any(t => mi.MediaTags.Select(mt => mt.Tag.Name).Contains(t))
+                filteredMedia = mediaInstances.Where(mi =>
+                    !SearchMedia.ExcludedTags.Intersect(mi.MediaTags.Select(mt => mt.Tag.Name)).Any()
                 );
             }
 
-            return this;
+            return filteredMedia;
         }
 
-        private MediaFilter InTimeRange(ref IQueryable<MediaInstance> mediaInstances)
+        private IEnumerable<MediaInstance> InTimeRange(IEnumerable<MediaInstance> mediaInstances)
         {
-            mediaInstances = (SearchMedia.TimeRangeStart, SearchMedia.TimeRangeEnd) switch
+            var filteredMedia = (SearchMedia.TimeRangeStart, SearchMedia.TimeRangeEnd) switch
             {
                 (null, null) => mediaInstances,
                 (null, _) => mediaInstances.Where(mi => mi.Timestamp <= SearchMedia.TimeRangeEnd),
@@ -59,7 +58,7 @@ namespace Episememe.Application.Features.MediaFiltering
                 (_, _) => mediaInstances.Where(mi => mi.Timestamp >= SearchMedia.TimeRangeStart && mi.Timestamp <= SearchMedia.TimeRangeEnd)
             };
 
-            return this;
+            return filteredMedia;
         }
     }
 }

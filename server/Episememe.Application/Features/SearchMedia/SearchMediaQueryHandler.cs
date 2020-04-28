@@ -2,26 +2,28 @@
 using Episememe.Application.Features.MediaFiltering;
 using Episememe.Application.Interfaces;
 using MediatR;
-using System;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Episememe.Application.Features.SearchMedia
 {
     public class SearchMediaQueryHandler : RequestHandler<SearchMediaQuery, IEnumerable<MediaInstanceDto>>
     {
-        private IApplicationContext _context;
+        private readonly IApplicationContext _context;
 
         public SearchMediaQueryHandler(IApplicationContext context)
             => _context = context;
 
         protected override IEnumerable<MediaInstanceDto> Handle(SearchMediaQuery request)
         {
+            var mediaInstances = _context.MediaInstances
+                .Include(x => x.MediaTags)
+                .ThenInclude(x => x.Tag);
             var filteredMedia = new MediaFilter(request.SearchMedia)
-                .Filter(_context.MediaInstances)
+                .Filter(mediaInstances)
                 .Select(mi =>
-                    new MediaInstanceDto(mi.Id, mi.MediaTags.Select(mt => mt.Tag.Name))
+                    new MediaInstanceDto(mi.Id, mi.DataType, mi.MediaTags.Select(mt => mt.Tag.Name))
                 );
 
             return filteredMedia;
