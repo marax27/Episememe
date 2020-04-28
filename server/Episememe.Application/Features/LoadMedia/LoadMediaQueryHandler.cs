@@ -15,12 +15,18 @@ namespace Episememe.Application.Features.LoadMedia
 
         protected override IActionResult Handle(LoadMediaQuery request)
         {
-            Stream stream = _storage.Read(request.LoadMedia.Id);
-            string mimeType = "application/octet-stream";
-            return new FileStreamResult(stream, mimeType)
-            {
+            try{
+                Stream stream = _storage.Read(request.LoadMedia.Id);
+                string mimeType = "application/octet-stream";
+                return new FileStreamResult(stream, mimeType)
+                {
                 FileDownloadName = request.LoadMedia.Id
-            };
+                };
+            }
+            catch (FileNotFoundException ex){
+                return new NotFoundResult();
+            }
+            
         }
     }
 }
