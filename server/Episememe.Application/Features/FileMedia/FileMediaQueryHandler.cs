@@ -8,7 +8,7 @@ namespace Episememe.Application.Features.FileMedia
 {
     public class FileMediaQueryHandler : RequestHandler<FileMediaQuery, IActionResult>
     {
-        private IFileStorage _storage;
+        private readonly IFileStorage _storage;
 
         public FileMediaQueryHandler(IFileStorage storage)
             => _storage = storage;
