@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
-using Episememe.Api.Utilities;
-using Episememe.Application.Features.LoadMedia;
+using Episememe.Application.Features.FileMedia;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,22 +10,22 @@ namespace Episememe.Api.Controllers
     [ApiController]
     [Route("api")]
     [Authorize]
-    public class LoadController : ControllerBase
+    public class FileController : ControllerBase
     {
-        private readonly ILogger<LoadController> _logger;
+        private readonly ILogger<FileController> _logger;
         private readonly IMediator _mediator;
 
-        public LoadController(ILogger<LoadController> logger, IMediator mediator)
+        public FileController(ILogger<FileController> logger, IMediator mediator)
         {
             _logger = logger;
             _mediator = mediator;
         }
 
         [HttpGet]
-        [Route("files")]
-        public async Task<IActionResult> GetLoadedMedia([FromQuery] string id)
+        [Route("files/{id}")]
+        public async Task<IActionResult> GetLoadedMedia(string id)
         {
-            var query = LoadMediaQuery.Create(id);
+            var query = FileMediaQuery.Create(id);
             var result = await _mediator.Send(query);
             return result;
         }

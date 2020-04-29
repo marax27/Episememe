@@ -1,20 +1,19 @@
 using Episememe.Application.Interfaces;
 using Episememe.Application.Exceptions;
 using MediatR;
-using System;
 using System.IO;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Episememe.Application.Features.LoadMedia
+namespace Episememe.Application.Features.FileMedia
 {
-    public class LoadMediaQueryHandler : RequestHandler<LoadMediaQuery, IActionResult>
+    public class FileMediaQueryHandler : RequestHandler<FileMediaQuery, IActionResult>
     {
         private IFileStorage _storage;
 
-        public LoadMediaQueryHandler(IFileStorage storage)
+        public FileMediaQueryHandler(IFileStorage storage)
             => _storage = storage;
 
-        protected override IActionResult Handle(LoadMediaQuery request)
+        protected override IActionResult Handle(FileMediaQuery request)
         {
             try{
                 Stream stream = _storage.Read(request.Id);
@@ -27,7 +26,6 @@ namespace Episememe.Application.Features.LoadMedia
             catch (FileDoesNotExistException ex){
                 return new NotFoundResult();
             }
-            
         }
     }
 }
