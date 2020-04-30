@@ -1,11 +1,11 @@
 ﻿using Episememe.Application.DataTransfer;
-using Episememe.Application.Features.MediaFiltering;
 using Episememe.Application.Tests.Helpers.Contexts;
 using Episememe.Domain.Entities;
 using FluentAssertions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Episememe.Application.Filtering.BaseFiltering;
 using Xunit;
 
 namespace Episememe.Application.Tests.Filtering
@@ -17,7 +17,7 @@ namespace Episememe.Application.Tests.Filtering
         {
             var mediaInstances = new GivenThreeMediaInstancesDbSet().MediaInstances;
 
-            var filteredMedia = GetFilteredMedia(null, null, null, null);
+            var filteredMedia = GetFilteredMedia(new SearchMediaDto());
 
             filteredMedia.Count().Should().Be(mediaInstances.Count());
         }
@@ -26,8 +26,12 @@ namespace Episememe.Application.Tests.Filtering
         public void GivenExistingTag_ConnectedMediaAreReturned()
         {
             string[] includedTags = { "usa" };
+            var searchMedia = new SearchMediaDto()
+            {
+                IncludedTags = includedTags,
+            };
 
-            var filteredMedia = GetFilteredMedia(includedTags, null, null, null);
+            var filteredMedia = GetFilteredMedia(searchMedia);
 
             filteredMedia.Should().NotBeEmpty();
             filteredMedia.Count().Should().Be(1);
@@ -38,8 +42,12 @@ namespace Episememe.Application.Tests.Filtering
         public void GivenNonexistentTag_NoMediaIsReturned()
         {
             string[] includedTags = {"politics"};
+            var searchMedia = new SearchMediaDto()
+            {
+                IncludedTags = includedTags,
+            };
 
-            var filteredMedia = GetFilteredMedia(includedTags, null, null, null);
+            var filteredMedia = GetFilteredMedia(searchMedia);
 
             filteredMedia.Should().BeEmpty();
         }
@@ -48,8 +56,12 @@ namespace Episememe.Application.Tests.Filtering
         public void GivenTagsToExclude_MediaWithoutExcludedTagsAreReturned()
         {
             string[] excludedTags = { "usa", "sport" };
+            var searchMedia = new SearchMediaDto()
+            {
+                ExcludedTags = excludedTags
+            };
 
-            var filteredMedia = GetFilteredMedia(null, excludedTags, null, null);
+            var filteredMedia = GetFilteredMedia(searchMedia);
 
             filteredMedia.Count().Should().Be(1);
             filteredMedia.Single().Id.Should().Be("3");
@@ -60,8 +72,13 @@ namespace Episememe.Application.Tests.Filtering
         {
             string[] includedTags = { "university" };
             string[] excludedTags = { "usa", "sport" };
+            var searchMedia = new SearchMediaDto()
+            {
+                IncludedTags = includedTags,
+                ExcludedTags = excludedTags
+            };
 
-            var filteredMedia = GetFilteredMedia(includedTags, excludedTags, null, null);
+            var filteredMedia = GetFilteredMedia(searchMedia);
 
             filteredMedia.Count().Should().Be(1);
             filteredMedia.Single().Id.Should().Be("3");
@@ -72,8 +89,13 @@ namespace Episememe.Application.Tests.Filtering
         {
             string[] includedTags = { "germany" };
             string[] excludedTags = { "usa", "sport" };
+            var searchMedia = new SearchMediaDto()
+            {
+                IncludedTags = includedTags,
+                ExcludedTags = excludedTags
+            };
 
-            var filteredMedia = GetFilteredMedia(includedTags, excludedTags, null, null);
+            var filteredMedia = GetFilteredMedia(searchMedia);
 
             filteredMedia.Should().BeEmpty();
         }
@@ -81,10 +103,15 @@ namespace Episememe.Application.Tests.Filtering
         [Fact]
         public void GivenTimeRange_MediaCreatedInTimeRangeAreReturned()
         {
-            var timeRangeStart = DateTime.Today.AddYears(-2).AddMonths(-6);
-            var timeRangeEnd = DateTime.Today.AddYears(-1).AddMonths(-3);
+            var timeRangeStart = new DateTime(2007, 6, 1, 0, 0, 0);
+            var timeRangeEnd = new DateTime(2008, 9, 1, 0, 0, 0);
+            var searchMedia = new SearchMediaDto()
+            {
+                TimeRangeStart = timeRangeStart,
+                TimeRangeEnd = timeRangeEnd
+            };
 
-            var filteredMedia = GetFilteredMedia(null, null, timeRangeStart, timeRangeEnd);
+            var filteredMedia = GetFilteredMedia(searchMedia);
 
             filteredMedia.Count().Should().Be(2);
         }
@@ -92,9 +119,13 @@ namespace Episememe.Application.Tests.Filtering
         [Fact]
         public void GivenTimeRangeStart_MediaCreatedAfterAreReturned()
         {
-            var timeRangeStart = DateTime.Today.AddYears(-1).AddMonths(-9);
+            var timeRangeStart = new DateTime(2008, 3, 1, 0, 0, 0);
+            var searchMedia = new SearchMediaDto()
+            {
+                TimeRangeStart = timeRangeStart
+            };
 
-            var filteredMedia = GetFilteredMedia(null, null, timeRangeStart, null);
+            var filteredMedia = GetFilteredMedia(searchMedia);
 
             filteredMedia.Count().Should().Be(2);
         }
@@ -102,25 +133,22 @@ namespace Episememe.Application.Tests.Filtering
         [Fact]
         public void GivenTimeRangeEnd_MediaCreatedBeforeAreReturned()
         {
-            var timeRangeEnd = DateTime.Today.AddYears(-1).AddMonths(-3);
+            var timeRangeEnd = new DateTime(2008, 9, 1, 0, 0, 0);
+            var searchMedia = new SearchMediaDto()
+            {
+                TimeRangeEnd = timeRangeEnd
+            };
 
-            var filteredMedia = GetFilteredMedia(null, null, null, timeRangeEnd);
+            var filteredMedia = GetFilteredMedia(searchMedia);
 
             filteredMedia.Count().Should().Be(2);
         }
 
-        private IEnumerable<MediaInstance> GetFilteredMedia(IEnumerable<string> includedTags, IEnumerable<string> excludedTags,
-            DateTime? timeRangeStart, DateTime? timeRangeEnd)
+        private ISet<MediaInstance> GetFilteredMedia(SearchMediaDto searchMedia)
         {
             var mediaInstances = new GivenThreeMediaInstancesDbSet().MediaInstances;
-            var searchMedia = new SearchMediaDto()
-            {
-                IncludedTags = includedTags,
-                ExcludedTags = excludedTags,
-                TimeRangeStart = timeRangeStart,
-                TimeRangeEnd = timeRangeEnd
-            };
-            return new MediaFilter(searchMedia).Filter(mediaInstances);
+            var filteredMedia = new MediaFilter(searchMedia).Filter(mediaInstances);
+            return filteredMedia.ToHashSet();
         }
     }
 }

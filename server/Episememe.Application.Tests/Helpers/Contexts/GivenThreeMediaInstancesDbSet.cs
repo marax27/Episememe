@@ -8,27 +8,27 @@ namespace Episememe.Application.Tests.Helpers.Contexts
 {
     public class GivenThreeMediaInstancesDbSet : IMediaInstanceDbSetTestContext
     {
-        public DbSet<MediaInstance> MediaInstances => GetMediaInstancesDbSet();
+        public DbSet<MediaInstance> MediaInstances => CreateMediaInstancesDbSet();
 
-        private DbSet<MediaInstance> GetMediaInstancesDbSet()
+        private DbSet<MediaInstance> CreateMediaInstancesDbSet()
         {
             var mediaInstance1 = new MediaInstance
             {
                 Id = "1",
                 RevisionCount = 0,
-                Timestamp = DateTime.Today.AddYears(-1)
+                Timestamp = new DateTime(2009, 1, 1, 0, 0, 0)
             };
             var mediaInstance2 = new MediaInstance
             {
                 Id = "2",
                 RevisionCount = 0,
-                Timestamp = DateTime.Today.AddYears(-2)
+                Timestamp = new DateTime(2008, 1, 1, 0, 0, 0)
             };
             var mediaInstance3 = new MediaInstance
             {
                 Id = "3",
                 RevisionCount = 0,
-                Timestamp = DateTime.Today.AddYears(-1).AddMonths(-6)
+                Timestamp = new DateTime(2008, 6, 1, 0, 0, 0)
             };
 
             var tag1 = new Tag
@@ -52,11 +52,11 @@ namespace Episememe.Application.Tests.Helpers.Contexts
                 Name = "university"
             };
 
-            var mediaTag1 = GetMediaTag(mediaInstance1, tag1);
-            var mediaTag2 = GetMediaTag(mediaInstance1, tag2);
-            var mediaTag3 = GetMediaTag(mediaInstance2, tag2);
-            var mediaTag4 = GetMediaTag(mediaInstance2, tag3);
-            var mediaTag5 = GetMediaTag(mediaInstance3, tag4);
+            var mediaTag1 = CreateMediaTag(mediaInstance1, tag1);
+            var mediaTag2 = CreateMediaTag(mediaInstance1, tag2);
+            var mediaTag3 = CreateMediaTag(mediaInstance2, tag2);
+            var mediaTag4 = CreateMediaTag(mediaInstance2, tag3);
+            var mediaTag5 = CreateMediaTag(mediaInstance3, tag4);
 
             mediaInstance1.MediaTags.Add(mediaTag1);
             mediaInstance1.MediaTags.Add(mediaTag2);
@@ -79,7 +79,7 @@ namespace Episememe.Application.Tests.Helpers.Contexts
             return DbSetMockFactory.Create(instances).Object;
         }
 
-        private MediaTag GetMediaTag(MediaInstance instance, Tag tag)
+        private MediaTag CreateMediaTag(MediaInstance instance, Tag tag)
         {
             var mediaTag = new MediaTag
             {

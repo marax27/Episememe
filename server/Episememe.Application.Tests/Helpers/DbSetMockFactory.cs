@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using Episememe.Domain.Entities;
-using Episememe.Domain.HelperEntities;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 

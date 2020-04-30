@@ -1,10 +1,10 @@
 ﻿using Episememe.Application.DataTransfer;
-using Episememe.Application.Features.MediaFiltering;
 using Episememe.Application.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using Episememe.Application.Filtering.BaseFiltering;
 
 namespace Episememe.Application.Features.SearchMedia
 {

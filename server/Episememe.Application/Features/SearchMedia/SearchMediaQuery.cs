@@ -1,4 +1,5 @@
-﻿using Episememe.Application.DataTransfer;
+﻿using System;
+using Episememe.Application.DataTransfer;
 using MediatR;
 using System.Collections.Generic;
 
@@ -15,6 +16,9 @@ namespace Episememe.Application.Features.SearchMedia
 
         public static SearchMediaQuery Create(SearchMediaDto searchMedia)
         {
+            if (searchMedia == null)
+                throw new ArgumentNullException();
+            
             return new SearchMediaQuery(searchMedia);
         }
     }
