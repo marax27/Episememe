@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Episememe.Application.Features.FileMedia;
+using Episememe.Application.Features.VerifyBrowseToken;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,10 +24,15 @@ namespace Episememe.Api.Controllers
 
         [HttpGet]
         [Route("files/{id}")]
-        public async Task<IActionResult> GetFile(string id)
+        public async Task<IActionResult> GetFile(string id, [FromQuery] string token)
         {
-            var query = FileMediaQuery.Create(id);
-            var result = await _mediator.Send(query);
+            var tokenQuery = VerifyBrowseTokenQuery.Create(token);
+            var isTokenValid = await _mediator.Send(tokenQuery);
+            if (!isTokenValid)
+                return Unauthorized();
+
+            var fileQuery = FileMediaQuery.Create(id);
+            var result = await _mediator.Send(fileQuery);
             return result;
         }
     }
