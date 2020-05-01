@@ -10,12 +10,12 @@ namespace Episememe.Api.Controllers
     [ApiController]
     [Route("api")]
     [Authorize]
-    public class FileController : ControllerBase
+    public class FilesController : ControllerBase
     {
-        private readonly ILogger<FileController> _logger;
+        private readonly ILogger<FilesController> _logger;
         private readonly IMediator _mediator;
 
-        public FileController(ILogger<FileController> logger, IMediator mediator)
+        public FilesController(ILogger<FilesController> logger, IMediator mediator)
         {
             _logger = logger;
             _mediator = mediator;
@@ -23,7 +23,7 @@ namespace Episememe.Api.Controllers
 
         [HttpGet]
         [Route("files/{id}")]
-        public async Task<IActionResult> GetLoadedMedia(string id)
+        public async Task<IActionResult> GetFile(string id)
         {
             var query = FileMediaQuery.Create(id);
             var result = await _mediator.Send(query);
