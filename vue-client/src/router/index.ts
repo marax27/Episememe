@@ -4,6 +4,7 @@ import Home from '../views/Home.vue';
 import Revision from '../views/Revision.vue';
 import Upload from '../views/Upload.vue';
 import Gallery from '../views/Gallery.vue';
+import { pageGuard } from '@/auth/page-guard';
 
 Vue.use(VueRouter);
 
@@ -40,5 +41,7 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 });
+
+router.beforeEach(pageGuard);
 
 export default router;
