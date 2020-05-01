@@ -1,5 +1,5 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Episememe.Application.Features.GenerateBrowseToken;
 using Episememe.Application.Features.IssueBrowseToken;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -22,7 +22,8 @@ namespace Episememe.Api.Controllers
         [HttpPost]
         public async Task<string> Post()
         {
-            var browseToken = Guid.NewGuid().ToString();
+            var query = GenerateBrowseTokenQuery.Create();
+            var browseToken = await _mediator.Send(query);
 
             var command = IssueBrowseTokenCommand.Create(browseToken);
             await _mediator.Send(command);
