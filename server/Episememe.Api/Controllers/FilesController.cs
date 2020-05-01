@@ -2,7 +2,6 @@ using System.Threading.Tasks;
 using Episememe.Application.Features.FileMedia;
 using Episememe.Application.Features.VerifyBrowseToken;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -10,7 +9,6 @@ namespace Episememe.Api.Controllers
 {
     [ApiController]
     [Route("api")]
-    [Authorize]
     public class FilesController : ControllerBase
     {
         private readonly ILogger<FilesController> _logger;
