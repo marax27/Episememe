@@ -42,7 +42,8 @@ export default class MediaComponent extends Vue {
   active!: boolean;
 
   public get mediaUrl(): string {
-    return 'http://localhost:18888/' + this.instance?.id;
+    const browseToken = this.$store.getters.encodedBrowseToken;
+    return `http://localhost:5000/api/files/${this.instance?.id}?token=${browseToken}`;
   }
 
   public get altMessage(): string {
