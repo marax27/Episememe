@@ -14,25 +14,25 @@ export default class ApiClient {
   public async delete<T>(resource: string): Promise<AxiosResponse<T>> {
     const config = await this.getConfig();
     const url = this.getUrl(resource);
-    return axios.post<T>(url, config);
+    return axios.delete<T>(url, config);
   }
 
-  public async post<T>(resource: string): Promise<AxiosResponse<T>> {
+  public async post<T>(resource: string, data: any): Promise<AxiosResponse<T>> {
     const config = await this.getConfig();
     const url = this.getUrl(resource);
-    return axios.post<T>(url, config);
+    return axios.post<T>(url, data, config);
   }
 
-  public async put<T>(resource: string): Promise<AxiosResponse<T>> {
+  public async put<T>(resource: string, data: any): Promise<AxiosResponse<T>> {
     const config = await this.getConfig();
     const url = this.getUrl(resource);
-    return axios.post<T>(url, config);
+    return axios.put<T>(url, data, config);
   }
 
-  public async patch<T>(resource: string): Promise<AxiosResponse<T>> {
+  public async patch<T>(resource: string, data: any): Promise<AxiosResponse<T>> {
     const config = await this.getConfig();
     const url = this.getUrl(resource);
-    return axios.post<T>(url, config);
+    return axios.patch<T>(url, data, config);
   }
 
   private getUrl(apiResource: string): string {
