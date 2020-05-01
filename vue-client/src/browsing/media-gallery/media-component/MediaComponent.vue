@@ -21,11 +21,12 @@
 </template>
 
 <script lang='ts'>
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue, Mixins } from 'vue-property-decorator';
 import { IMediaInstance } from '../../../shared/models/IMediaInstance';
 import ImageComponent from './subcomponents/ImageComponent.vue';
 import VideoComponent from './subcomponents/VideoComponent.vue';
 import DownloadLinkComponent from './subcomponents/DownloadLinkComponent.vue';
+import ApiClientService from '../../../shared/mixins/api-client/api-client.service';
 
 @Component({
   components: {
@@ -34,7 +35,7 @@ import DownloadLinkComponent from './subcomponents/DownloadLinkComponent.vue';
     DownloadLinkComponent
   }
 })
-export default class MediaComponent extends Vue {
+export default class MediaComponent extends Mixins(ApiClientService) {
   @Prop()
   instance?: IMediaInstance;
 
@@ -42,8 +43,8 @@ export default class MediaComponent extends Vue {
   active!: boolean;
 
   public get mediaUrl(): string {
-    const browseToken = this.$store.getters.encodedBrowseToken;
-    return `http://localhost:5000/api/files/${this.instance?.id}?token=${browseToken}`;
+    const browseToken = this.$store.state.browseToken;
+    return this.$api.createUrl(`files/${this.instance?.id}`, {token: browseToken});
   }
 
   public get altMessage(): string {

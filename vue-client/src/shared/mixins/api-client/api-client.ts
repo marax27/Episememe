@@ -35,6 +35,14 @@ export default class ApiClient {
     return axios.patch<T>(url, data, config);
   }
 
+  public createUrl(resource: string, queryParameters: {[key: string]: string}): string {
+    const baseUrl = this.getUrl(resource);
+    const params = Object.keys(queryParameters)
+      .map(key => `${key}=${encodeURIComponent(queryParameters[key])}`)
+      .join('&');
+    return baseUrl + (params ? '?' + params : '');
+  }
+
   private getUrl(apiResource: string): string {
     return `${this._apiUrl}/${apiResource}`;
   }
