@@ -5,10 +5,12 @@
       <p>Search query is empty</p>
     </div>
     <div v-else class='media-gallery'>
-      <img v-for='(item, index) in instances' :key='item.id'
-           class='media-instance'
-           v-show='index === currentlyBrowsedIndex'
-           :src='item.address' :alt='`Cannot display #${item.id}`'/>
+      <MediaComponent
+        v-for='(item, index) in instances' :key='item.id'
+        :active='index === currentlyBrowsedIndex'
+        :instance='item'
+        class='media-instance'>
+      </MediaComponent>
     </div>
 
     <v-btn class='previous-instance' x-large icon color='secondary'
@@ -26,11 +28,17 @@
 
 <script lang='ts'>
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import MediaComponent from './media-component/MediaComponent.vue';
+import { IMediaInstance } from '../../shared/models/IMediaInstance';
 
-@Component
+@Component({
+  components: {
+    'MediaComponent': MediaComponent
+  }
+})
 export default class MediaGallery extends Vue {
   @Prop({ default: [] })
-  instances!: any[];
+  instances!: IMediaInstance[];
 
   public get isQueryEmpty(): boolean {
     return this.instances == null || this.instances.length === 0;
