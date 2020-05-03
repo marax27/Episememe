@@ -20,12 +20,12 @@ import { IMediaInstance } from '../shared/models/IMediaInstance';
 export default class Gallery extends Vue {
 
   mediaInstances: IMediaInstance[] = [
-    { id: '0.jpg', dataType: 'jpg', tags: [] },
-    { id: '1.jpg', dataType: 'jpg', tags: [] },
-    { id: '2.pdf', dataType: 'pdf', tags: [] },
-    { id: '3.jpg', dataType: 'jpg', tags: [] },
-    { id: '4.jpg', dataType: 'jpg', tags: [] },
-    { id: '5.mp4', dataType: 'mp4', tags: [] },
+    { id: 'jpg00', dataType: 'jpg', tags: [] },
+    { id: 'jpg01', dataType: 'jpg', tags: [] },
+    { id: 'pdf02', dataType: 'pdf', tags: [] },
+    { id: 'jpg03', dataType: 'jpg', tags: [] },
+    { id: 'jpg04', dataType: 'jpg', tags: [] },
+    { id: 'mp405', dataType: 'mp4', tags: [] },
   ];
 
   public get galleryData() {

@@ -1,8 +1,13 @@
 import { mount } from '@vue/test-utils';
 import vuetify from 'vuetify';
+import Vuex, { Store } from 'vuex';
 import Vue from 'vue';
 import MediaComponent from '../MediaComponent.vue';
 import * as ctx from './contexts';
+
+const apiClientMock = {
+  createUrl: (_x: any, _y: any) => 'dumb-url.com'
+};
 
 [
   new ctx.GivenSampleImage(),
@@ -15,18 +20,28 @@ import * as ctx from './contexts';
 
   describe(`MediaComponent Test: ${context.constructor.name}`, () => {
     let wrapper: ReturnType<typeof mount>;
+    let store: Store<any>;
   
     beforeAll(() => {
       Vue.use(vuetify);
+      Vue.use(Vuex);
+
+      store = new Vuex.Store({
+        state: { browseToken: 'sampleToken' }
+      });
     });
   
     beforeEach(() => {
       wrapper = mount(MediaComponent, {
+        store,
+        mocks: {
+          '$api': apiClientMock
+        },
         propsData: {
           instance: context.givenInstance,
           active: context.givenActive
         }
-      })
+      });
     });
 
     it('is a Vue instance', () => {

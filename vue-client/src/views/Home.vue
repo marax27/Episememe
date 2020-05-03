@@ -25,9 +25,10 @@
 </template>
 
 <script lang='ts'>
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue, Mixins } from 'vue-property-decorator';
 import router from '../router';
 import ContentWrapper from '../shared/components/content-wrapper/ContentWrapper.vue';
+import ApiClientService from '../shared/mixins/api-client/api-client.service';
 
 @Component({
   name: 'Home',
@@ -35,7 +36,7 @@ import ContentWrapper from '../shared/components/content-wrapper/ContentWrapper.
     ContentWrapper
   }
 })
-export default class Home extends Vue {
+export default class Home extends Mixins(ApiClientService) {
 
   valid = true;
 
@@ -45,11 +46,25 @@ export default class Home extends Vue {
   values = ['Poland', 'History']
 
   search() {
-    router.push({ name: 'Gallery', params: { data: '123' } });
+    this.refreshBrowseToken(() => {
+      router.push({ name: 'Gallery', params: { data: '123' } });
+    });
   }
 
   onInputChange($event: string) {
     if ($event == null)  return;
+  }
+
+  private refreshBrowseToken(afterCompletion: () => void) {
+    return this.$api
+      .post<string>('authorization', {})
+      .then(response => {
+        this.$store.dispatch('refreshBrowseToken', response.data)
+          .then(_ => afterCompletion());
+      })
+      .catch(err => {
+        console.error(`Failed to retrieve the browser token.`);
+      });
   }
 }
 </script>

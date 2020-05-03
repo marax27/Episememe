@@ -14,25 +14,33 @@ export default class ApiClient {
   public async delete<T>(resource: string): Promise<AxiosResponse<T>> {
     const config = await this.getConfig();
     const url = this.getUrl(resource);
-    return axios.post<T>(url, config);
+    return axios.delete<T>(url, config);
   }
 
-  public async post<T>(resource: string): Promise<AxiosResponse<T>> {
+  public async post<T>(resource: string, data: any): Promise<AxiosResponse<T>> {
     const config = await this.getConfig();
     const url = this.getUrl(resource);
-    return axios.post<T>(url, config);
+    return axios.post<T>(url, data, config);
   }
 
-  public async put<T>(resource: string): Promise<AxiosResponse<T>> {
+  public async put<T>(resource: string, data: any): Promise<AxiosResponse<T>> {
     const config = await this.getConfig();
     const url = this.getUrl(resource);
-    return axios.post<T>(url, config);
+    return axios.put<T>(url, data, config);
   }
 
-  public async patch<T>(resource: string): Promise<AxiosResponse<T>> {
+  public async patch<T>(resource: string, data: any): Promise<AxiosResponse<T>> {
     const config = await this.getConfig();
     const url = this.getUrl(resource);
-    return axios.post<T>(url, config);
+    return axios.patch<T>(url, data, config);
+  }
+
+  public createUrl(resource: string, queryParameters: {[key: string]: string}): string {
+    const baseUrl = this.getUrl(resource);
+    const params = Object.keys(queryParameters)
+      .map(key => `${key}=${encodeURIComponent(queryParameters[key])}`)
+      .join('&');
+    return baseUrl + (params ? '?' + params : '');
   }
 
   private getUrl(apiResource: string): string {
