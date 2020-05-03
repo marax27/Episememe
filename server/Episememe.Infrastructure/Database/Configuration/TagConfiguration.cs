@@ -8,8 +8,8 @@ namespace Episememe.Infrastructure.Database.Configuration
     {
         public void Configure(EntityTypeBuilder<Tag> builder)
         {
-            builder.Property(t => t.Name)
-                .IsRequired();
+            builder.HasIndex(t => t.Name)
+                .IsRequired().IsUnique();
         }
     }
 }
