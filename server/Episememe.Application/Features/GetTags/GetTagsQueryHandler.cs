@@ -8,11 +8,11 @@ using Episememe.Application.Filtering.BaseFiltering;
 
 namespace Episememe.Application.Features.GetTags
 {
-    public class TagQueryHandler : RequestHandler<GetTagsQuery, IEnumerable<TagInstanceDto>>
+    public class GetTagsQueryHandler : RequestHandler<GetTagsQuery, IEnumerable<TagInstanceDto>>
     {
         private readonly IApplicationContext _context;
 
-        public TagQueryHandler(IApplicationContext context)
+        public GetTagsQueryHandler(IApplicationContext context)
             => _context = context;
 
         protected override IEnumerable<TagInstanceDto> Handle(GetTagsQuery request)
