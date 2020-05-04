@@ -10,6 +10,8 @@ namespace Episememe.Infrastructure.Database.Configuration
         {
             builder.Property(t => t.Name)
                 .IsRequired();
+            builder.HasIndex(t => t.Name)
+                .IsUnique();
         }
     }
 }
