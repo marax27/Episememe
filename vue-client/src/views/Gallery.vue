@@ -2,14 +2,26 @@
   <div class='wrapper'>
     <MediaGallery :instances='mediaInstances'></MediaGallery>
     <SettingsMenu></SettingsMenu>
+
+    <v-snackbar
+      v-model='errorSnackbarIsOpen'
+      :timeout='3000'>
+      Failed to load the media. Try again later.
+      <v-btn
+        text color='error'
+        @click='errorSnackbarIsOpen = false;'>
+        Close
+      </v-btn>
+    </v-snackbar>
   </div>
 </template>
 
 <script lang='ts'>
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue, Mixins } from 'vue-property-decorator';
 import MediaGallery from '@/browsing/media-gallery/MediaGallery.vue';
 import SettingsMenu from '@/browsing/SettingsMenu.vue';
 import { IMediaInstance } from '../shared/models/IMediaInstance';
+import ApiClientService from '../shared/mixins/api-client/api-client.service';
 
 @Component({
   components: {
@@ -17,16 +29,19 @@ import { IMediaInstance } from '../shared/models/IMediaInstance';
     SettingsMenu
   }
 })
-export default class Gallery extends Vue {
+export default class Gallery extends Mixins(ApiClientService) {
 
-  mediaInstances: IMediaInstance[] = [
-    { id: 'jpg00', dataType: 'jpg', tags: [] },
-    { id: 'jpg01', dataType: 'jpg', tags: [] },
-    { id: 'pdf02', dataType: 'pdf', tags: [] },
-    { id: 'jpg03', dataType: 'jpg', tags: [] },
-    { id: 'jpg04', dataType: 'jpg', tags: [] },
-    { id: 'mp405', dataType: 'mp4', tags: [] },
-  ];
+  errorSnackbarIsOpen = false;
+
+  mediaInstances: IMediaInstance[] = [];
+
+  created() {
+    this.$api.get<IMediaInstance[]>(`media?q=${this.galleryData}`)
+      .then(response => this.mediaInstances = response.data)
+      .catch(err => {
+        this.errorSnackbarIsOpen = true;
+      });
+  }
 
   public get galleryData() {
     return this.$route.params.data;

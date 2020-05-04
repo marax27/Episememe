@@ -50,15 +50,7 @@ export default class TagInputField extends Vue {
   userInput = '';
 
   get allItems(): ITag[] {
-    return [
-      { description: 'Harold Hide the Pain', name: 'Harold Hide the Pain' },
-      { description: 'Poland', name: 'Poland' },
-      { description: 'Sample text', name: 'Sample text' },
-      { description: 'USA: United States of America', name: 'USA' },
-      { description: 'Star Wars', name: 'Star Wars' },
-      { description: 'Pseudoscience', name: 'Pseudoscience' },
-      { description: 'Antivaxxers, anti-vaxxers, antyszczepionkowcy - you name it', name: 'Anti-vaxxers' },
-    ];
+    return this.$store.getters.allTags;
   }
 
   isExcluded(item: ITag): boolean {

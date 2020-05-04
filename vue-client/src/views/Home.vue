@@ -10,7 +10,9 @@ import router from '../router';
 import ContentWrapper from '../shared/components/content-wrapper/ContentWrapper.vue';
 import ApiClientService from '../shared/mixins/api-client/api-client.service';
 import SearchPanel from '../searching/SearchPanel.vue';
-import { ISearchSpecification } from '../shared/models/ISearchSpecification';
+import { ISearchSpecification } from '../searching/interfaces/ISearchSpecification';
+import { SearchSpecificationDto } from '../searching/interfaces/SearchSpecificationDto';
+import { ITag } from '../shared/models/ITag';
 
 @Component({
   name: 'Home',
@@ -21,11 +23,17 @@ import { ISearchSpecification } from '../shared/models/ISearchSpecification';
 })
 export default class Home extends Mixins(ApiClientService) {
 
+  created() {
+    if (this.$store.state.tags == null) {
+      this.loadTags();
+    }
+  }
+
   onSubmit(specification: ISearchSpecification) {
-    console.dir({ specs: specification });
-    // this.refreshBrowseToken(() => {
-      // router.push({ name: 'Gallery', params: { data: '123' } });
-    // });
+    const galleryData = this.createGalleryData(specification);
+    this.refreshBrowseToken(() => {
+      router.push({ name: 'Gallery', params: { data: galleryData } });
+    });
   }
 
   private refreshBrowseToken(afterCompletion: () => void) {
@@ -36,8 +44,27 @@ export default class Home extends Mixins(ApiClientService) {
           .then(_ => afterCompletion());
       })
       .catch(err => {
-        console.error(`Failed to retrieve the browser token.`);
+        console.error('Failed to retrieve the browse token.');
+        if (this.$store.state.browseToken != null) {
+          afterCompletion();
+        }
       });
+  }
+
+  private loadTags() {
+    this.$api.get<ITag[]>('tags')
+      .then(response => { this.$store.dispatch('updateTags', response.data); })
+      .catch(err => console.error(`Failed to load tags from the API: ${err}.`));
+  }
+
+  private createGalleryData(specification: ISearchSpecification): string {
+    const obj: SearchSpecificationDto = {
+      includedTags: specification.includeTags,
+      excludedTags: specification.excludeTags,
+      timeRangeStart: specification.timeFrom,
+      timeRangeEnd: specification.timeTo
+    };
+    return JSON.stringify(obj);
   }
 }
 </script>
