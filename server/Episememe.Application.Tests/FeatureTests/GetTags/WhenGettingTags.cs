@@ -29,6 +29,22 @@ namespace Episememe.Application.Tests.FeatureTests.GetTags
             actualResult.Should().BeEquivalentTo(expectedResult);
         }
 
+        [Fact]
+        public void GetEmptyTagsList()
+        {
+
+            var givenTags = new List<Tag>();
+            IApplicationContext context = CreateMockApplicationContext(givenTags);
+            
+            var query = GetTagsQuery.Create();
+            IRequestHandler<GetTagsQuery, IEnumerable<TagInstanceDto>> sut = new GetTagsQueryHandler(context);
+            var actualResult = sut.Handle(query, CancellationToken.None).Result;
+
+            var expectedResult = new List<TagInstanceDto>();
+
+            actualResult.Should().BeEquivalentTo(expectedResult);
+        }
+
         private IApplicationContext CreateMockApplicationContext(IEnumerable<Tag> givenTags)
         {
             
