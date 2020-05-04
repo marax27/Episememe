@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using Episememe.Api.Utilities;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,10 +14,10 @@ namespace Episememe.Api.Controllers
     [Authorize]
     public class TagsController : ControllerBase
     {
-        private readonly ILogger<TagController> _logger;
+        private readonly ILogger<TagsController> _logger;
         private readonly IMediator _mediator;
 
-        public TagController(ILogger<TagController> logger, IMediator mediator)
+        public TagsController(ILogger<TagsController> logger, IMediator mediator)
         {
             _logger = logger;
             _mediator = mediator;
