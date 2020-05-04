@@ -6,10 +6,9 @@ using Episememe.Domain.Entities;
 using Episememe.Application.DataTransfer;
 using Episememe.Application.Features.GetTags;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Moq;
 using Xunit;
-using Newtonsoft.Json;
+using FluentAssertions;
 
 namespace Episememe.Application.Tests.FeatureTests.GetTags
 {
@@ -18,38 +17,27 @@ namespace Episememe.Application.Tests.FeatureTests.GetTags
         [Fact]
         public void GetExistingTags()
         {
-            IApplicationContext context = CreateMockApplicationContext();
+            var givenTags = new[] { new Tag{Id = 52, Name = "random", Description = "It is so random"}, new Tag{Id = 62, Name = "expected", Description = "Spanish Inquisition"} };
+            IApplicationContext context = CreateMockApplicationContext(givenTags);
 
             var query = GetTagsQuery.Create();
             IRequestHandler<GetTagsQuery, IEnumerable<TagInstanceDto>> sut = new GetTagsQueryHandler(context);
-
             var actualResult = sut.Handle(query, CancellationToken.None).Result;
-            var expectedResult = CreateExpectedResult();
 
-            var obj1Str = JsonConvert.SerializeObject(actualResult);
-            var obj2Str = JsonConvert.SerializeObject(expectedResult);
+            var expectedResult = new[] {new TagInstanceDto("random", "It is so random"), new TagInstanceDto("expected", "Spanish Inquisition")};
 
-            Assert.Equal(obj1Str, obj2Str);
+            actualResult.Should().BeEquivalentTo(expectedResult);
         }
 
-        private IApplicationContext CreateMockApplicationContext()
+        private IApplicationContext CreateMockApplicationContext(IEnumerable<Tag> givenTags)
         {
-            var givenTags = new[] { new Tag{Id = 52, Name = "random", Description = "It is so random"}, new Tag{Id = 62, Name = "expected", Description = "Spanish Inquisition"} };
+            
             var tagMock = DbSetMockFactory.Create(givenTags);
 
             var mock = new Mock<IApplicationContext>();
             mock.Setup(m => m.Tags).Returns(tagMock.Object);
 
             return mock.Object;
-        }
-
-        private IEnumerable<TagInstanceDto> CreateExpectedResult()
-        {
-            List<TagInstanceDto> list = new List<TagInstanceDto>();
-            list.Add(new TagInstanceDto("random", "It is so random"));
-            list.Add(new TagInstanceDto("expected", "Spanish Inquisition"));
-            IEnumerable<TagInstanceDto> expected = list;
-            return expected;
         }
     }
 }
