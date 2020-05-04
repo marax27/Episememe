@@ -39,12 +39,18 @@
       </v-row>
 
     </v-card-text>
+
+    <v-card-text align='left'>
+      <p v-for='item in validationErrors' :key='item'>
+        <v-icon left color='error'>mdi-alert-circle-outline</v-icon>
+        <span class='error--text'>{{ item }}</span>
+      </p>
+    </v-card-text>
   </v-card>
 </template>
 
 <script lang='ts'>
 import { Component, Vue, Watch } from 'vue-property-decorator';
-import { ITag } from '../shared/models/ITag';
 import { ISearchSpecification } from '../shared/models/ISearchSpecification';
 import MonthPicker from './components/MonthPicker.vue';
 import TagInputField from './components/TagInputField.vue';
@@ -64,10 +70,18 @@ export default class SearchPanel extends Vue {
   excludeTags: string[] = [];
 
   get isValid(): boolean {
-    return this.includeTags.length > 0
-        || this.excludeTags.length > 0
-        || this.dateFrom != null
-        || this.dateTo != null;
+    return this.validationErrors.length === 0
+      && (this.includeTags.length > 0
+      || this.excludeTags.length > 0
+      || this.dateFrom != null
+      || this.dateTo != null);
+  }
+
+  get validationErrors(): string[] {
+    const result = [];
+    if (this.dateFrom != null && this.dateTo != null && this.dateFrom > this.dateTo)
+      result.push('The "From" date must be older than the "To" date.');
+    return result;
   }
 
   submitSearchQuery() {
