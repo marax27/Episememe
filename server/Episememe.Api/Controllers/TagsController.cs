@@ -13,7 +13,7 @@ namespace Episememe.Api.Controllers
     [ApiController]
     [Route("api")]
     [Authorize]
-    public class TagController : ControllerBase
+    public class TagsController : ControllerBase
     {
         private readonly ILogger<TagController> _logger;
         private readonly IMediator _mediator;
@@ -25,7 +25,7 @@ namespace Episememe.Api.Controllers
         }
 
         [HttpGet]
-        [Route("tag")]
+        [Route("tags")]
         public async Task<IEnumerable<TagInstanceDto>> GetTags()
         {
             var query = GetTagsQuery.Create();

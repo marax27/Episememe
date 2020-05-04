@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using Episememe.Application.Interfaces;
@@ -6,7 +5,6 @@ using Episememe.Application.Tests.Helpers;
 using Episememe.Domain.Entities;
 using Episememe.Application.DataTransfer;
 using Episememe.Application.Features.GetTags;
-using FluentAssertions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Moq;
@@ -15,12 +13,11 @@ using Newtonsoft.Json;
 
 namespace Episememe.Application.Tests.FeatureTests.GetTags
 {
-    public class WhenGettingTags{
-
-        private readonly Mock<DbSet<Tag>> _browseTokensMock;
-        
+    public class WhenGettingTags
+    {        
         [Fact]
-        public void GetExistingTags(){
+        public void GetExistingTags()
+        {
             IApplicationContext context = CreateMockApplicationContext();
 
             var query = GetTagsQuery.Create();
@@ -46,7 +43,8 @@ namespace Episememe.Application.Tests.FeatureTests.GetTags
             return mock.Object;
         }
 
-        private IEnumerable<TagInstanceDto> CreateExpectedResult(){
+        private IEnumerable<TagInstanceDto> CreateExpectedResult()
+        {
             List<TagInstanceDto> list = new List<TagInstanceDto>();
             list.Add(new TagInstanceDto("random", "It is so random"));
             list.Add(new TagInstanceDto("expected", "Spanish Inquisition"));
