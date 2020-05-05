@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
-using System.Text.Json;
+using Newtonsoft.Json;
 using System.Threading.Tasks;
 
 namespace Episememe.Api.Controllers
@@ -28,7 +28,7 @@ namespace Episememe.Api.Controllers
         [Route("media")]
         public async Task<IEnumerable<MediaInstanceDto>> GetSearchedMedia([FromQuery] string q)
         {
-            var searchMediaDto = JsonSerializer.Deserialize<SearchMediaDto>(q);
+            var searchMediaDto = JsonConvert.DeserializeObject<SearchMediaDto>(q);
             var query = SearchMediaQuery.Create(searchMediaDto);
             var result = await _mediator.Send(query);
             return result;
