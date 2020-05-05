@@ -5,5 +5,3 @@ export interface SearchSpecificationDto {
   timeRangeStart: Date | null;
   timeRangeEnd: Date | null;
 }
-
-

@@ -17,7 +17,7 @@
       <v-row dense>
         <v-col cols='6' sm='3'>
           <MonthPicker
-            @change='dateFrom = $event;'
+            @change='timeFrom = $event;'
             icon='mdi-clock-start'
             label='From:'>
           </MonthPicker>
@@ -25,7 +25,7 @@
 
         <v-col cols='6' sm='3'>
           <MonthPicker
-            @change='dateTo = $event;'
+            @change='timeTo = $event;'
             icon='mdi-clock-end'
             label='To:'>
           </MonthPicker>
@@ -63,8 +63,8 @@ import TagInputField from './components/TagInputField.vue';
 })
 export default class SearchPanel extends Vue {
 
-  dateFrom: Date | null = null;
-  dateTo: Date | null = null;
+  timeFrom: Date | null = null;
+  timeTo: Date | null = null;
 
   includeTags: string[] = [];
   excludeTags: string[] = [];
@@ -73,13 +73,13 @@ export default class SearchPanel extends Vue {
     return this.validationErrors.length === 0
       && (this.includeTags.length > 0
       || this.excludeTags.length > 0
-      || this.dateFrom != null
-      || this.dateTo != null);
+      || this.timeFrom != null
+      || this.timeTo != null);
   }
 
   get validationErrors(): string[] {
     const result = [];
-    if (this.dateFrom != null && this.dateTo != null && this.dateFrom > this.dateTo)
+    if (this.timeFrom != null && this.timeTo != null && this.timeFrom > this.timeTo)
       result.push('The "From" date must be older than the "To" date.');
     return result;
   }
@@ -88,8 +88,8 @@ export default class SearchPanel extends Vue {
     const specification: ISearchSpecification = {
       includeTags: this.includeTags,
       excludeTags: this.excludeTags,
-      timeFrom: this.dateFrom,
-      timeTo: this.dateTo
+      timeFrom: this.timeFrom,
+      timeTo: this.timeTo
     };
     this.$emit('submit', specification);
   }
