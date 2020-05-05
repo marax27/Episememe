@@ -1,6 +1,17 @@
 <template>
   <ContentWrapper>
     <SearchPanel @submit='onSubmit'></SearchPanel>
+
+    <v-snackbar
+      v-model='errorSnackbarIsOpen'
+      :timeout='3000'>
+      Failed to retrieve data from the server. Try again later.
+      <v-btn
+        text color='error'
+        @click='errorSnackbarIsOpen = false;'>
+        Close
+      </v-btn>
+    </v-snackbar>
   </ContentWrapper>
 </template>
 
@@ -23,6 +34,8 @@ import { ITag } from '../shared/models/ITag';
 })
 export default class Home extends Mixins(ApiClientService) {
 
+  errorSnackbarIsOpen = false;
+
   created() {
     if (this.$store.state.tags == null) {
       this.loadTags();
@@ -44,9 +57,10 @@ export default class Home extends Mixins(ApiClientService) {
           .then(_ => afterCompletion());
       })
       .catch(err => {
-        console.error('Failed to retrieve the browse token.');
         if (this.$store.state.browseToken != null) {
           afterCompletion();
+        } else {
+          this.errorSnackbarIsOpen = true;
         }
       });
   }
@@ -54,7 +68,7 @@ export default class Home extends Mixins(ApiClientService) {
   private loadTags() {
     this.$api.get<ITag[]>('tags')
       .then(response => { this.$store.dispatch('updateTags', response.data); })
-      .catch(err => console.error(`Failed to load tags from the API: ${err}.`));
+      .catch(err => this.errorSnackbarIsOpen = true);
   }
 
   private createGalleryData(specification: ISearchSpecification): string {
