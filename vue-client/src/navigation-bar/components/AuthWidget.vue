@@ -2,11 +2,6 @@
   <v-icon v-if="$auth.loading">mdi-loading mdi-spin</v-icon>
   <div v-else class="d-flex align-center">
     <div v-if="$auth.isAuthenticated">
-      <v-btn text @click="logout">
-        <v-icon>mdi-logout</v-icon>
-        <span>Logout</span>
-      </v-btn>
-
       <router-link to="/user">
         <v-avatar class="profile-image">
           <v-img
@@ -34,13 +29,6 @@ export default class AuthWidget extends Vue {
 
   login() {
     this.$auth.loginWithRedirect();
-  }
-
-  logout() {
-    store.commit('logout');
-    this.$auth.logout({
-      returnTo: window.location.origin
-    });
   }
 }
 </script>
