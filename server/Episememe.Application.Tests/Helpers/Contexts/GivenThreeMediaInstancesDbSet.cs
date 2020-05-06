@@ -15,19 +15,16 @@ namespace Episememe.Application.Tests.Helpers.Contexts
             var mediaInstance1 = new MediaInstance
             {
                 Id = "1",
-                RevisionCount = 0,
                 Timestamp = new DateTime(2009, 1, 1, 0, 0, 0)
             };
             var mediaInstance2 = new MediaInstance
             {
                 Id = "2",
-                RevisionCount = 0,
                 Timestamp = new DateTime(2008, 1, 1, 0, 0, 0)
             };
             var mediaInstance3 = new MediaInstance
             {
                 Id = "3",
-                RevisionCount = 0,
                 Timestamp = new DateTime(2008, 6, 1, 0, 0, 0)
             };
 

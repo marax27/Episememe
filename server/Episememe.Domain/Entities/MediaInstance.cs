@@ -9,8 +9,7 @@ namespace Episememe.Domain.Entities
         public string Id { get; set; } = null!;
         public DateTime Timestamp { get; set; }
         public string DataType { get; set; } = null!;
-        public string Path { get; set; } = null!;
-        public int RevisionCount { get; set; }
+        public string AuthorId { get; set; } = null!;
 
         public ICollection<MediaTag> MediaTags { get; set; } = new HashSet<MediaTag>();
     }

@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Episememe.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200504172719_MakeTagNameUnique")]
-    partial class MakeTagNameUnique
+    [Migration("20200506155409_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -36,18 +36,13 @@ namespace Episememe.Infrastructure.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("AuthorId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("DataType")
                         .IsRequired()
                         .HasColumnType("TEXT");
-
-                    b.Property<string>("Path")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("RevisionCount")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER")
-                        .HasDefaultValue(0);
 
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("TEXT");
@@ -64,7 +59,6 @@ namespace Episememe.Infrastructure.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
