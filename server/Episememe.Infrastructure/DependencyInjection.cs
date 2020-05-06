@@ -23,6 +23,8 @@ namespace Episememe.Infrastructure
                 => provider.GetService<ApplicationDbContext>());
             services.AddScoped<IAuthorizationContext>(provider
                 => provider.GetService<ApplicationDbContext>());
+            services.AddScoped<IWritableApplicationContext>(provider
+                => provider.GetService<ApplicationDbContext>());
 
             services.AddTransient<IDatabaseMigrationService, ApplicationDbContext>();
 
