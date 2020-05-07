@@ -55,7 +55,7 @@ export default class NavBarLink extends Vue {
 }
 
 .nav-link + .nav-link {
-  margin-left: .5em;
+  margin-left: 1.5em;
   margin-right: .5em;
 }
 
