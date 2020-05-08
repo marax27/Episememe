@@ -3,7 +3,10 @@
     <v-card-title>Search</v-card-title>
 
     <v-card-text>
-      Select tags to construct a query. <span class='font-weight-bold'>Click</span> on a tag to make it an <span class='success--text text-darken-2'>include</span>/<span class='error--text text-darken-2'>exclude</span> tag. You can also specify a <span class='font-weight-bold'>time range</span>.
+      Select tags to construct a query.
+      <span class='font-weight-bold'>Click</span> on a tag to make it an
+      <span class='success--text text-darken-2'>include</span>/<span class='error--text text-darken-2'>exclude</span> tag.
+      You can also specify a <span class='font-weight-bold'>time range</span>.
     </v-card-text>
 
     <v-card-text>
