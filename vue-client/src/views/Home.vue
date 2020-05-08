@@ -1,26 +1,17 @@
 <template>
   <ContentWrapper>
-    <v-card dense>
-      <v-card-title>Search</v-card-title>
+    <SearchPanel @submit='onSubmit'></SearchPanel>
 
-      <v-card-text>
-
-          <v-row dense>
-              <v-autocomplete
-                v-model="values" :items="items"
-                prepend-icon='mdi-magnify'
-                outlined dense chips small-chips label='Search' multiple
-                v-on:update:search-input='onInputChange'
-              ></v-autocomplete>
-          </v-row>
-
-          <v-row dense justify='end'>
-            <v-btn :disabled="!valid" color='primary' @click='search'>
-              Search
-            </v-btn>
-          </v-row>
-      </v-card-text>
-    </v-card>
+    <v-snackbar
+      v-model='errorSnackbarIsOpen'
+      :timeout='3000'>
+      Failed to retrieve data from the server. Try again later.
+      <v-btn
+        text color='error'
+        @click='errorSnackbarIsOpen = false;'>
+        Close
+      </v-btn>
+    </v-snackbar>
   </ContentWrapper>
 </template>
 
@@ -29,30 +20,33 @@ import { Component, Vue, Mixins } from 'vue-property-decorator';
 import router from '../router';
 import ContentWrapper from '../shared/components/content-wrapper/ContentWrapper.vue';
 import ApiClientService from '../shared/mixins/api-client/api-client.service';
+import SearchPanel from '../searching/SearchPanel.vue';
+import { ISearchSpecification } from '../searching/interfaces/ISearchSpecification';
+import { SearchSpecificationDto } from '../searching/interfaces/SearchSpecificationDto';
+import { ITag } from '../shared/models/ITag';
 
 @Component({
   name: 'Home',
   components: {
-    ContentWrapper
+    ContentWrapper,
+    SearchPanel
   }
 })
 export default class Home extends Mixins(ApiClientService) {
 
-  valid = true;
+  errorSnackbarIsOpen = false;
 
-  name = '';
-
-  items = ['Politics', 'History', 'Poland', 'United States', 'Something else', 'Lorem ipsum', 'XYZ', 'Even more', 'Extremely long chip', 'Science']
-  values = ['Poland', 'History']
-
-  search() {
-    this.refreshBrowseToken(() => {
-      router.push({ name: 'Gallery', params: { data: '123' } });
-    });
+  created() {
+    if (this.$store.state.tags == null) {
+      this.loadTags();
+    }
   }
 
-  onInputChange($event: string) {
-    if ($event == null)  return;
+  onSubmit(specification: ISearchSpecification) {
+    const galleryData = this.createGalleryData(specification);
+    this.refreshBrowseToken(() => {
+      router.push({ name: 'Gallery', params: { data: galleryData } });
+    });
   }
 
   private refreshBrowseToken(afterCompletion: () => void) {
@@ -63,9 +57,28 @@ export default class Home extends Mixins(ApiClientService) {
           .then(_ => afterCompletion());
       })
       .catch(err => {
-        console.error(`Failed to retrieve the browser token.`);
+        if (this.$store.state.browseToken != null) {
+          afterCompletion();
+        } else {
+          this.errorSnackbarIsOpen = true;
+        }
       });
+  }
+
+  private loadTags() {
+    this.$api.get<ITag[]>('tags')
+      .then(response => { this.$store.dispatch('updateTags', response.data); })
+      .catch(err => this.errorSnackbarIsOpen = true);
+  }
+
+  private createGalleryData(specification: ISearchSpecification): string {
+    const obj: SearchSpecificationDto = {
+      includedTags: specification.includeTags,
+      excludedTags: specification.excludeTags,
+      timeRangeStart: specification.timeFrom,
+      timeRangeEnd: specification.timeTo
+    };
+    return JSON.stringify(obj);
   }
 }
 </script>
-

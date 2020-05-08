@@ -52,7 +52,8 @@ export default class ApiClient {
     return {
       headers: {
         Authorization: `Bearer ${token}`
-      }
+      },
+      timeout: 5000
     };
   }
 }
