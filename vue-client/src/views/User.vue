@@ -3,15 +3,6 @@
     <v-card>
       <v-card-title>User page</v-card-title>
     </v-card>
-
-    <v-btn
-      class='mt-4'
-      color='secondary'
-      @click='logout'>
-
-      <v-icon>mdi-logout</v-icon>
-      <span>Logout</span>
-    </v-btn>
   </ContentWrapper>
 </template>
 
@@ -28,11 +19,5 @@ import store from '../store';
 })
 export default class User extends Vue {
   $auth: any;
-
-  logout() {
-    this.$auth.logout({
-      returnTo: window.location.origin
-    });
-  }
 }
 </script>
