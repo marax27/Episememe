@@ -50,7 +50,8 @@ export default class TagInputField extends Vue {
   userInput = '';
 
   get allItems(): ITag[] {
-    return this.$store.getters.allTags;
+    const tags: ITag[] = this.$store.getters.allTags;
+    return tags.sort((a, b) => a.name.localeCompare(b.name));
   }
 
   isExcluded(item: ITag): boolean {
