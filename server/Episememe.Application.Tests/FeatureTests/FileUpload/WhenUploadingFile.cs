@@ -25,7 +25,6 @@ namespace Episememe.Application.Tests.FeatureTests.FileUpload
     public class WhenUploadingFile : IDisposable
     {
         private readonly string _givenMediaInstanceId = "abcdefgh";
-        private readonly string _givenMediaInstanceFilePath;
         private readonly DateTime _givenDate = new DateTime(2010, 1, 1);
 
         private readonly MockFileSystem _fileSystemMock;
@@ -53,13 +52,6 @@ namespace Episememe.Application.Tests.FeatureTests.FileUpload
             _mediaIdProviderMock = new Mock<IMediaIdProvider>();
             _mediaIdProviderMock.Setup(provider => provider.GenerateUniqueBase32Id(new List<string>()))
                 .Returns(_givenMediaInstanceId);
-
-            _givenMediaInstanceFilePath = Path.Combine(
-                "C:",
-                _givenMediaInstanceId.Substring(0, 1),
-                _givenMediaInstanceId.Substring(1, 1),
-                _givenMediaInstanceId
-            );
         }
 
         [Fact]
@@ -81,7 +73,6 @@ namespace Episememe.Application.Tests.FeatureTests.FileUpload
             _contextMock.MediaInstances.Should().HaveCount(1);
             _contextMock.MediaInstances.Single().Id.Should().BeEquivalentTo(_givenMediaInstanceId);
             _fileSystemMock.AllFiles.Should().HaveCount(1);
-            _fileSystemMock.AllFiles.Should().Contain(_givenMediaInstanceFilePath);
 
             var streamContent = GetFileContent(_fileStorageMock.Read(_givenMediaInstanceId));
             streamContent.Should().BeEquivalentTo(givenFileContent);
