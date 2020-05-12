@@ -1,14 +1,14 @@
-using System;
+using Episememe.Api.Utilities;
 using Episememe.Application.DataTransfer;
 using Episememe.Application.Features.FileMedia;
-using Episememe.Application.Features.UploadFile;
+using Episememe.Application.Features.FileUpload;
 using Episememe.Application.Features.VerifyBrowseToken;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Threading.Tasks;
-using Episememe.Api.Utilities;
-using Microsoft.AspNetCore.Authorization;
 
 namespace Episememe.Api.Controllers
 {
@@ -26,7 +26,6 @@ namespace Episememe.Api.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         [Route("files/{id}")]
         public async Task<IActionResult> GetFile(string id, [FromQuery] string token)
         {
@@ -41,6 +40,7 @@ namespace Episememe.Api.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         [Route("files")]
         public async Task TaskUploadNewFile([FromForm] FileUploadDto fileUploadDto)
         {
@@ -48,7 +48,7 @@ namespace Episememe.Api.Controllers
                 throw new ArgumentNullException();
 
             var user = User.GetUserId();
-            var fileUploadCommand = UploadFileCommand.Create(fileUploadDto.FormFile, fileUploadDto.Tags, user);
+            var fileUploadCommand = FileUploadCommand.Create(fileUploadDto.FormFile, fileUploadDto.Tags, user);
             await _mediator.Send(fileUploadCommand);
         }
     }
