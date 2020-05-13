@@ -4,11 +4,8 @@ using System.Linq;
 using System.Collections.Generic;
 using Episememe.Domain.Entities;
 using Episememe.Domain.HelperEntities;
-using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using System;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 
 
 
@@ -26,7 +23,9 @@ namespace Episememe.Application.Features.UpdateTags
             MediaInstance editedInstance;
             try 
             {
-                editedInstance = _context.MediaInstances.First(a => a.Id == request.Id);
+                editedInstance = _context.MediaInstances
+                .Include(mi => mi.MediaTags)
+                .Single(a => a.Id == request.Id);
             }
             catch (Exception){
                 throw;
@@ -38,7 +37,7 @@ namespace Episememe.Application.Features.UpdateTags
                 MediaInstance = editedInstance,
                 Tag = t
             }).ToList();
-            
+
             editedInstance.MediaTags = mediaTags;
             _context.SaveChanges();
         }
