@@ -38,7 +38,9 @@
               <v-card-title>Tag Selection</v-card-title>
 
               <v-card-text>
-                ...
+                <BasicTagPicker
+                  v-model='tagNames'>
+                </BasicTagPicker>
               </v-card-text>
             </v-card>
 
@@ -61,12 +63,17 @@
 <script lang='ts'>
 import { Component, Mixins } from 'vue-property-decorator';
 import ApiClientService from '../shared/mixins/api-client/api-client.service';
+import BasicTagPicker from '../tags/components/BasicTagPicker.vue';
 
-@Component
+@Component({
+  components: {
+    BasicTagPicker
+  }
+})
 export default class UploadPanel extends Mixins(ApiClientService) {
 
-  private currentFile: File | null = null;
-
+  currentFile: File | null = null;
+  tagNames: string[] = [];
   uploadInProgress = false;
 
   handleNewFile() {

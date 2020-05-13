@@ -4,7 +4,7 @@
     :items='allTags'
     :search-input.sync='userInput'
     prepend-icon='mdi-magnify'
-    outlined dense multiple
+    outlined multiple
     item-text='description'
     item-value='name'
     :return-object='false'
