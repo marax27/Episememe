@@ -7,7 +7,6 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Threading.Tasks;
 
 namespace Episememe.Api.Controllers
@@ -42,14 +41,13 @@ namespace Episememe.Api.Controllers
         [HttpPost]
         [Authorize]
         [Route("files")]
-        public async Task TaskUploadNewFile([FromForm] FileUploadDto fileUploadDto)
+        public async Task<IActionResult> UploadNewFile([FromForm] FileUploadDto fileUploadDto)
         {
-            if(fileUploadDto?.FormFile == null || fileUploadDto?.Tags == null)
-                throw new ArgumentNullException();
-
             var user = User.GetUserId();
-            var fileUploadCommand = FileUploadCommand.Create(fileUploadDto.FormFile, fileUploadDto.Tags, user);
+            var fileUploadCommand = FileUploadCommand.Create(fileUploadDto.FormFile!, fileUploadDto.Tags!, user);
             await _mediator.Send(fileUploadCommand);
+
+            return StatusCode(201);
         }
     }
 }

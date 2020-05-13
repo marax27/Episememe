@@ -1,28 +1,13 @@
 ﻿using Episememe.Application.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Episememe.Infrastructure.Identifiers
 {
     public class MediaIdProvider : IMediaIdProvider
     {
-        public string GenerateUniqueBase32Id(IReadOnlyCollection<string> existingIds)
+        public string Generate()
         {
-            var idExists = true;
-            var newId = string.Empty;
-
-            while (idExists)
-            {
-                newId = GenerateRandomBase32();
-
-                if (!existingIds.Contains(newId))
-                {
-                    idExists = false;
-                }
-            }
-
-            return newId;
+            return GenerateRandomBase32();
         }
 
         private string GenerateRandomBase32()

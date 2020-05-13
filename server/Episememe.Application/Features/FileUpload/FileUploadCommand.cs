@@ -1,6 +1,6 @@
-﻿using System;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 
 namespace Episememe.Application.Features.FileUpload
@@ -20,6 +20,9 @@ namespace Episememe.Application.Features.FileUpload
 
         public static FileUploadCommand Create(IFormFile formFile, IEnumerable<string> tags, string authorId)
         {
+            if (formFile == null || tags == null || authorId == null)
+                throw new ArgumentNullException();
+
             return new FileUploadCommand(formFile, tags, authorId);
         }
     }

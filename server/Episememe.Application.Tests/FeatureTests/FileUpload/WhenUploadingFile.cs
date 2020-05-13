@@ -50,7 +50,7 @@ namespace Episememe.Application.Tests.FeatureTests.FileUpload
                 .Returns(_givenDate);
 
             _mediaIdProviderMock = new Mock<IMediaIdProvider>();
-            _mediaIdProviderMock.Setup(provider => provider.GenerateUniqueBase32Id(new List<string>()))
+            _mediaIdProviderMock.Setup(provider => provider.Generate())
                 .Returns(_givenMediaInstanceId);
         }
 
@@ -76,29 +76,6 @@ namespace Episememe.Application.Tests.FeatureTests.FileUpload
 
             var streamContent = GetFileContent(_fileStorageMock.Read(_givenMediaInstanceId));
             streamContent.Should().BeEquivalentTo(givenFileContent);
-        }
-
-        [Fact]
-        public void GivenNewMedia_DatabaseExceptionIsThrownAndMediaIsNotUploaded()
-        {
-            var givenFileName = "newFile";
-            var givenFileContent = "None";
-            var formFile = CreateTestFormFile(givenFileName, givenFileContent);
-            var givenTag = "pigeons";
-            var givenTags = new List<string>()
-            {
-                givenTag
-            };
-
-            // Force an exception to be thrown by passing null to a required field
-            var command = FileUploadCommand.Create(formFile, givenTags, null!);
-            var handler = new FileUploadCommandHandler(_fileStorageMock, _contextMock,
-                _timeProviderMock.Object, _mediaIdProviderMock.Object);
-
-            Assert.Throws<AggregateException>(() => handler.Handle(command, CancellationToken.None).Wait());
-
-            _fileSystemMock.AllFiles.Should().BeEmpty();
-            _contextMock.MediaInstances.Should().BeEmpty();
         }
 
         [Fact]

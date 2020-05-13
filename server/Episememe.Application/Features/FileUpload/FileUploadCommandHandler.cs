@@ -30,11 +30,7 @@ namespace Episememe.Application.Features.FileUpload
 
         public async Task<Unit> Handle(FileUploadCommand request, CancellationToken cancellationToken)
         {
-            var mediaInstancesIds = _context.MediaInstances
-                .Select(mi => mi.Id)
-                .ToList()
-                .AsReadOnly();
-            var instanceId = _mediaIdProvider.GenerateUniqueBase32Id(mediaInstancesIds);
+            var instanceId = GenerateMediaInstanceId();
             var extension = Path.GetExtension(request.FormFile.FileName);
             var dataType = extension.Length > 0 ? extension.Substring(1) : string.Empty;
             await CreateMediaFile(instanceId, dataType, request.Tags, request.AuthorId, request.FormFile);
@@ -89,6 +85,25 @@ namespace Episememe.Application.Features.FileUpload
 
             await _context.MediaInstances.AddAsync(mediaInstance);
             await _context.SaveChangesAsync(CancellationToken.None);
+        }
+
+        private string GenerateMediaInstanceId()
+        {
+            var idExists = true;
+            var newId = string.Empty;
+            var existingIds = _context.MediaInstances.Select(mi => mi.Id);
+
+            while (idExists)
+            {
+                newId = _mediaIdProvider.Generate();
+
+                if (!existingIds.Contains(newId))
+                {
+                    idExists = false;
+                }
+            }
+
+            return newId;
         }
 
         private IEnumerable<Tag> ConvertStringsToTags(IEnumerable<string> stringTags)
