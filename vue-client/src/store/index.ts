@@ -30,6 +30,9 @@ export default new Vuex.Store({
     reportError({ commit }, message) {
       commit('setErrorMessage', message);
     },
+    clearError({ commit }) {
+      commit('setErrorMessage', null)
+    }
   },
   getters: {
     allTags: state => {

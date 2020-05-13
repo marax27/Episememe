@@ -26,6 +26,13 @@ export default class ErrorNotification extends Vue {
     return this.$store.state.errorMessage;
   }
 
+  @Watch('isOpen')
+  private onIsOpenChange() {
+    if (!this.isOpen) {
+      this.$store.dispatch('clearError');
+    }
+  }
+
   @Watch('errorMessage')
   private onErrorMessageChange() {
     if (this.errorMessage) {
