@@ -1,6 +1,6 @@
 <template>
   <ContentWrapper>
-    <SearchPanel @submit='onSubmit'></SearchPanel>
+    <SearchPanel :loading='searchInProgress' @submit='onSubmit'></SearchPanel>
   </ContentWrapper>
 </template>
 
@@ -23,6 +23,8 @@ import { ITag } from '../shared/models/ITag';
 })
 export default class Home extends Mixins(ApiClientService) {
 
+  searchInProgress = false;
+
   created() {
     if (this.$store.state.tags == null) {
       this.loadTags();
@@ -31,6 +33,8 @@ export default class Home extends Mixins(ApiClientService) {
 
   onSubmit(specification: ISearchSpecification) {
     const galleryData = this.createGalleryData(specification);
+
+    this.searchInProgress = true;
     this.refreshBrowseToken(() => {
       router.push({ name: 'Gallery', params: { data: galleryData } });
     });

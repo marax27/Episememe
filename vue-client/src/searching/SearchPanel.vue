@@ -36,6 +36,7 @@
 
         <v-btn
           class='search-button'
+          :loading='loading'
           :disabled="!isValid" color='primary' @click='submitSearchQuery'>
           Search
         </v-btn>
@@ -53,7 +54,7 @@
 </template>
 
 <script lang='ts'>
-import { Component, Vue, Watch } from 'vue-property-decorator';
+import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import { ISearchSpecification } from '../searching/interfaces/ISearchSpecification';
 import MonthPicker from './components/MonthPicker.vue';
 import TagInputField from './components/TagInputField.vue';
@@ -65,6 +66,9 @@ import TagInputField from './components/TagInputField.vue';
   }
 })
 export default class SearchPanel extends Vue {
+
+  @Prop({ default: false })
+  loading!: boolean;
 
   timeFrom: Date | null = null;
   timeTo: Date | null = null;
