@@ -7,6 +7,7 @@
         <v-col cols='12' md='6'>
           <div v-ripple class='upload-field elevation-2 pa-1 d-flex flex-column align-center justify-center fill-height'>
             <v-icon class='upload-icon'>mdi-upload</v-icon>
+            <input type='file' ref='fileUpload' @change='handleNewFile' />
           </div>
         </v-col>
 
@@ -35,13 +36,34 @@
 </template>
 
 <script lang='ts'>
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Mixins } from 'vue-property-decorator';
+import ApiClientService from '../shared/mixins/api-client/api-client.service';
 
 @Component
-export default class UploadPanel extends Vue {
+export default class UploadPanel extends Mixins(ApiClientService) {
+
+  private currentFile: File | null = null;
+
+  handleNewFile() {
+    const fe = this.$refs.fileUpload as HTMLInputElement;
+    if (fe == null || fe.files == null) {
+      return;
+    }
+    this.currentFile = fe.files[0];
+  }
 
   upload() {
-    return undefined;
+    const data = new FormData();
+    data.append('file', this.currentFile as any);
+    const headers = { 'Content-Type': 'multipart/form-data' };
+
+    this.$api.post<any>('files', data, headers)
+      .then(response => {
+        return undefined;
+      })
+      .catch(err => {
+        return undefined;
+      });
   }
 }
 </script>
