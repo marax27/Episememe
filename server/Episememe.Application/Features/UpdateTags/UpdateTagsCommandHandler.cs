@@ -38,6 +38,7 @@ namespace Episememe.Application.Features.UpdateTags
                 MediaInstance = editedInstance,
                 Tag = t
             }).ToList();
+            
             editedInstance.MediaTags = mediaTags;
             _context.SaveChanges();
         }
@@ -45,8 +46,6 @@ namespace Episememe.Application.Features.UpdateTags
         private IEnumerable<Tag> ConvertStringsToTags(IEnumerable<string> stringTags, MediaInstance media)
         {
             var tagNames = _context.Tags.Select(t => t.Name);
-            var mediaTagNames = media.MediaTags.Select(t => t.Tag.Name);
-            stringTags = stringTags.Where(t => !(mediaTagNames.Contains(t)));
             var tags = stringTags.Select(st =>
                 tagNames.Contains(st) ? _context.Tags.Single(t => t.Name == st) : new Tag() { Name = st, Description = st });
 
