@@ -44,7 +44,7 @@ namespace Episememe.Api.Controllers
         public async Task<IActionResult> UploadNewFile([FromForm] FileUploadDto fileUploadDto)
         {
             var user = User.GetUserId();
-            var fileUploadCommand = FileUploadCommand.Create(fileUploadDto.FormFile!, fileUploadDto.Tags!, user);
+            var fileUploadCommand = FileUploadCommand.Create(fileUploadDto.FormFile, fileUploadDto.Tags, user);
             await _mediator.Send(fileUploadCommand);
 
             return StatusCode(201);

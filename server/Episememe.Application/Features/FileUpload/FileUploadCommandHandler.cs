@@ -38,7 +38,7 @@ namespace Episememe.Application.Features.FileUpload
             return Unit.Value;
         }
 
-        private async Task CreateMediaFile(string instanceId, string dataType, IEnumerable<string> tags, string authorId,
+        private async Task CreateMediaFile(string instanceId, string dataType, IEnumerable<string> tags, string? authorId,
             IFormFile formFile)
         {
             await CreateMediaFileInFileSystem(formFile, instanceId);
@@ -63,7 +63,7 @@ namespace Episememe.Application.Features.FileUpload
             await formFile.CopyToAsync(stream);
         }
 
-        private async Task CreateMediaInstanceInDatabase(string id, string dataType, IEnumerable<string> tags, string authorId)
+        private async Task CreateMediaInstanceInDatabase(string id, string dataType, IEnumerable<string> tags, string? authorId)
         {
             var mediaInstance = new MediaInstance()
             {
