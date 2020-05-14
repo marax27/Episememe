@@ -37,11 +37,10 @@ namespace Episememe.Api.Controllers
         }
 
         [HttpPost]
-        [Route("revision/{id}")]
-        public async Task UpdateTagsList(string id, [FromForm] string tags)
+        [Route("revision")]
+        public async Task UpdateTagsList([FromForm] TagsUpdateDto ListOfTags)
         {
-            IEnumerable<string> _tags = tags.Split(",");
-            var command = UpdateTagsCommand.Create(id, _tags);
+            var command = UpdateTagsCommand.Create(ListOfTags.FileId!, ListOfTags.Tags!);
             await _mediator.Send(command);
         }
     }

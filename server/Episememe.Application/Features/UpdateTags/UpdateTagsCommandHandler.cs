@@ -28,7 +28,7 @@ namespace Episememe.Application.Features.UpdateTags
                 .Single(a => a.Id == request.Id);
             }
             catch (Exception){
-                throw;
+                throw new ArgumentNullException();
             }
 
             ICollection<MediaTag> mediaTags = ConvertStringsToTags(request.Tags, editedInstance)

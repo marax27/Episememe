@@ -1,4 +1,5 @@
 using MediatR;
+using System;
 using System.Collections.Generic;
 
 namespace Episememe.Application.Features.UpdateTags
@@ -17,6 +18,8 @@ namespace Episememe.Application.Features.UpdateTags
 
         public static UpdateTagsCommand Create(string id, IEnumerable<string> tags)
         {
+            if (id == null || tags == null)
+                throw new ArgumentNullException();
             return new UpdateTagsCommand(id, tags);
         }
     }
