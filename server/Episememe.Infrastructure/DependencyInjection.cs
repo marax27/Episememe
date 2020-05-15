@@ -2,6 +2,7 @@
 using Episememe.Application.Interfaces;
 using Episememe.Infrastructure.Database;
 using Episememe.Infrastructure.FileSystem;
+using Episememe.Infrastructure.Identifiers;
 using Episememe.Infrastructure.Time;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -23,10 +24,14 @@ namespace Episememe.Infrastructure
                 => provider.GetService<ApplicationDbContext>());
             services.AddScoped<IAuthorizationContext>(provider
                 => provider.GetService<ApplicationDbContext>());
+            services.AddScoped<IWritableApplicationContext>(provider
+                => provider.GetService<ApplicationDbContext>());
 
             services.AddTransient<IDatabaseMigrationService, ApplicationDbContext>();
 
             services.AddTransient<ITimeProvider, TimeProvider>();
+
+            services.AddTransient<IMediaIdProvider, MediaIdProvider>();
 
             services.Configure<FileStorageSettings>(options
                 => configuration.GetSection("FileStorage").Bind(options));

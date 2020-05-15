@@ -8,15 +8,25 @@ namespace Episememe.Infrastructure.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "BrowseTokens",
+                columns: table => new
+                {
+                    Id = table.Column<string>(nullable: false),
+                    ExpirationTime = table.Column<DateTime>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BrowseTokens", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "MediaInstances",
                 columns: table => new
                 {
                     Id = table.Column<string>(nullable: false),
                     Timestamp = table.Column<DateTime>(nullable: false),
                     DataType = table.Column<string>(nullable: false),
-                    Path = table.Column<string>(nullable: false),
-                    RevisionCount = table.Column<int>(nullable: false, defaultValue: 0)
-                        .Annotation("Sqlite:Autoincrement", true)
+                    AuthorId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -30,7 +40,7 @@ namespace Episememe.Infrastructure.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(nullable: false),
-                    Description = table.Column<string>(nullable: false)
+                    Description = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -65,10 +75,19 @@ namespace Episememe.Infrastructure.Migrations
                 name: "IX_MediaTags_TagId",
                 table: "MediaTags",
                 column: "TagId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tags_Name",
+                table: "Tags",
+                column: "Name",
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "BrowseTokens");
+
             migrationBuilder.DropTable(
                 name: "MediaTags");
 

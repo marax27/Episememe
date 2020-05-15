@@ -12,11 +12,6 @@ namespace Episememe.Infrastructure.Database.Configuration
                 .IsRequired();
             builder.Property(mi => mi.DataType)
                 .IsRequired();
-            builder.Property(mi => mi.Path)
-                .IsRequired();
-            builder.Property(mi => mi.RevisionCount)
-                .IsRequired()
-                .HasDefaultValue(0);
         }
     }
 }

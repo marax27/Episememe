@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Episememe.Infrastructure.Database
 {
-    public class ApplicationDbContext : DbContext, IApplicationContext, IAuthorizationContext, IDatabaseMigrationService
+    public class ApplicationDbContext : DbContext, IApplicationContext, IAuthorizationContext, IWritableApplicationContext, IDatabaseMigrationService
     {
         public ApplicationDbContext(DbContextOptions options)
             : base(options) { }
