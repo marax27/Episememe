@@ -44,6 +44,23 @@
               </v-card-text>
             </v-card>
 
+            <v-card
+              :disabled='!isFileProvided()'
+              tile
+              class='secondary-column-field align-self-stretch'
+              color='secondary darken-1'>
+
+              <v-card-text>
+                <v-row columns='12' dense>
+
+                  <v-col cols='6'>
+                    <DeduceTagsTile @click='deduceTags' />
+                  </v-col>
+
+                </v-row>
+              </v-card-text>
+            </v-card>
+
             <v-btn
               :disabled='!isFileProvided()'
               :loading='uploadInProgress'
@@ -65,10 +82,12 @@ import { Component, Mixins } from 'vue-property-decorator';
 import ApiClientService from '../shared/mixins/api-client/api-client.service';
 import BasicTagPicker from '../tags/components/BasicTagPicker.vue';
 import TagsProviderService from '../tags/mixins/tags-provider.service';
+import DeduceTagsTile from './components/DeduceTagsTile.vue';
 
 @Component({
   components: {
-    BasicTagPicker
+    BasicTagPicker,
+    DeduceTagsTile
   }
 })
 export default class UploadPanel extends Mixins(ApiClientService, TagsProviderService) {
@@ -89,6 +108,10 @@ export default class UploadPanel extends Mixins(ApiClientService, TagsProviderSe
 
   isFileProvided(): boolean {
     return this.currentFile != null;
+  }
+
+  deduceTags() {
+    return undefined;
   }
 
   upload() {
