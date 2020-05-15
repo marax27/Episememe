@@ -5,5 +5,5 @@ export class TagViewModel implements ITag {
   constructor(
     public name: string,
     public fullName: string,
-    public description: string) {}
+    public description?: string) {}
 }

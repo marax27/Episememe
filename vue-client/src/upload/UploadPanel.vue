@@ -82,6 +82,7 @@ import { Component, Mixins } from 'vue-property-decorator';
 import ApiClientService from '../shared/mixins/api-client/api-client.service';
 import BasicTagPicker from '../tags/components/BasicTagPicker.vue';
 import TagsProviderService from '../tags/mixins/tags-provider.service';
+import TagsDeductionService from '../tags/mixins/tags-deduction.service';
 import DeduceTagsTile from './components/DeduceTagsTile.vue';
 
 @Component({
@@ -90,7 +91,7 @@ import DeduceTagsTile from './components/DeduceTagsTile.vue';
     DeduceTagsTile
   }
 })
-export default class UploadPanel extends Mixins(ApiClientService, TagsProviderService) {
+export default class UploadPanel extends Mixins(ApiClientService, TagsDeductionService, TagsProviderService) {
 
   currentFile: File | null = null;
   tagNames: string[] = [];
@@ -111,7 +112,9 @@ export default class UploadPanel extends Mixins(ApiClientService, TagsProviderSe
   }
 
   deduceTags() {
-    return undefined;
+    if (this.currentFile != null) {
+      this.tagNames = this.deduceTagsForFile(this.currentFile);
+    }
   }
 
   upload() {
