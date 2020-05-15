@@ -20,8 +20,10 @@ namespace Episememe.Application.Features.FileUpload
 
         public static FileUploadCommand Create(IFormFile? formFile, IEnumerable<string>? tags, string? authorId)
         {
-            if (formFile == null || tags == null)
-                throw new ArgumentNullException();
+            if (formFile == null)
+                throw new ArgumentNullException(nameof(formFile));
+            if (tags == null)
+                throw new ArgumentNullException(nameof(tags));
 
             return new FileUploadCommand(formFile, tags, authorId);
         }

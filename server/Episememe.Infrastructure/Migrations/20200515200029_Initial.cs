@@ -26,7 +26,7 @@ namespace Episememe.Infrastructure.Migrations
                     Id = table.Column<string>(nullable: false),
                     Timestamp = table.Column<DateTime>(nullable: false),
                     DataType = table.Column<string>(nullable: false),
-                    AuthorId = table.Column<string>(nullable: false)
+                    AuthorId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {

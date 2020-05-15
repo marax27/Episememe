@@ -1,4 +1,5 @@
-﻿using Episememe.Application.Interfaces;
+﻿using Episememe.Application.Exceptions;
+using Episememe.Application.Interfaces;
 using Episememe.Domain.Entities;
 using Episememe.Domain.HelperEntities;
 using MediatR;
@@ -30,10 +31,28 @@ namespace Episememe.Application.Features.FileUpload
 
         public async Task<Unit> Handle(FileUploadCommand request, CancellationToken cancellationToken)
         {
-            var instanceId = GenerateMediaInstanceId();
             var extension = Path.GetExtension(request.FormFile.FileName);
-            var dataType = extension.Length > 0 ? extension.Substring(1) : string.Empty;
-            await CreateMediaFile(instanceId, dataType, request.Tags, request.AuthorId, request.FormFile);
+            var dataType = extension.Length > 1 ? extension.Substring(1) : string.Empty;
+
+            var remainingTries = 5;
+            var hasBeenCreated = false;
+            do
+            {
+                if (remainingTries == 0)
+                    throw new TimeoutException(nameof(remainingTries));
+
+                var instanceId = GenerateMediaInstanceId();
+                try
+                {
+                    await CreateMediaFile(instanceId, dataType, request.Tags, request.AuthorId, request.FormFile);
+                    hasBeenCreated = true;
+                }
+                catch (FileExistsException)
+                {
+                    --remainingTries;
+                }
+
+            } while (hasBeenCreated == false);
 
             return Unit.Value;
         }
@@ -49,7 +68,7 @@ namespace Episememe.Application.Features.FileUpload
                 await CreateMediaInstanceInDatabase(instanceId, dataType, tags, authorId);
                 await transaction.Result.CommitAsync(CancellationToken.None);
             }
-            catch (Exception)
+            catch
             {
                 await transaction.Result.RollbackAsync(CancellationToken.None);
                 _fileStorage.Delete(instanceId);
