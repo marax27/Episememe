@@ -1,5 +1,5 @@
 <template>
-  <v-autocomplete
+  <v-combobox
     v-model='selectedItems'
     :items='allItems'
     :search-input.sync='userInput'
@@ -7,7 +7,7 @@
     outlined dense multiple
     item-text='description'
     item-value='name'
-    return-object
+    :return-object='false'
     label='Search'>
 
     <template v-slot:selection='data'>
@@ -20,7 +20,7 @@
         @click='handleItemClick(data.item, $event); data.select($event)'
         @click:close='remove(data.item)'>
 
-        <v-icon small left>mdi-tag</v-icon> {{ data.item.name }}
+        <v-icon small left>mdi-tag</v-icon> {{ data.item }}
       </v-chip>
     </template>
 
@@ -36,7 +36,7 @@
       </template>
     </template>
 
-  </v-autocomplete>
+  </v-combobox>
 </template>
 
 <script lang='ts'>
@@ -45,38 +45,39 @@ import { ITag } from '../../shared/models/ITag';
 
 @Component
 export default class TagInputField extends Vue {
-  selectedItems: ITag[] = [];
+  selectedItems: string[] = [];
   excludedTagNames: string[] = [];
   userInput = '';
 
   get allItems(): ITag[] {
-    return this.$store.getters.allTags;
+    const tags: ITag[] = this.$store.getters.allTags;
+    return tags.sort((a, b) => a.name.localeCompare(b.name));
   }
 
-  isExcluded(item: ITag): boolean {
-    return this.excludedTagNames.includes(item.name);
+  isExcluded(item: string): boolean {
+    return this.excludedTagNames.includes(item);
   }
 
-  handleItemClick(item: ITag) {
-    const index = this.excludedTagNames.indexOf(item.name);
+  handleItemClick(item: string) {
+    const index = this.excludedTagNames.indexOf(item);
     if (index === -1)
-      this.excludedTagNames.push(item.name);
+      this.excludedTagNames.push(item);
     else
       this.excludedTagNames.splice(index, 1);
   }
 
-  remove(item: ITag) {
-    const index = this.selectedItems.findIndex(x => x.name === item.name);
+  remove(item: string) {
+    const index = this.selectedItems.findIndex(x => x === item);
     if (index >= 0)
       this.selectedItems.splice(index, 1);
 
-    const excludeIndex = this.excludedTagNames.indexOf(item.name);
+    const excludeIndex = this.excludedTagNames.indexOf(item);
     if (excludeIndex >= 0)
       this.excludedTagNames.splice(excludeIndex, 1);
   }
 
   @Watch('selectedItems')
-  onSelectedItemsChange(value: ITag[]) {
+  onSelectedItemsChange(value: string[]) {
     this.userInput = '';
     this._emitItems();
   }
@@ -87,10 +88,9 @@ export default class TagInputField extends Vue {
   }
 
   private _emitItems() {
-    const selectedNames = this.selectedItems.map(tag => tag.name);
     const excludedNames = this.excludedTagNames
-      .filter(name => selectedNames.includes(name));
-    const includedNames = selectedNames
+      .filter(name => this.selectedItems.includes(name));
+    const includedNames = this.selectedItems
       .filter(name => !excludedNames.includes(name));
 
     this.$emit('changeInclude', includedNames);

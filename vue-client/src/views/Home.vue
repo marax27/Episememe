@@ -1,17 +1,6 @@
 <template>
   <ContentWrapper>
-    <SearchPanel @submit='onSubmit'></SearchPanel>
-
-    <v-snackbar
-      v-model='errorSnackbarIsOpen'
-      :timeout='3000'>
-      Failed to retrieve data from the server. Try again later.
-      <v-btn
-        text color='error'
-        @click='errorSnackbarIsOpen = false;'>
-        Close
-      </v-btn>
-    </v-snackbar>
+    <SearchPanel :loading='searchInProgress' @submit='onSubmit'></SearchPanel>
   </ContentWrapper>
 </template>
 
@@ -34,7 +23,7 @@ import { ITag } from '../shared/models/ITag';
 })
 export default class Home extends Mixins(ApiClientService) {
 
-  errorSnackbarIsOpen = false;
+  searchInProgress = false;
 
   created() {
     if (this.$store.state.tags == null) {
@@ -44,6 +33,8 @@ export default class Home extends Mixins(ApiClientService) {
 
   onSubmit(specification: ISearchSpecification) {
     const galleryData = this.createGalleryData(specification);
+
+    this.searchInProgress = true;
     this.refreshBrowseToken(() => {
       router.push({ name: 'Gallery', params: { data: galleryData } });
     });
@@ -60,7 +51,7 @@ export default class Home extends Mixins(ApiClientService) {
         if (this.$store.state.browseToken != null) {
           afterCompletion();
         } else {
-          this.errorSnackbarIsOpen = true;
+          this.reportError();
         }
       });
   }
@@ -68,7 +59,11 @@ export default class Home extends Mixins(ApiClientService) {
   private loadTags() {
     this.$api.get<ITag[]>('tags')
       .then(response => { this.$store.dispatch('updateTags', response.data); })
-      .catch(err => this.errorSnackbarIsOpen = true);
+      .catch(err => this.reportError());
+  }
+
+  private reportError() {
+    this.$store.dispatch('reportError', 'Failed to retrieve data from the server.');
   }
 
   private createGalleryData(specification: ISearchSpecification): string {

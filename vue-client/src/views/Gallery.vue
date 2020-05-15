@@ -2,17 +2,6 @@
   <div class='wrapper'>
     <MediaGallery :instances='mediaInstances'></MediaGallery>
     <SettingsMenu></SettingsMenu>
-
-    <v-snackbar
-      v-model='errorSnackbarIsOpen'
-      :timeout='3000'>
-      Failed to load the media. Try again later.
-      <v-btn
-        text color='error'
-        @click='errorSnackbarIsOpen = false;'>
-        Close
-      </v-btn>
-    </v-snackbar>
   </div>
 </template>
 
@@ -31,15 +20,13 @@ import ApiClientService from '../shared/mixins/api-client/api-client.service';
 })
 export default class Gallery extends Mixins(ApiClientService) {
 
-  errorSnackbarIsOpen = false;
-
   mediaInstances: IMediaInstance[] = [];
 
   created() {
     this.$api.get<IMediaInstance[]>(`media?q=${this.galleryData}`)
       .then(response => this.mediaInstances = response.data)
       .catch(err => {
-        this.errorSnackbarIsOpen = true;
+        this.$store.dispatch('reportError', 'Failed to load the media.');
       });
   }
 

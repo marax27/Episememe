@@ -6,7 +6,8 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     browseToken: '',
-    tags: null
+    tags: null,
+    errorMessage: null
   },
   mutations: {
     setBrowseToken(state, newToken) {
@@ -14,6 +15,9 @@ export default new Vuex.Store({
     },
     setTags(state, newTags) {
       Vue.set(state, 'tags', newTags);
+    },
+    setErrorMessage(state, newMessage) {
+      Vue.set(state, 'errorMessage', newMessage);
     }
   },
   actions: {
@@ -22,6 +26,12 @@ export default new Vuex.Store({
     },
     updateTags({ commit }, tags) {
       commit('setTags', tags);
+    },
+    reportError({ commit }, message) {
+      commit('setErrorMessage', message);
+    },
+    clearError({ commit }) {
+      commit('setErrorMessage', null)
     }
   },
   getters: {
