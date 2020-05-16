@@ -1,11 +1,11 @@
 <template>
   <v-combobox
     v-model='selectedItems'
-    :items='allItems'
+    :items='allTags'
     :search-input.sync='userInput'
     prepend-icon='mdi-magnify'
-    outlined dense multiple
-    item-text='description'
+    outlined multiple
+    item-text='fullName'
     item-value='name'
     :return-object='false'
     label='Search'>
@@ -40,19 +40,15 @@
 </template>
 
 <script lang='ts'>
-import { Component, Vue, Watch } from 'vue-property-decorator';
+import { Component, Watch, Mixins } from 'vue-property-decorator';
 import { ITag } from '../../shared/models/ITag';
+import TagsProviderService from '../../tags/mixins/tags-provider.service';
 
 @Component
-export default class TagInputField extends Vue {
+export default class TagInputField extends Mixins(TagsProviderService) {
   selectedItems: string[] = [];
   excludedTagNames: string[] = [];
   userInput = '';
-
-  get allItems(): ITag[] {
-    const tags: ITag[] = this.$store.getters.allTags;
-    return tags.sort((a, b) => a.name.localeCompare(b.name));
-  }
 
   isExcluded(item: string): boolean {
     return this.excludedTagNames.includes(item);

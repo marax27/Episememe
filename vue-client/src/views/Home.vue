@@ -25,12 +25,6 @@ export default class Home extends Mixins(ApiClientService) {
 
   searchInProgress = false;
 
-  created() {
-    if (this.$store.state.tags == null) {
-      this.loadTags();
-    }
-  }
-
   onSubmit(specification: ISearchSpecification) {
     const galleryData = this.createGalleryData(specification);
 
@@ -54,12 +48,6 @@ export default class Home extends Mixins(ApiClientService) {
           this.reportError();
         }
       });
-  }
-
-  private loadTags() {
-    this.$api.get<ITag[]>('tags')
-      .then(response => { this.$store.dispatch('updateTags', response.data); })
-      .catch(err => this.reportError());
   }
 
   private reportError() {

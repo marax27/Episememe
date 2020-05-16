@@ -5,7 +5,7 @@ namespace Episememe.Application.DataTransfer
 {
     public class FileUploadDto
     {
-        public IFormFile? FormFile { get; set; }
-        public IEnumerable<string>? Tags { get; set; }
+        public IFormFile? File { get; set; }
+        public string? Tags { get; set; }
     }
 }

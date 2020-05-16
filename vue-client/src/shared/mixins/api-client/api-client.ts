@@ -5,32 +5,32 @@ export default class ApiClient {
     private _auth: any,
     private _apiUrl: string) {}
 
-  public async get<T>(resource: string): Promise<AxiosResponse<T>> {
-    const config = await this.getConfig();
+  public async get<T>(resource: string, extraHeaders: {[key: string]: string} = {}): Promise<AxiosResponse<T>> {
+    const config = await this.getConfig(extraHeaders);
     const url = this.getUrl(resource);
     return axios.get<T>(url, config);
   }
 
-  public async delete<T>(resource: string): Promise<AxiosResponse<T>> {
-    const config = await this.getConfig();
+  public async delete<T>(resource: string, extraHeaders: {[key: string]: string} = {}): Promise<AxiosResponse<T>> {
+    const config = await this.getConfig(extraHeaders);
     const url = this.getUrl(resource);
     return axios.delete<T>(url, config);
   }
 
-  public async post<T>(resource: string, data: any): Promise<AxiosResponse<T>> {
-    const config = await this.getConfig();
+  public async post<T>(resource: string, data: any, extraHeaders: {[key: string]: string} = {}): Promise<AxiosResponse<T>> {
+    const config = await this.getConfig(extraHeaders);
     const url = this.getUrl(resource);
     return axios.post<T>(url, data, config);
   }
 
-  public async put<T>(resource: string, data: any): Promise<AxiosResponse<T>> {
-    const config = await this.getConfig();
+  public async put<T>(resource: string, data: any, extraHeaders: {[key: string]: string} = {}): Promise<AxiosResponse<T>> {
+    const config = await this.getConfig(extraHeaders);
     const url = this.getUrl(resource);
     return axios.put<T>(url, data, config);
   }
 
-  public async patch<T>(resource: string, data: any): Promise<AxiosResponse<T>> {
-    const config = await this.getConfig();
+  public async patch<T>(resource: string, data: any, extraHeaders: {[key: string]: string} = {}): Promise<AxiosResponse<T>> {
+    const config = await this.getConfig(extraHeaders);
     const url = this.getUrl(resource);
     return axios.patch<T>(url, data, config);
   }
@@ -47,13 +47,15 @@ export default class ApiClient {
     return `${this._apiUrl}/${apiResource}`;
   }
 
-  private async getConfig(): Promise<AxiosRequestConfig> {
+  private async getConfig(extraHeaders: {[key: string]: string}): Promise<AxiosRequestConfig> {
     const token = await this._auth.getTokenSilently();
-    return {
+    const config = {
       headers: {
         Authorization: `Bearer ${token}`
       },
       timeout: 5000
     };
+    config.headers = {...config.headers, ...extraHeaders};
+    return config;
   }
 }

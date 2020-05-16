@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Episememe.Api.Utilities;
 using Episememe.Application.DataTransfer;
 using Episememe.Application.Features.FileMedia;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Episememe.Api.Controllers
 {
@@ -43,8 +45,9 @@ namespace Episememe.Api.Controllers
         [Route("files")]
         public async Task<IActionResult> UploadNewFile([FromForm] FileUploadDto fileUploadDto)
         {
+            var tagNames = JsonConvert.DeserializeObject<IEnumerable<string>>(fileUploadDto.Tags);
             var user = User.GetUserId();
-            var fileUploadCommand = FileUploadCommand.Create(fileUploadDto.FormFile, fileUploadDto.Tags, user);
+            var fileUploadCommand = FileUploadCommand.Create(fileUploadDto.File, tagNames, user);
             await _mediator.Send(fileUploadCommand);
 
             return StatusCode(201);
