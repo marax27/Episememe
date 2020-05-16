@@ -1,4 +1,8 @@
 
+html {
+    overflow: auto;
+}
+
 .left {
     float: left;
 }
