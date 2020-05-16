@@ -4,7 +4,7 @@
     :items='allTags'
     :search-input.sync='userInput'
     outlined multiple
-    item-text='description'
+    item-text='fullName'
     item-value='name'
     :return-object='false'
     label='Media tags'>

@@ -5,7 +5,7 @@
     :search-input.sync='userInput'
     prepend-icon='mdi-magnify'
     outlined multiple
-    item-text='description'
+    item-text='fullName'
     item-value='name'
     :return-object='false'
     label='Search'>

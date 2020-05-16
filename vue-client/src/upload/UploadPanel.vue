@@ -64,13 +64,14 @@
 import { Component, Mixins } from 'vue-property-decorator';
 import ApiClientService from '../shared/mixins/api-client/api-client.service';
 import BasicTagPicker from '../tags/components/BasicTagPicker.vue';
+import TagsProviderService from '../tags/mixins/tags-provider.service';
 
 @Component({
   components: {
     BasicTagPicker
   }
 })
-export default class UploadPanel extends Mixins(ApiClientService) {
+export default class UploadPanel extends Mixins(ApiClientService, TagsProviderService) {
 
   currentFile: File | null = null;
   tagNames: string[] = [];
@@ -102,6 +103,7 @@ export default class UploadPanel extends Mixins(ApiClientService) {
         this.uploadInProgress = false;
         this.currentFile = null;
         this.uploadButtonLabel = 'Uploaded';
+        this.refreshTags();
       })
       .catch(err => {
         this.uploadInProgress = false;
