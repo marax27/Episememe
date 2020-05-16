@@ -90,7 +90,8 @@ export default class UploadPanel extends Mixins(ApiClientService) {
 
   upload() {
     const data = new FormData();
-    data.append('file', this.currentFile as any);
+    data.append('File', this.currentFile as any);
+    data.append('Tags', JSON.stringify(this.tagNames));
     const headers = { 'Content-Type': 'multipart/form-data' };
 
     this.uploadInProgress = true;
