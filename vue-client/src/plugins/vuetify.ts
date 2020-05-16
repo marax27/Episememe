@@ -3,7 +3,7 @@ import Vuetify from 'vuetify/lib';
 import colors from 'vuetify/lib/util/colors';
 
 const darkColorPalette = {
-    primary: '#895cbf',
+    primary: '#7462b5',
     secondary: '#424242',
     accent: '#ffbf00',
     info: '#2c75e3',
