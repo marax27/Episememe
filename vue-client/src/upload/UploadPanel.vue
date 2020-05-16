@@ -51,7 +51,7 @@
               class='secondary-column-field'
               @click='upload'>
 
-              <v-icon left>mdi-upload</v-icon> Upload
+              <v-icon left>mdi-upload</v-icon> {{ uploadButtonLabel }}
             </v-btn>
           </div>
         </v-col>
@@ -75,6 +75,7 @@ export default class UploadPanel extends Mixins(ApiClientService) {
   currentFile: File | null = null;
   tagNames: string[] = [];
   uploadInProgress = false;
+  uploadButtonLabel = 'Upload';
 
   handleNewFile() {
     const fe = this.$refs.fileUpload as HTMLInputElement;
@@ -82,6 +83,7 @@ export default class UploadPanel extends Mixins(ApiClientService) {
       return;
     }
     this.currentFile = fe.files[0];
+    this.uploadButtonLabel = 'Upload';
   }
 
   isFileProvided(): boolean {
@@ -98,7 +100,8 @@ export default class UploadPanel extends Mixins(ApiClientService) {
     this.$api.post<any>('files', data, headers)
       .then(response => {
         this.uploadInProgress = false;
-        return undefined;
+        this.currentFile = null;
+        this.uploadButtonLabel = 'Uploaded';
       })
       .catch(err => {
         this.uploadInProgress = false;
