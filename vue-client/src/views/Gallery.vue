@@ -1,13 +1,19 @@
 <template>
   <div class='wrapper'>
     <MediaGallery :instances='mediaInstances'></MediaGallery>
-    <SettingsMenu></SettingsMenu>
+    <SettingsMenu
+      @revise='isOpen = true'>
+    </SettingsMenu>
+    <RevisionPopup
+      v-model='isOpen'>
+    </RevisionPopup>
   </div>
 </template>
 
 <script lang='ts'>
 import { Component, Vue, Mixins } from 'vue-property-decorator';
 import MediaGallery from '@/browsing/media-gallery/MediaGallery.vue';
+import RevisionPopup from '@/browsing/revision-popup/RevisionPopup.vue';
 import SettingsMenu from '@/browsing/SettingsMenu.vue';
 import { IMediaInstance } from '../shared/models/IMediaInstance';
 import ApiClientService from '../shared/mixins/api-client/api-client.service';
@@ -15,12 +21,15 @@ import ApiClientService from '../shared/mixins/api-client/api-client.service';
 @Component({
   components: {
     MediaGallery,
-    SettingsMenu
+    SettingsMenu,
+    RevisionPopup,
   }
 })
 export default class Gallery extends Mixins(ApiClientService) {
 
   mediaInstances: IMediaInstance[] = [];
+
+  isOpen = false;
 
   created() {
     this.$api.get<IMediaInstance[]>(`media?q=${this.galleryData}`)

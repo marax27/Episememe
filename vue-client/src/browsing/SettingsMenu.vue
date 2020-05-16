@@ -31,7 +31,7 @@ import { Component, Vue } from 'vue-property-decorator';
 @Component
 export default class SettingsMenu extends Vue {
   menuButtons = [
-    { name: 'Revise', icon: 'mdi-pencil', callback: this.foo },
+    { name: 'Revise', icon: 'mdi-square-edit-outline', callback: this.startRevision },
     { name: 'Favourite', icon: 'mdi-star', callback: this.foo },
     { name: 'Hide', icon: 'mdi-eye-off', callback: this.foo },
     { name: 'Volume', icon: 'mdi-volume-high', callback: this.foo },
@@ -43,9 +43,9 @@ export default class SettingsMenu extends Vue {
   foo() {
     return undefined;
   }
+
+  startRevision() {
+    this.$emit('revise');
+  }
 }
 </script>
-
-<style scoped>
-
-</style>
