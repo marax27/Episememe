@@ -1,3 +1,4 @@
+using Episememe.Application.Exceptions;
 using Episememe.Application.Features.UpdateTags;
 using Episememe.Application.Interfaces;
 using Episememe.Domain.Entities;
@@ -47,9 +48,9 @@ namespace Episememe.Application.Tests.FeatureTests.FileRevision
             var command = UpdateTagsCommand.Create("xdxdxdxd", Tags);
             var handler = new UpdateTagsCommandHandler(_contextMock);
             
-            Exception ex = Assert.Throws<AggregateException>(() => handler.Handle(command, CancellationToken.None).Wait());
+            Action act = () => handler.Handle(command, CancellationToken.None).Wait();
 
-            Assert.Equal("File not found", ex.Message);
+            act.Should().Throw<FileDoesNotExistException>();
         }
 
         private (IWritableApplicationContext, DbConnection) GetInMemoryDatabaseContext()
