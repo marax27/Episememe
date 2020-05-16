@@ -8,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
-using System;
 
 namespace Episememe.Api.Controllers
 {
@@ -38,10 +37,12 @@ namespace Episememe.Api.Controllers
 
         [HttpPost]
         [Route("revision")]
-        public async Task UpdateTagsList([FromForm] TagsUpdateDto ListOfTags)
+        public async Task<IActionResult> UpdateTagsList([FromForm] TagsUpdateDto ListOfTags)
         {
             var command = UpdateTagsCommand.Create(ListOfTags.FileId!, ListOfTags.Tags!);
             await _mediator.Send(command);
+
+            return StatusCode(201);
         }
     }
 }

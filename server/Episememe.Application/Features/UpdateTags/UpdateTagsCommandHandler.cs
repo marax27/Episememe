@@ -1,34 +1,35 @@
 using MediatR;
 using Episememe.Application.Interfaces;
+using Episememe.Application.Exceptions;
 using System.Linq;
 using System.Collections.Generic;
 using Episememe.Domain.Entities;
 using Episememe.Domain.HelperEntities;
 using Microsoft.EntityFrameworkCore;
 using System;
-
-
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Episememe.Application.Features.UpdateTags
 {
-    public class UpdateTagsCommandHandler : RequestHandler<UpdateTagsCommand>
+    public class UpdateTagsCommandHandler : IRequestHandler<UpdateTagsCommand>
     {
         private readonly IWritableApplicationContext _context;
 
         public UpdateTagsCommandHandler(IWritableApplicationContext context)
             => _context = context;
 
-        protected override void Handle(UpdateTagsCommand request)
+        public async Task<Unit> Handle(UpdateTagsCommand request, CancellationToken cancellationToken)
         {
             MediaInstance editedInstance;
             try 
             {
-                editedInstance = _context.MediaInstances
+                editedInstance = await _context.MediaInstances
                 .Include(mi => mi.MediaTags)
-                .Single(a => a.Id == request.Id);
+                .SingleAsync(a => a.Id == request.Id);
             }
             catch (Exception){
-                throw new ArgumentNullException();
+                throw new FileDoesNotExistException("File not found");
             }
 
             ICollection<MediaTag> mediaTags = ConvertStringsToTags(request.Tags, editedInstance)
@@ -39,8 +40,12 @@ namespace Episememe.Application.Features.UpdateTags
             }).ToList();
 
             editedInstance.MediaTags = mediaTags;
-            _context.SaveChanges();
+            await _context.SaveChangesAsync(cancellationToken);
+
+            return Unit.Value;
         }
+
+        
 
         private IEnumerable<Tag> ConvertStringsToTags(IEnumerable<string> stringTags, MediaInstance media)
         {
