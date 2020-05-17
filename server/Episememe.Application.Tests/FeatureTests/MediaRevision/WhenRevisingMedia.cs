@@ -16,12 +16,12 @@ using Xunit;
 
 namespace Episememe.Application.Tests.FeatureTests.FileRevision
 {
-    public class WhenUploadingFile : IDisposable
+    public class WhenRevisiogMedia : IDisposable
     {
         private readonly IWritableApplicationContext _contextMock;
         private readonly DbConnection _connection;
 
-        public WhenUploadingFile()
+        public WhenRevisiogMedia()
         {
             (_contextMock, _connection) = GetInMemoryDatabaseContext();
         }

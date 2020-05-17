@@ -45,8 +45,6 @@ namespace Episememe.Application.Features.UpdateTags
             return Unit.Value;
         }
 
-        
-
         private IEnumerable<Tag> ConvertStringsToTags(IEnumerable<string> stringTags, MediaInstance media)
         {
             var tagNames = _context.Tags.Select(t => t.Name);

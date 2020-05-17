@@ -35,14 +35,14 @@ namespace Episememe.Api.Controllers
             return result;
         }
 
-        [HttpPost]
-        [Route("revision")]
-        public async Task<IActionResult> UpdateTagsList([FromForm] TagsUpdateDto ListOfTags)
+        [HttpPatch]
+        [Route("revision{id}")]
+        public async Task<IActionResult> UpdateTagsList(string id, [FromForm] TagsUpdateDto ListOfTags)
         {
-            var command = UpdateTagsCommand.Create(ListOfTags.FileId!, ListOfTags.Tags!);
+            var command = UpdateTagsCommand.Create(id!, ListOfTags.Tags!);
             await _mediator.Send(command);
 
-            return StatusCode(201);
+            return StatusCode(204);
         }
     }
 }

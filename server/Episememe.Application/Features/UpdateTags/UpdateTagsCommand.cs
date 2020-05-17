@@ -9,7 +9,6 @@ namespace Episememe.Application.Features.UpdateTags
         public string Id { get; }
         public IEnumerable<string> Tags { get; }
     
-
         private UpdateTagsCommand(string id, IEnumerable<string> tags)
         {
             Id = id;
@@ -18,8 +17,10 @@ namespace Episememe.Application.Features.UpdateTags
 
         public static UpdateTagsCommand Create(string id, IEnumerable<string> tags)
         {
-            if (id == null || tags == null)
-                throw new ArgumentNullException();
+            if (id == null)
+                throw new ArgumentNullException(nameof(id));
+            if (tags == null)
+                throw new ArgumentNullException(nameof(tags));
             return new UpdateTagsCommand(id, tags);
         }
     }
