@@ -16,18 +16,18 @@ using Xunit;
 
 namespace Episememe.Application.Tests.FeatureTests.FileRevision
 {
-    public class WhenRevisiogMedia : IDisposable
+    public class WhenRevisingMedia : IDisposable
     {
         private readonly IWritableApplicationContext _contextMock;
         private readonly DbConnection _connection;
 
-        public WhenRevisiogMedia()
+        public WhenRevisingMedia()
         {
             (_contextMock, _connection) = GetInMemoryDatabaseContext();
         }
 
         [Fact]
-        public void SwapTagsInInstance()
+        public void GivenMediaTagsAreUpdated_ThenExpectedMediaTagsAreInDatabase ()
         {
             var Tags = new List<string> 
             {"sword", "shield", "minimini"};
@@ -40,7 +40,7 @@ namespace Episememe.Application.Tests.FeatureTests.FileRevision
         }
 
         [Fact]
-        public void TryEditNonexistentFile()
+        public void GivenNonexistentFileID_ThenExceptionExpected()
         {
             var Tags = new List<string> 
             {"sword", "shield", "minimini"};
@@ -51,6 +51,17 @@ namespace Episememe.Application.Tests.FeatureTests.FileRevision
             Action act = () => handler.Handle(command, CancellationToken.None).Wait();
 
             act.Should().Throw<FileDoesNotExistException>();
+        }
+
+        [Fact]
+        public void GivenEmptyTagsList_ThenFileDoesNotHaveTags()
+        {
+            var Tags = new List<string> {};
+
+            var command = UpdateTagsCommand.Create("xdxdxdxd", Tags);
+            var handler = new UpdateTagsCommandHandler(_contextMock);
+            
+            _contextMock.MediaInstances.Single().MediaTags.Select(t => t.Tag.Name).Should().BeEquivalentTo(Tags);
         }
 
         private (IWritableApplicationContext, DbConnection) GetInMemoryDatabaseContext()
