@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model='isOpen' width='70%'>
+  <v-dialog v-model='isOpen' width='70%' eager>
 
     <v-card>
       <v-card-title>
@@ -39,7 +39,7 @@
 </template>
 
 <script lang='ts'>
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import BasicTagPicker from '@/tags/components/BasicTagPicker.vue';
 import { IMediaInstance } from '../../shared/models/IMediaInstance';
 
@@ -50,10 +50,6 @@ import { IMediaInstance } from '../../shared/models/IMediaInstance';
 })
 export default class RevisionPopup extends Vue {
 
-  get currentInstance(): IMediaInstance {
-    return this.$store.state.gallery.currentMediaInstance;
-  }
-
   @Prop({ default: false })
   value!: boolean;
 
@@ -62,13 +58,27 @@ export default class RevisionPopup extends Vue {
   get isOpen(): boolean {
     return this.value;
   }
-
   set isOpen(newValue: boolean) {
     this.$emit('input', newValue);
   }
 
+  get currentInstance(): IMediaInstance {
+    return this.$store.state.gallery.currentMediaInstance;
+  }
+
   close() {
     this.isOpen = false;
+  }
+
+  @Watch('value')
+  private onValueChange(newValue: boolean) {
+    if (newValue) {
+      this.loadInitialTags();
+    }
+  }
+
+  private loadInitialTags() {
+    this.tagNames = [...this.currentInstance.tags];
   }
 }
 </script>
