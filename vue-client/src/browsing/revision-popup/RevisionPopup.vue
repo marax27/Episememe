@@ -1,5 +1,9 @@
 <template>
-  <v-dialog v-model='isOpen' width='70%' eager>
+  <v-dialog
+    v-model='isOpen'
+    width='70%'
+    persistent
+    eager>
 
     <v-card>
       <v-card-title>
