@@ -41,6 +41,7 @@
 <script lang='ts'>
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import BasicTagPicker from '@/tags/components/BasicTagPicker.vue';
+import { IMediaInstance } from '../../shared/models/IMediaInstance';
 
 @Component({
   components: {
@@ -48,6 +49,10 @@ import BasicTagPicker from '@/tags/components/BasicTagPicker.vue';
   }
 })
 export default class RevisionPopup extends Vue {
+
+  get currentInstance(): IMediaInstance {
+    return this.$store.state.gallery.currentMediaInstance;
+  }
 
   @Prop({ default: false })
   value!: boolean;
