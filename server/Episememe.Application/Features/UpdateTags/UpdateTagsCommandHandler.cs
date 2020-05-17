@@ -29,7 +29,7 @@ namespace Episememe.Application.Features.UpdateTags
                 .SingleAsync(a => a.Id == request.Id);
             }
             catch (Exception){
-                throw new FileDoesNotExistException("File not found");
+                throw new ArgumentException("File not found");
             }
 
             ICollection<MediaTag> mediaTags = ConvertStringsToTags(request.Tags, editedInstance)

@@ -40,7 +40,7 @@ namespace Episememe.Application.Tests.FeatureTests.FileRevision
         }
 
         [Fact]
-        public void GivenNonexistentFileID_ThenExceptionExpected()
+        public void GivenNonexistentFileID_ThenArgumentExcpetionThrown()
         {
             var Tags = new List<string> 
             {"sword", "shield", "minimini"};
@@ -50,18 +50,16 @@ namespace Episememe.Application.Tests.FeatureTests.FileRevision
             
             Action act = () => handler.Handle(command, CancellationToken.None).Wait();
 
-            act.Should().Throw<FileDoesNotExistException>();
+            act.Should().Throw<ArgumentException>();
         }
 
         [Fact]
-        public void GivenEmptyTagsList_ThenFileDoesNotHaveTags()
+        public void GivenEmptyTagsList_ThenArgumentNullExcpetionThrown()
         {
-            var Tags = new List<string> {};
-
-            var command = UpdateTagsCommand.Create("xdxdxdxd", Tags);
-            var handler = new UpdateTagsCommandHandler(_contextMock);
+            var Tags = new List<string> {};            
+            Action act = () => UpdateTagsCommand.Create("k8wetest", Tags);
             
-            _contextMock.MediaInstances.Single().MediaTags.Select(t => t.Tag.Name).Should().BeEquivalentTo(Tags);
+            act.Should().Throw<ArgumentNullException>();
         }
 
         private (IWritableApplicationContext, DbConnection) GetInMemoryDatabaseContext()
