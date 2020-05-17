@@ -29,6 +29,12 @@
           <v-icon left>mdi-close</v-icon> Close
         </v-btn>
 
+        <v-btn
+          color='secondary'
+          @click='reset'>
+          <v-icon>mdi-restart</v-icon> Reset tags
+        </v-btn>
+
         <v-spacer></v-spacer>
 
         <v-btn
@@ -68,6 +74,10 @@ export default class RevisionPopup extends Vue {
 
   get currentInstance(): IMediaInstance {
     return this.$store.state.gallery.currentMediaInstance;
+  }
+
+  reset() {
+    this.loadInitialTags();
   }
 
   close() {
