@@ -39,7 +39,7 @@
 
         <v-btn
           color='primary'
-          @click='close'>
+          @click='submit'>
           <v-icon left>mdi-square-edit-outline</v-icon> Submit
         </v-btn>
       </v-card-actions>
@@ -49,16 +49,17 @@
 </template>
 
 <script lang='ts'>
-import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
+import { Component, Prop, Watch, Mixins } from 'vue-property-decorator';
 import BasicTagPicker from '@/tags/components/BasicTagPicker.vue';
 import { IMediaInstance } from '../../shared/models/IMediaInstance';
+import ApiClientService from '../../shared/mixins/api-client/api-client.service';
 
 @Component({
   components: {
     BasicTagPicker
   }
 })
-export default class RevisionPopup extends Vue {
+export default class RevisionPopup extends Mixins(ApiClientService) {
 
   @Prop({ default: false })
   value!: boolean;
@@ -82,6 +83,21 @@ export default class RevisionPopup extends Vue {
 
   close() {
     this.isOpen = false;
+  }
+
+  submit() {
+    const data = new FormData();
+    data.append('Tags', JSON.stringify(this.tagNames));
+    const mediaId = this.currentInstance.id;
+    const headers = { 'Content-Type': 'multipart/form-data' };
+
+    this.$api.patch<any>(`media/${mediaId}`, data, headers)
+      .then(response => {
+        this.close();
+      })
+      .catch(err => {
+        this.$store.dispatch('reportError', 'Failed to complete the revision.');
+      });
   }
 
   @Watch('value')

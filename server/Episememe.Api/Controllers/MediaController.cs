@@ -36,7 +36,7 @@ namespace Episememe.Api.Controllers
         }
 
         [HttpPatch]
-        [Route("revision/{id}")]
+        [Route("media/{id}")]
         public async Task<IActionResult> UpdateTagsList(string id, [FromForm] TagsUpdateDto ListOfTags)
         {
             var tagNames = JsonConvert.DeserializeObject<IEnumerable<string>>(ListOfTags.Tags);
