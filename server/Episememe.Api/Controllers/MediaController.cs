@@ -1,5 +1,6 @@
 ﻿using Episememe.Application.DataTransfer;
 using Episememe.Application.Features.SearchMedia;
+using Episememe.Application.Features.UpdateTags;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -32,6 +33,17 @@ namespace Episememe.Api.Controllers
             var query = SearchMediaQuery.Create(searchMediaDto);
             var result = await _mediator.Send(query);
             return result;
+        }
+
+        [HttpPatch]
+        [Route("revision/{id}")]
+        public async Task<IActionResult> UpdateTagsList(string id, [FromForm] TagsUpdateDto ListOfTags)
+        {
+            var tagNames = JsonConvert.DeserializeObject<IEnumerable<string>>(ListOfTags.Tags);
+            var command = UpdateTagsCommand.Create(id, tagNames);
+            await _mediator.Send(command);
+
+            return StatusCode(204);
         }
     }
 }
