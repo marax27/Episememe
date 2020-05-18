@@ -1,4 +1,4 @@
-import { ITagsDeduction } from './ITagsDeduction';
+import { ITagsDeduction } from '../ITagsDeduction';
 import { ITag } from '@/shared/models/ITag';
 
 export class BasicTagsDeduction implements ITagsDeduction {
@@ -6,7 +6,8 @@ export class BasicTagsDeduction implements ITagsDeduction {
   public deduceFrom(text: string, knownTags: ITag[]): string[] {
     const parts = text
       .split(' ')
-      .map(s => s.split('-').join(' '));
+      .map(s => s.split('-').join(' '))
+      .filter(s => s.length > 0);
 
     return parts
       .map(s => this.getMatchingTagName(s, knownTags) ?? s);

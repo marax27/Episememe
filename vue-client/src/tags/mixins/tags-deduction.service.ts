@@ -1,7 +1,7 @@
 import { Component, Mixins } from 'vue-property-decorator';
 import TagsProviderService from './tags-provider.service';
 import { ITagsDeduction } from '../deduction/ITagsDeduction';
-import { BasicTagsDeduction } from '../deduction/BasicTagsDeduction';
+import { BasicTagsDeduction } from '../deduction/basic-tags-deduction/BasicTagsDeduction';
 
 @Component
 export default class TagsDeductionService extends Mixins(TagsProviderService) {
