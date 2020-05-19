@@ -17,7 +17,7 @@ namespace Episememe.Application.Tests.FeatureTests.FileUpload
                 "pigeons", "flying rats"
             };
 
-            Action act = () => FileUploadCommand.Create(null, givenTags, string.Empty);
+            Action act = () => FileUploadCommand.Create(null, givenTags, string.Empty, false);
             act.Should().Throw<ArgumentNullException>();
         }
 
@@ -28,7 +28,7 @@ namespace Episememe.Application.Tests.FeatureTests.FileUpload
             var givenFileContent = "None";
             var givenFormFile = FormFileFactory.Create(givenFileName, givenFileContent);
 
-            Action act = () => FileUploadCommand.Create(givenFormFile, null, string.Empty);
+            Action act = () => FileUploadCommand.Create(givenFormFile, null, string.Empty, false);
             act.Should().Throw<ArgumentNullException>();
         }
     }
