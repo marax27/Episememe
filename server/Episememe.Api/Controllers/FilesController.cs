@@ -47,7 +47,7 @@ namespace Episememe.Api.Controllers
         {
             var tagNames = JsonConvert.DeserializeObject<IEnumerable<string>>(fileUploadDto.Tags);
             var user = User.GetUserId();
-            var fileUploadCommand = FileUploadCommand.Create(fileUploadDto.File, tagNames, user);
+            var fileUploadCommand = FileUploadCommand.Create(fileUploadDto.File, tagNames, user, fileUploadDto.IsPrivate);
             await _mediator.Send(fileUploadCommand);
 
             return StatusCode(201);

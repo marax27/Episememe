@@ -7,5 +7,6 @@ namespace Episememe.Application.DataTransfer
     {
         public IFormFile? File { get; set; }
         public string? Tags { get; set; }
+        public bool IsPrivate { get; set; }
     }
 }
