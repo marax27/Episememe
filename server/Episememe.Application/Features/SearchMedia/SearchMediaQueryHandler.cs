@@ -20,7 +20,7 @@ namespace Episememe.Application.Features.SearchMedia
             var mediaInstances = _context.MediaInstances
                 .Include(x => x.MediaTags)
                 .ThenInclude(x => x.Tag);
-            var filteredMedia = new MediaFilter(request.SearchMedia)
+            var filteredMedia = new MediaFilter(request.SearchMediaData)
                 .Filter(mediaInstances)
                 .Select(mi =>
                     new MediaInstanceDto(mi.Id, mi.DataType, mi.MediaTags.Select(mt => mt.Tag.Name))

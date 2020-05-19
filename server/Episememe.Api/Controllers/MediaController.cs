@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
+using Episememe.Api.Utilities;
 
 namespace Episememe.Api.Controllers
 {
@@ -30,7 +31,15 @@ namespace Episememe.Api.Controllers
         public async Task<IEnumerable<MediaInstanceDto>> GetSearchedMedia([FromQuery] string q)
         {
             var searchMediaDto = JsonConvert.DeserializeObject<SearchMediaDto>(q);
-            var query = SearchMediaQuery.Create(searchMediaDto);
+            var searchMediaData = new SearchMediaData()
+            {
+                IncludedTags = searchMediaDto.IncludedTags,
+                ExcludedTags = searchMediaDto.ExcludedTags,
+                TimeRangeStart = searchMediaDto.TimeRangeStart,
+                TimeRangeEnd = searchMediaDto.TimeRangeEnd,
+                UserId = User.GetUserId()
+            };
+            var query = SearchMediaQuery.Create(searchMediaData);
             var result = await _mediator.Send(query);
             return result;
         }
