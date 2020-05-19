@@ -94,6 +94,7 @@ export default class RevisionPopup extends Mixins(ApiClientService, TagsProvider
 
     this.$api.patch<any>(`media/${mediaId}`, data, headers)
       .then(response => {
+        this.updateLocalMediaInstance();
         this.refreshTags();
         this.close();
       })
@@ -111,6 +112,10 @@ export default class RevisionPopup extends Mixins(ApiClientService, TagsProvider
 
   private loadInitialTags() {
     this.tagNames = [...this.currentInstance.tags];
+  }
+
+  private updateLocalMediaInstance() {
+    this.currentInstance.tags = this.tagNames;
   }
 }
 </script>
