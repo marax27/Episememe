@@ -53,13 +53,14 @@ import { Component, Prop, Watch, Mixins } from 'vue-property-decorator';
 import BasicTagPicker from '@/tags/components/BasicTagPicker.vue';
 import { IMediaInstance } from '../../shared/models/IMediaInstance';
 import ApiClientService from '../../shared/mixins/api-client/api-client.service';
+import TagsProviderService from '../../tags/mixins/tags-provider.service';
 
 @Component({
   components: {
     BasicTagPicker
   }
 })
-export default class RevisionPopup extends Mixins(ApiClientService) {
+export default class RevisionPopup extends Mixins(ApiClientService, TagsProviderService) {
 
   @Prop({ default: false })
   value!: boolean;
@@ -93,6 +94,7 @@ export default class RevisionPopup extends Mixins(ApiClientService) {
 
     this.$api.patch<any>(`media/${mediaId}`, data, headers)
       .then(response => {
+        this.refreshTags();
         this.close();
       })
       .catch(err => {
