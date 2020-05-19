@@ -31,13 +31,36 @@
               class='secondary-column-field align-self-stretch'
               color='secondary darken-1'>
 
+              <v-card-title>Properties</v-card-title>
+
               <v-card-text>
                 <v-row columns='12' dense>
+                  <v-col cols='6'>
+                    <v-checkbox
+                      class='ma-0'
+                      v-model='isPrivate'
+                      prepend-icon='mdi-account-lock-outline'
+                      hint='A private file is not available to other users'
+                      persistent-hint
+                      label='Mark as private'>
+                    </v-checkbox>
+                  </v-col>
+                </v-row>
+              </v-card-text>
+            </v-card>
 
+            <v-card
+              :disabled='!isFileProvided()'
+              tile
+              class='secondary-column-field align-self-stretch'
+              color='secondary darken-1'>
+
+
+              <v-card-text>
+                <v-row columns='12' dense>
                   <v-col cols='6'>
                     <DeduceTagsTile @click='deduceTags' />
                   </v-col>
-
                 </v-row>
               </v-card-text>
             </v-card>
@@ -80,6 +103,8 @@ export default class UploadPanel extends Mixins(ApiClientService, TagsDeductionS
   tagNames: string[] = [];
   uploadInProgress = false;
   uploadButtonLabel = 'Upload';
+
+  isPrivate = false;
 
   updateFile(file: File | null) {
     this.currentFile = file;
