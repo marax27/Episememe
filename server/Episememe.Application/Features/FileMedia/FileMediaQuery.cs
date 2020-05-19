@@ -7,23 +7,20 @@ namespace Episememe.Application.Features.FileMedia
     public class FileMediaQuery : IRequest<IActionResult>
     {
         public string Id { get; }
+        public string? UserId { get; }
 
-        private FileMediaQuery(string id)
+        private FileMediaQuery(string id, string? userId)
         {
             Id = id;
+            UserId = userId;
         }
 
-        public static FileMediaQuery Create(string id)
+        public static FileMediaQuery Create(string id, string? userId)
         {
-            ValidateId(id);
-            return new FileMediaQuery(id);
-        }
+            if (string.IsNullOrEmpty(id))
+                throw new ArgumentNullException(nameof(id));
 
-        protected static void ValidateId(string id){
-            if (String.IsNullOrEmpty(id)){
-                throw new ArgumentException();
-            }
+            return new FileMediaQuery(id, userId);
         }
-        
     }
 }

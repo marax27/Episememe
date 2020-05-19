@@ -1,14 +1,14 @@
-﻿using Episememe.Application.DataTransfer;
+﻿using Episememe.Api.Utilities;
+using Episememe.Application.DataTransfer;
 using Episememe.Application.Features.SearchMedia;
 using Episememe.Application.Features.UpdateTags;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using Episememe.Api.Utilities;
 
 namespace Episememe.Api.Controllers
 {
@@ -46,10 +46,10 @@ namespace Episememe.Api.Controllers
 
         [HttpPatch]
         [Route("media/{id}")]
-        public async Task<IActionResult> UpdateTagsList(string id, [FromForm] TagsUpdateDto ListOfTags)
+        public async Task<IActionResult> UpdateTagsList(string id, [FromForm] TagsUpdateDto listOfTags)
         {
-            var tagNames = JsonConvert.DeserializeObject<IEnumerable<string>>(ListOfTags.Tags);
-            var command = UpdateTagsCommand.Create(id, tagNames);
+            var tagNames = JsonConvert.DeserializeObject<IEnumerable<string>>(listOfTags.Tags);
+            var command = UpdateTagsCommand.Create(id, tagNames, User.GetUserId());
             await _mediator.Send(command);
 
             return StatusCode(204);

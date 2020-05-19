@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Episememe.Api.Utilities;
 using Episememe.Application.DataTransfer;
 using Episememe.Application.Features.FileMedia;
@@ -8,8 +7,9 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Episememe.Api.Controllers
 {
@@ -35,7 +35,7 @@ namespace Episememe.Api.Controllers
             if (!isTokenValid)
                 return Unauthorized();
 
-            var fileQuery = FileMediaQuery.Create(id);
+            var fileQuery = FileMediaQuery.Create(id, User.GetUserId());
             var result = await _mediator.Send(fileQuery);
             return result;
         }
