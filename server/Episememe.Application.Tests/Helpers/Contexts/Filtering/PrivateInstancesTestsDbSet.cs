@@ -22,7 +22,7 @@ namespace Episememe.Application.Tests.Helpers.Contexts.Filtering
             var mediaInstance2 = new MediaInstance
             {
                 Id = "2",
-                IsPrivate = true,
+                IsPrivate = false,
                 AuthorId = user1
             };
             var mediaInstance3 = new MediaInstance
@@ -34,7 +34,7 @@ namespace Episememe.Application.Tests.Helpers.Contexts.Filtering
             var mediaInstance4 = new MediaInstance
             {
                 Id = "4",
-                IsPrivate = true,
+                IsPrivate = false,
                 AuthorId = user2
             };
             var mediaInstance5 = new MediaInstance

@@ -1,37 +1,41 @@
-﻿using Episememe.Application.Features.SearchMedia;
-using Episememe.Domain.Entities;
+﻿using Episememe.Domain.Entities;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace Episememe.Application.Filtering.BaseFiltering
 {
-    public class MediaFilter
+    public class MediaFilter : IFilter<MediaInstance>
     {
-        private readonly SearchMediaData _searchMediaData;
+        private readonly IEnumerable<string>? _includedTags;
+        private readonly IEnumerable<string>? _excludedTags;
+        private readonly DateTime? _timeRangeStart;
+        private readonly DateTime? _timeRangeEnd;
 
-        public MediaFilter(SearchMediaData searchMediaData)
+        public MediaFilter(IEnumerable<string>? includedTags, IEnumerable<string>? excludedTags,
+            DateTime? timeRangeStart, DateTime? timeRangeEnd)
         {
-            _searchMediaData = searchMediaData;
+            _includedTags = includedTags;
+            _excludedTags = excludedTags;
+            _timeRangeStart = timeRangeStart;
+            _timeRangeEnd = timeRangeEnd;
         }
 
-        public IEnumerable<MediaInstance> Filter(IQueryable<MediaInstance> mediaInstances)
+        public ReadOnlyCollection<MediaInstance> Filter(ReadOnlyCollection<MediaInstance> instances)
         {
-            ReadOnlyCollection<MediaInstance> filteredMedia = mediaInstances.ToList().AsReadOnly();
-            filteredMedia = ConsiderPrivate(InTimeRange(ExcludeTags(IncludeTags(filteredMedia))));
-
-            return filteredMedia.AsEnumerable();
+            return InTimeRange(ExcludeTags(IncludeTags(instances)));
         }
 
         private ReadOnlyCollection<MediaInstance> IncludeTags(ReadOnlyCollection<MediaInstance> mediaInstances)
         {
             var filteredMedia = mediaInstances;
-            if (_searchMediaData.IncludedTags != null)
+            if (_includedTags != null)
             {
 
                 filteredMedia = mediaInstances
                     .Where(mi =>
-                        !_searchMediaData.IncludedTags.Except(mi.MediaTags.Select(mt => mt.Tag.Name)).Any()
+                        !_includedTags.Except(mi.MediaTags.Select(mt => mt.Tag.Name)).Any()
                         )
                     .ToList()
                     .AsReadOnly();
@@ -43,11 +47,11 @@ namespace Episememe.Application.Filtering.BaseFiltering
         private ReadOnlyCollection<MediaInstance> ExcludeTags(ReadOnlyCollection<MediaInstance> mediaInstances)
         {
             var filteredMedia = mediaInstances;
-            if (_searchMediaData.ExcludedTags != null)
+            if (_excludedTags != null)
             {
                 filteredMedia = mediaInstances
                     .Where(mi =>
-                        !_searchMediaData.ExcludedTags.Intersect(mi.MediaTags.Select(mt => mt.Tag.Name)).Any()
+                        !_excludedTags.Intersect(mi.MediaTags.Select(mt => mt.Tag.Name)).Any()
                         )
                     .ToList()
                     .AsReadOnly();
@@ -58,30 +62,16 @@ namespace Episememe.Application.Filtering.BaseFiltering
 
         private ReadOnlyCollection<MediaInstance> InTimeRange(ReadOnlyCollection<MediaInstance> mediaInstances)
         {
-            var filteredMedia = (_searchMediaData.TimeRangeStart, _searchMediaData.TimeRangeEnd) switch
+            var filteredMedia = (_timeRangeStart, _timeRangeEnd) switch
             {
                 (null, null) => mediaInstances,
-                (null, _) => mediaInstances.Where(mi => mi.Timestamp <= _searchMediaData.TimeRangeEnd),
-                (_, null) => mediaInstances.Where(mi => mi.Timestamp >= _searchMediaData.TimeRangeStart),
-                (_, _) => mediaInstances.Where(mi => mi.Timestamp >= _searchMediaData.TimeRangeStart 
-                                                     && mi.Timestamp <= _searchMediaData.TimeRangeEnd)
+                (null, _) => mediaInstances.Where(mi => mi.Timestamp <= _timeRangeEnd),
+                (_, null) => mediaInstances.Where(mi => mi.Timestamp >= _timeRangeStart),
+                (_, _) => mediaInstances.Where(mi => mi.Timestamp >= _timeRangeStart
+                                                     && mi.Timestamp <= _timeRangeEnd)
             };
 
             return filteredMedia.ToList().AsReadOnly();
-        }
-
-        private ReadOnlyCollection<MediaInstance> ConsiderPrivate(ReadOnlyCollection<MediaInstance> mediaInstances)
-        {
-            var filteredMedia = mediaInstances;
-            if (!string.IsNullOrEmpty(_searchMediaData.UserId))
-            {
-                filteredMedia = mediaInstances.Where(mi => !mi.IsPrivate 
-                                                           || (mi.IsPrivate && mi.AuthorId == _searchMediaData.UserId))
-                    .ToList()
-                    .AsReadOnly();
-            }
-
-            return filteredMedia;
         }
     }
 }

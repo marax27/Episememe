@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Episememe.Application.Filtering;
 using Xunit;
 
 namespace Episememe.Application.Tests.Filtering
@@ -159,9 +160,10 @@ namespace Episememe.Application.Tests.Filtering
             var mediaInstances= new PrivateInstancesTestsDbSet().Instances;
             var filteredMedia = GetFilteredMedia(searchMedia, mediaInstances);
 
-            filteredMedia.Should().HaveCount(3);
+            filteredMedia.Should().HaveCount(4);
             filteredMedia.Should().Contain(mi => mi.Id == "1");
             filteredMedia.Should().Contain(mi => mi.Id == "2");
+            filteredMedia.Should().Contain(mi => mi.Id == "4");
             filteredMedia.Should().Contain(mi => mi.Id == "5");
         }
 
@@ -176,13 +178,21 @@ namespace Episememe.Application.Tests.Filtering
             var mediaInstances = new PrivateInstancesTestsDbSet().Instances;
             var filteredMedia = GetFilteredMedia(searchMedia, mediaInstances);
 
-            filteredMedia.Should().ContainSingle(mi => mi.Id == "5");
+            filteredMedia.Should().HaveCount(3);
+            filteredMedia.Should().Contain(mi => mi.Id == "2");
+            filteredMedia.Should().Contain(mi => mi.Id == "4");
+            filteredMedia.Should().Contain(mi => mi.Id == "5");
         }
 
 
         private ISet<MediaInstance> GetFilteredMedia(SearchMediaData searchMedia, DbSet<MediaInstance> mediaInstances)
         {
-            var filteredMedia = new MediaFilter(searchMedia).Filter(mediaInstances);
+            var mediaFilter = new MediaFilter(searchMedia.IncludedTags, searchMedia.ExcludedTags, 
+                searchMedia.TimeRangeStart, searchMedia.TimeRangeEnd);
+            var privateMediaFilter = new PrivateMediaFilter(searchMedia.UserId);
+            var filterChain = new FilterChain<MediaInstance>(mediaFilter, privateMediaFilter);
+            var filteredMedia = filterChain.Filter(mediaInstances.ToList().AsReadOnly());
+
             return filteredMedia.ToHashSet();
         }
     }
