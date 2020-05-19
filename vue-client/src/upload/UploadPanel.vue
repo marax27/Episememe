@@ -10,60 +10,46 @@
 
         <v-col cols='12' md='8'>
           <div class='d-flex flex-column align-center justify-space-between fill-height'>
-            <v-card
+
+
+            <UploadPanelSecondaryTile
               :disabled='!isFileProvided()'
-              tile
-              class='secondary-column-field align-self-stretch'
-              color='secondary darken-1'>
+              title='Tags'
+              class='secondary-column-field'>
 
-              <v-card-title>Tag Selection</v-card-title>
+              <BasicTagPicker v-model='tagNames' />
+            </UploadPanelSecondaryTile>
 
-              <v-card-text>
-                <BasicTagPicker
-                  v-model='tagNames'>
-                </BasicTagPicker>
-              </v-card-text>
-            </v-card>
-
-            <v-card
+            <UploadPanelSecondaryTile
               :disabled='!isFileProvided()'
-              tile
-              class='secondary-column-field align-self-stretch'
-              color='secondary darken-1'>
+              title='Properties'
+              class='secondary-column-field'>
 
-              <v-card-title>Properties</v-card-title>
+              <v-row columns='12' dense>
+                <v-col cols='6'>
+                  <v-checkbox
+                    class='ma-0'
+                    v-model='isPrivate'
+                    prepend-icon='mdi-account-lock-outline'
+                    hint='A private file is not available to other users'
+                    persistent-hint
+                    label='Mark as private'>
+                  </v-checkbox>
+                </v-col>
+              </v-row>
+            </UploadPanelSecondaryTile>
 
-              <v-card-text>
-                <v-row columns='12' dense>
-                  <v-col cols='6'>
-                    <v-checkbox
-                      class='ma-0'
-                      v-model='isPrivate'
-                      prepend-icon='mdi-account-lock-outline'
-                      hint='A private file is not available to other users'
-                      persistent-hint
-                      label='Mark as private'>
-                    </v-checkbox>
-                  </v-col>
-                </v-row>
-              </v-card-text>
-            </v-card>
-
-            <v-card
+            <UploadPanelSecondaryTile
               :disabled='!isFileProvided()'
-              tile
-              class='secondary-column-field align-self-stretch'
-              color='secondary darken-1'>
+              title='Actions'
+              class='secondary-column-field'>
 
-
-              <v-card-text>
-                <v-row columns='12' dense>
-                  <v-col cols='6'>
-                    <DeduceTagsTile @click='deduceTags' />
-                  </v-col>
-                </v-row>
-              </v-card-text>
-            </v-card>
+              <v-row columns='12' dense>
+                <v-col cols='6'>
+                  <DeduceTagsTile @click='deduceTags' />
+                </v-col>
+              </v-row>
+            </UploadPanelSecondaryTile>
 
             <v-btn
               :disabled='!isFileProvided()'
@@ -89,9 +75,11 @@ import TagsProviderService from '../tags/mixins/tags-provider.service';
 import TagsDeductionService from '../tags/mixins/tags-deduction.service';
 import DeduceTagsTile from './components/DeduceTagsTile.vue';
 import UploadTile from './components/UploadTile.vue';
+import UploadPanelSecondaryTile from './components/UploadPanelSecondaryTile.vue';
 
 @Component({
   components: {
+    UploadPanelSecondaryTile,
     UploadTile,
     BasicTagPicker,
     DeduceTagsTile
