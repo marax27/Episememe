@@ -27,7 +27,7 @@
 </template>
 
 <script lang='ts'>
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import MediaComponent from './media-component/MediaComponent.vue';
 import { IMediaInstance } from '../../shared/models/IMediaInstance';
 
@@ -44,18 +44,31 @@ export default class MediaGallery extends Vue {
     return this.instances == null || this.instances.length === 0;
   }
 
+  private updateInstance() {
+    const currentInstance = this.instances[this.currentlyBrowsedIndex];
+    this.$store.dispatch('gallery/updateCurrentMediaInstance', currentInstance);
+  }
+
   currentlyBrowsedIndex = 0;
 
   movePrevious() {
     --this.currentlyBrowsedIndex;
     if (this.currentlyBrowsedIndex < 0)
       this.currentlyBrowsedIndex += this.instances.length;
+    this.updateInstance();
   }
 
   moveNext() {
     ++this.currentlyBrowsedIndex;
     if (this.currentlyBrowsedIndex >= this.instances.length)
       this.currentlyBrowsedIndex -= this.instances.length;
+    this.updateInstance();
+  }
+
+  @Watch('instances')
+  private onInstancesChange() {
+    // Necessary to detect when instances are first loaded.
+    this.updateInstance();
   }
 }
 </script>

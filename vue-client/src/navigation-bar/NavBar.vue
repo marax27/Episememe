@@ -5,7 +5,6 @@
       <NavBarLink link='/' icon='mdi-hexagon-outline' :title='true'>Episememe</NavBarLink>
 
       <NavBarLink link='/upload' icon='mdi-upload'>Upload</NavBarLink>
-      <NavBarLink link='/revision' icon='mdi-square-edit-outline'>Revision</NavBarLink>
     </div>
 
     <v-spacer></v-spacer>
