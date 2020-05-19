@@ -12,6 +12,8 @@ namespace Episememe.Infrastructure.Database.Configuration
                 .IsRequired();
             builder.Property(mi => mi.DataType)
                 .IsRequired();
+            builder.Property(mi => mi.IsPrivate)
+                .IsRequired();
         }
     }
 }
