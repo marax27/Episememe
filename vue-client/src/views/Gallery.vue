@@ -32,6 +32,14 @@ export default class Gallery extends Mixins(ApiClientService) {
   isOpen = false;
 
   created() {
+    this.refreshBrowseToken(this.loadMedia);
+  }
+
+  public get galleryData() {
+    return this.$route.params.data;
+  }
+
+  private loadMedia() {
     this.$api.get<IMediaInstance[]>(`media?q=${this.galleryData}`)
       .then(response => this.mediaInstances = response.data)
       .catch(err => {
@@ -39,8 +47,20 @@ export default class Gallery extends Mixins(ApiClientService) {
       });
   }
 
-  public get galleryData() {
-    return this.$route.params.data;
+  private refreshBrowseToken(afterCompletion: () => void) {
+    return this.$api
+      .post<string>('authorization', {})
+      .then(response => {
+        this.$store.dispatch('refreshBrowseToken', response.data)
+          .then(_ => afterCompletion());
+      })
+      .catch(err => {
+        if (this.$store.state.browseToken != null) {
+          afterCompletion();
+        } else {
+          this.$store.dispatch('reportError', 'Failed to retrieve data from the server.');
+        }
+      });
   }
 }
 </script>
