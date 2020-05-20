@@ -42,7 +42,7 @@ namespace Episememe.Application.Tests.FeatureTests.MediaRevision
         }
 
         [Fact]
-        public void GivenNonexistentFileID_ThenAggregateExceptionIsThrown()
+        public void GivenNonexistentFileID_ThenExceptionIsThrown()
         {
             _contextMock.MediaInstances.Add(CreateExampleDatabaseInstance());
             _contextMock.SaveChanges();
@@ -56,7 +56,7 @@ namespace Episememe.Application.Tests.FeatureTests.MediaRevision
 
             Action act = () => handler.Handle(command, CancellationToken.None).Wait();
 
-            act.Should().Throw<AggregateException>();
+            act.Should().Throw<Exception>();
         }
 
         [Fact]
