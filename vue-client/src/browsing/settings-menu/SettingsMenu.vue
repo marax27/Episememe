@@ -3,7 +3,6 @@
     absolute
     v-model='speedDialIsOpen'
     :right='true' :bottom='true'
-    direction='top' transition='slide-y-reverse-transition'
     :open-on-hover='true'>
 
     <template v-slot:activator>
@@ -12,23 +11,23 @@
       </v-btn>
     </template>
 
-    <v-tooltip left v-for='item in menuButtons' :key='item.name'>
-      <template v-slot:activator='{ on }'>
-        <v-btn @click='item.callback'
-          v-on='on' fab small color='secondary' @click.stop>
-          <v-icon>{{ item.icon }}</v-icon>
-        </v-btn>
-      </template>
-      <span>{{ item.name }}</span>
-    </v-tooltip>
+    <BaseMenuButton
+      v-for='item in menuButtons' :key='item.name'
+      :icon='item.icon' :label='item.name'
+      @click='item.callback' />
 
   </v-speed-dial>
 </template>
 
 <script lang='ts'>
 import { Component, Vue } from 'vue-property-decorator';
+import BaseMenuButton from './buttons/BaseMenuButton.vue';
 
-@Component
+@Component({
+  components: {
+    BaseMenuButton,
+  }
+})
 export default class SettingsMenu extends Vue {
   menuButtons = [
     { name: 'Revise', icon: 'mdi-square-edit-outline', callback: this.startRevision },

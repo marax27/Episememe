@@ -14,7 +14,7 @@
 import { Component, Vue, Mixins } from 'vue-property-decorator';
 import MediaGallery from '@/browsing/media-gallery/MediaGallery.vue';
 import RevisionPopup from '@/browsing/revision-popup/RevisionPopup.vue';
-import SettingsMenu from '@/browsing/SettingsMenu.vue';
+import SettingsMenu from '@/browsing/settings-menu/SettingsMenu.vue';
 import { IMediaInstance } from '../shared/models/IMediaInstance';
 import ApiClientService from '../shared/mixins/api-client/api-client.service';
 
