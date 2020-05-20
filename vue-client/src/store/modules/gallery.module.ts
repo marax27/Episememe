@@ -5,22 +5,22 @@ export const gallery: Module<any, any> = {
   namespaced: true,
   state: () => ({
     currentMediaInstance: null,
-    volumeOn: true,
+    isMuted: false,
   }),
   mutations: {
     setCurrentMediaInstance(state, newInstance: IMediaInstance) {
       state.currentMediaInstance = newInstance;
     },
-    setVolumeOn(state, volumeOn: boolean) {
-      state.volumeOn = volumeOn;
+    setMuted(state, isMuted: boolean) {
+      state.isMuted = isMuted;
     }
   },
   actions: {
     updateCurrentMediaInstance({ commit }, instance: IMediaInstance) {
       commit('setCurrentMediaInstance', instance);
     },
-    toggleVolume({ commit, state }) {
-      commit('setVolumeOn', !state.volumeOn);
+    toggleMuted({ commit, state }) {
+      commit('setMuted', !state.isMuted);
     }
   },
   getters: {
