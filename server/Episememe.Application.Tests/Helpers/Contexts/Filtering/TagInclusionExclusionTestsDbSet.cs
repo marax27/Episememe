@@ -4,28 +4,25 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 
-namespace Episememe.Application.Tests.Helpers.Contexts
+namespace Episememe.Application.Tests.Helpers.Contexts.Filtering
 {
-    public class GivenThreeMediaInstancesDbSet : IMediaInstanceDbSetTestContext
+    public class TagInclusionExclusionTestsDbSet : IDbSetTestContext<MediaInstance>
     {
-        public DbSet<MediaInstance> MediaInstances => CreateMediaInstancesDbSet();
+        public DbSet<MediaInstance> Instances => CreateMediaInstancesDbSet();
 
         private DbSet<MediaInstance> CreateMediaInstancesDbSet()
         {
             var mediaInstance1 = new MediaInstance
             {
-                Id = "1",
-                Timestamp = new DateTime(2009, 1, 1, 0, 0, 0)
+                Id = "1"
             };
             var mediaInstance2 = new MediaInstance
             {
-                Id = "2",
-                Timestamp = new DateTime(2008, 1, 1, 0, 0, 0)
+                Id = "2"
             };
             var mediaInstance3 = new MediaInstance
             {
-                Id = "3",
-                Timestamp = new DateTime(2008, 6, 1, 0, 0, 0)
+                Id = "3"
             };
 
             var tag1 = new Tag

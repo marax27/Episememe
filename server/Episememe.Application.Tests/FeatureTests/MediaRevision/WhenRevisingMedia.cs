@@ -1,12 +1,10 @@
 using Episememe.Application.Exceptions;
 using Episememe.Application.Features.UpdateTags;
 using Episememe.Application.Interfaces;
+using Episememe.Application.Tests.Helpers;
 using Episememe.Domain.Entities;
 using Episememe.Domain.HelperEntities;
-using Episememe.Infrastructure.Database;
 using FluentAssertions;
-using Microsoft.Data.Sqlite;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -14,7 +12,7 @@ using System.Linq;
 using System.Threading;
 using Xunit;
 
-namespace Episememe.Application.Tests.FeatureTests.FileRevision
+namespace Episememe.Application.Tests.FeatureTests.MediaRevision
 {
     public class WhenRevisingMedia : IDisposable
     {
@@ -23,60 +21,80 @@ namespace Episememe.Application.Tests.FeatureTests.FileRevision
 
         public WhenRevisingMedia()
         {
-            (_contextMock, _connection) = GetInMemoryDatabaseContext();
+            (_contextMock, _connection) = InMemoryDatabaseFactory.CreateSqliteDbContext();
         }
 
         [Fact]
-        public void GivenMediaTagsAreUpdated_ThenExpectedMediaTagsAreInDatabase ()
+        public void GivenMediaTagsAreUpdated_ThenExpectedMediaTagsAreInDatabase()
         {
-            var Tags = new List<string> 
-            {"sword", "shield", "minimini"};
+            _contextMock.MediaInstances.Add(CreateExampleDatabaseInstance());
+            _contextMock.SaveChanges();
+            var tags = new List<string>
+            {
+                "sword", "shield", "minimini"
+            };
 
-            var command = UpdateTagsCommand.Create("k8wetest", Tags);
+            var command = UpdateTagsCommand.Create("k8wetest", tags, string.Empty);
             var handler = new UpdateTagsCommandHandler(_contextMock);
             handler.Handle(command, CancellationToken.None).Wait();
 
-            _contextMock.MediaInstances.Single().MediaTags.Select(t => t.Tag.Name).Should().BeEquivalentTo(Tags);
+            _contextMock.MediaInstances.Single().MediaTags.Select(t => t.Tag.Name).Should().BeEquivalentTo(tags);
         }
 
         [Fact]
-        public void GivenNonexistentFileID_ThenArgumentExcpetionThrown()
+        public void GivenNonexistentFileID_ThenExceptionIsThrown()
         {
-            var Tags = new List<string> 
-            {"sword", "shield", "minimini"};
+            _contextMock.MediaInstances.Add(CreateExampleDatabaseInstance());
+            _contextMock.SaveChanges();
+            var tags = new List<string>
+            {
+                "sword", "shield", "minimini"
+            };
 
-            var command = UpdateTagsCommand.Create("xdxdxdxd", Tags);
+            var command = UpdateTagsCommand.Create("xdxdxdxd", tags, string.Empty);
             var handler = new UpdateTagsCommandHandler(_contextMock);
-            
+
             Action act = () => handler.Handle(command, CancellationToken.None).Wait();
 
-            act.Should().Throw<ArgumentException>();
+            act.Should().Throw<Exception>();
         }
 
         [Fact]
-        public void GivenEmptyTagsList_ThenArgumentNullExcpetionThrown()
+        public void GivenEmptyTagsList_ThenArgumentNullExceptionThrown()
         {
-            var Tags = new List<string> {};            
-            Action act = () => UpdateTagsCommand.Create("k8wetest", Tags);
-            
+            _contextMock.MediaInstances.Add(CreateExampleDatabaseInstance());
+            _contextMock.SaveChanges();
+            var tags = new List<string>();
+            Action act = () => UpdateTagsCommand.Create("k8wetest", tags, string.Empty);
+
             act.Should().Throw<ArgumentNullException>();
         }
 
-        private (IWritableApplicationContext, DbConnection) GetInMemoryDatabaseContext()
+        [Fact]
+        public void GivenAnotherUsersPrivateMedia_ThenMediaDoesNotBelongToUserIsThrown()
         {
-            var connection = new SqliteConnection("DataSource=:memory:");
-            connection.Open();
+            var givenUser1 = "user1";
+            var givenUser2 = "user2";
+            var givenMediaId = "abcdefgh";
+            var givenMediaInstance = new MediaInstance()
+            {
+                Id = givenMediaId,
+                AuthorId = givenUser1,
+                DataType = "png",
+                IsPrivate = true
+            };
+            var givenTags = new List<string>()
+            {
+                "test everything"
+            };
+            _contextMock.MediaInstances.Add(givenMediaInstance);
+            _contextMock.SaveChanges();
 
-            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseSqlite(connection)
-                .Options;
-            var context = new ApplicationDbContext(options);
-            context.Database.EnsureCreated();
+            var command = UpdateTagsCommand.Create(givenMediaId, givenTags, givenUser2);
+            var handler = new UpdateTagsCommandHandler(_contextMock);
+            Action act = () => handler.Handle(command, CancellationToken.None).Wait();
 
-            context.MediaInstances.Add(CreateExampleDatabaseInstance());
-            context.SaveChanges();
-
-            return (context, connection);
+            act.Should().Throw<MediaDoesNotBelongToUserException>();
         }
 
         public MediaInstance CreateExampleDatabaseInstance()
@@ -90,16 +108,16 @@ namespace Episememe.Application.Tests.FeatureTests.FileRevision
             {
                 "pigeons", "flying rats", "little mermaid"
             };
-            ICollection<MediaTag> mediaTags = tags.Select(t => new MediaTag() 
+            ICollection<MediaTag> mediaTags = tags.Select(t => new MediaTag()
             {
-                    MediaInstance = mediaInstance,
-                    Tag = new Tag() {Name = t}
+                MediaInstance = mediaInstance,
+                Tag = new Tag() { Name = t }
             }).ToList();
 
             return mediaInstance;
         }
 
-          public void Dispose()
+        public void Dispose()
         {
             _connection?.Dispose();
         }

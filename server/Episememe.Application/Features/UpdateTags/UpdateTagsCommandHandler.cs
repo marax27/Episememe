@@ -1,12 +1,12 @@
-using MediatR;
-using Episememe.Application.Interfaces;
 using Episememe.Application.Exceptions;
-using System.Linq;
-using System.Collections.Generic;
+using Episememe.Application.Interfaces;
 using Episememe.Domain.Entities;
 using Episememe.Domain.HelperEntities;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -21,23 +21,20 @@ namespace Episememe.Application.Features.UpdateTags
 
         public async Task<Unit> Handle(UpdateTagsCommand request, CancellationToken cancellationToken)
         {
-            MediaInstance editedInstance;
-            try 
-            {
-                editedInstance = await _context.MediaInstances
+
+            var editedInstance = await _context.MediaInstances
                 .Include(mi => mi.MediaTags)
-                .SingleAsync(a => a.Id == request.Id);
-            }
-            catch (Exception){
-                throw new ArgumentException("File not found");
-            }
+                .SingleAsync(a => a.Id == request.Id, cancellationToken);
+
+            if (editedInstance.IsPrivate && editedInstance.AuthorId != request.UserId)
+                throw new MediaDoesNotBelongToUserException(request.UserId ?? string.Empty);
 
             ICollection<MediaTag> mediaTags = ConvertStringsToTags(request.Tags, editedInstance)
-            .Select(t => new MediaTag()
-            {
-                MediaInstance = editedInstance,
-                Tag = t
-            }).ToList();
+                .Select(t => new MediaTag()
+                {
+                    MediaInstance = editedInstance,
+                    Tag = t
+                }).ToList();
 
             editedInstance.MediaTags = mediaTags;
             await _context.SaveChangesAsync(cancellationToken);

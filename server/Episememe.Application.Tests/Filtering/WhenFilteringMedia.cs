@@ -1,11 +1,13 @@
-﻿using Episememe.Application.DataTransfer;
-using Episememe.Application.Tests.Helpers.Contexts;
+﻿using Episememe.Application.Features.SearchMedia;
+using Episememe.Application.Filtering.BaseFiltering;
+using Episememe.Application.Tests.Helpers.Contexts.Filtering;
 using Episememe.Domain.Entities;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Episememe.Application.Filtering.BaseFiltering;
+using Episememe.Application.Filtering;
 using Xunit;
 
 namespace Episememe.Application.Tests.Filtering
@@ -15,39 +17,37 @@ namespace Episememe.Application.Tests.Filtering
         [Fact]
         public void GivenNullFilterArguments_AllMediaAreReturned()
         {
-            var mediaInstances = new GivenThreeMediaInstancesDbSet().MediaInstances;
+            var mediaInstances = new TagInclusionExclusionTestsDbSet().Instances;
 
-            var filteredMedia = GetFilteredMedia(new SearchMediaDto());
+            var filteredMedia = GetFilteredMedia(new SearchMediaData(), mediaInstances);
 
-            filteredMedia.Count().Should().Be(mediaInstances.Count());
+            filteredMedia.Should().HaveCount(mediaInstances.Count());
         }
 
         [Fact]
         public void GivenExistingTag_ConnectedMediaAreReturned()
         {
             string[] includedTags = { "usa" };
-            var searchMedia = new SearchMediaDto()
+            var searchMedia = new SearchMediaData()
             {
                 IncludedTags = includedTags,
             };
+            var mediaInstances = new TagInclusionExclusionTestsDbSet().Instances;
+            var filteredMedia = GetFilteredMedia(searchMedia, mediaInstances);
 
-            var filteredMedia = GetFilteredMedia(searchMedia);
-
-            filteredMedia.Should().NotBeEmpty();
-            filteredMedia.Count().Should().Be(1);
-            filteredMedia.Single().Id.Should().Be("1");
+            filteredMedia.Should().ContainSingle(mi => mi.Id == "1");
         }
 
         [Fact]
         public void GivenNonexistentTag_NoMediaIsReturned()
         {
             string[] includedTags = {"politics"};
-            var searchMedia = new SearchMediaDto()
+            var searchMedia = new SearchMediaData()
             {
                 IncludedTags = includedTags,
             };
-
-            var filteredMedia = GetFilteredMedia(searchMedia);
+            var mediaInstances = new TagInclusionExclusionTestsDbSet().Instances;
+            var filteredMedia = GetFilteredMedia(searchMedia, mediaInstances);
 
             filteredMedia.Should().BeEmpty();
         }
@@ -56,15 +56,14 @@ namespace Episememe.Application.Tests.Filtering
         public void GivenTagsToExclude_MediaWithoutExcludedTagsAreReturned()
         {
             string[] excludedTags = { "usa", "sport" };
-            var searchMedia = new SearchMediaDto()
+            var searchMedia = new SearchMediaData()
             {
                 ExcludedTags = excludedTags
             };
+            var mediaInstances = new TagInclusionExclusionTestsDbSet().Instances;
+            var filteredMedia = GetFilteredMedia(searchMedia, mediaInstances);
 
-            var filteredMedia = GetFilteredMedia(searchMedia);
-
-            filteredMedia.Count().Should().Be(1);
-            filteredMedia.Single().Id.Should().Be("3");
+            filteredMedia.Should().ContainSingle(mi => mi.Id == "3");
         }
 
         [Fact]
@@ -72,16 +71,15 @@ namespace Episememe.Application.Tests.Filtering
         {
             string[] includedTags = { "university" };
             string[] excludedTags = { "usa", "sport" };
-            var searchMedia = new SearchMediaDto()
+            var searchMedia = new SearchMediaData()
             {
                 IncludedTags = includedTags,
                 ExcludedTags = excludedTags
             };
+            var mediaInstances = new TagInclusionExclusionTestsDbSet().Instances;
+            var filteredMedia = GetFilteredMedia(searchMedia, mediaInstances);
 
-            var filteredMedia = GetFilteredMedia(searchMedia);
-
-            filteredMedia.Count().Should().Be(1);
-            filteredMedia.Single().Id.Should().Be("3");
+            filteredMedia.Should().ContainSingle(mi => mi.Id == "3");
         }
 
         [Fact]
@@ -89,13 +87,13 @@ namespace Episememe.Application.Tests.Filtering
         {
             string[] includedTags = { "germany" };
             string[] excludedTags = { "usa", "sport" };
-            var searchMedia = new SearchMediaDto()
+            var searchMedia = new SearchMediaData()
             {
                 IncludedTags = includedTags,
                 ExcludedTags = excludedTags
             };
-
-            var filteredMedia = GetFilteredMedia(searchMedia);
+            var mediaInstances = new TagInclusionExclusionTestsDbSet().Instances;
+            var filteredMedia = GetFilteredMedia(searchMedia, mediaInstances);
 
             filteredMedia.Should().BeEmpty();
         }
@@ -105,49 +103,96 @@ namespace Episememe.Application.Tests.Filtering
         {
             var timeRangeStart = new DateTime(2007, 6, 1, 0, 0, 0);
             var timeRangeEnd = new DateTime(2008, 9, 1, 0, 0, 0);
-            var searchMedia = new SearchMediaDto()
+            var searchMedia = new SearchMediaData()
             {
                 TimeRangeStart = timeRangeStart,
                 TimeRangeEnd = timeRangeEnd
             };
+            var mediaInstances = new TimeRangeTestsDbSet().Instances;
+            var filteredMedia = GetFilteredMedia(searchMedia, mediaInstances);
 
-            var filteredMedia = GetFilteredMedia(searchMedia);
-
-            filteredMedia.Count().Should().Be(2);
+            filteredMedia.Should().HaveCount(2);
+            filteredMedia.Should().Contain(mi => mi.Id == "2");
+            filteredMedia.Should().Contain(mi => mi.Id == "3");
         }
 
         [Fact]
         public void GivenTimeRangeStart_MediaCreatedAfterAreReturned()
         {
             var timeRangeStart = new DateTime(2008, 3, 1, 0, 0, 0);
-            var searchMedia = new SearchMediaDto()
+            var searchMedia = new SearchMediaData()
             {
                 TimeRangeStart = timeRangeStart
             };
+            var mediaInstances = new TimeRangeTestsDbSet().Instances;
+            var filteredMedia = GetFilteredMedia(searchMedia, mediaInstances);
 
-            var filteredMedia = GetFilteredMedia(searchMedia);
-
-            filteredMedia.Count().Should().Be(2);
+            filteredMedia.Should().HaveCount(2);
+            filteredMedia.Should().Contain(mi => mi.Id == "1");
+            filteredMedia.Should().Contain(mi => mi.Id == "3");
         }
 
         [Fact]
         public void GivenTimeRangeEnd_MediaCreatedBeforeAreReturned()
         {
             var timeRangeEnd = new DateTime(2008, 9, 1, 0, 0, 0);
-            var searchMedia = new SearchMediaDto()
+            var searchMedia = new SearchMediaData()
             {
                 TimeRangeEnd = timeRangeEnd
             };
 
-            var filteredMedia = GetFilteredMedia(searchMedia);
+            var mediaInstances = new TimeRangeTestsDbSet().Instances;
+            var filteredMedia = GetFilteredMedia(searchMedia, mediaInstances);
 
-            filteredMedia.Count().Should().Be(2);
+            filteredMedia.Should().HaveCount(2);
+            filteredMedia.Should().Contain(mi => mi.Id == "2");
+            filteredMedia.Should().Contain(mi => mi.Id == "3");
         }
 
-        private ISet<MediaInstance> GetFilteredMedia(SearchMediaDto searchMedia)
+        [Fact]
+        public void GivenUserId_PublicMediaAndUsersPrivateMediaAreReturned()
         {
-            var mediaInstances = new GivenThreeMediaInstancesDbSet().MediaInstances;
-            var filteredMedia = new MediaFilter(searchMedia).Filter(mediaInstances);
+            var userId = "user1";
+            var searchMedia = new SearchMediaData()
+            {
+                UserId = userId
+            };
+            var mediaInstances= new PrivateInstancesTestsDbSet().Instances;
+            var filteredMedia = GetFilteredMedia(searchMedia, mediaInstances);
+
+            filteredMedia.Should().HaveCount(4);
+            filteredMedia.Should().Contain(mi => mi.Id == "1");
+            filteredMedia.Should().Contain(mi => mi.Id == "2");
+            filteredMedia.Should().Contain(mi => mi.Id == "4");
+            filteredMedia.Should().Contain(mi => mi.Id == "5");
+        }
+
+        [Fact]
+        public void GivenUserIdNotConnectedToAnyMedia_PublicMediaAreReturned()
+        {
+            var userId = "randomUser";
+            var searchMedia = new SearchMediaData()
+            {
+                UserId = userId
+            };
+            var mediaInstances = new PrivateInstancesTestsDbSet().Instances;
+            var filteredMedia = GetFilteredMedia(searchMedia, mediaInstances);
+
+            filteredMedia.Should().HaveCount(3);
+            filteredMedia.Should().Contain(mi => mi.Id == "2");
+            filteredMedia.Should().Contain(mi => mi.Id == "4");
+            filteredMedia.Should().Contain(mi => mi.Id == "5");
+        }
+
+
+        private ISet<MediaInstance> GetFilteredMedia(SearchMediaData searchMedia, DbSet<MediaInstance> mediaInstances)
+        {
+            var mediaFilter = new MediaFilter(searchMedia.IncludedTags, searchMedia.ExcludedTags, 
+                searchMedia.TimeRangeStart, searchMedia.TimeRangeEnd);
+            var privateMediaFilter = new PrivateMediaFilter(searchMedia.UserId);
+            var filterChain = new FilterChain<MediaInstance>(mediaFilter, privateMediaFilter);
+            var filteredMedia = filterChain.Filter(mediaInstances.ToList().AsReadOnly());
+
             return filteredMedia.ToHashSet();
         }
     }

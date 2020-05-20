@@ -3,8 +3,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Episememe.Application.Tests.Helpers.Contexts
 {
-    interface IMediaInstanceDbSetTestContext
+    interface IDbSetTestContext<T> where T : class
     {
-        public DbSet<MediaInstance> MediaInstances { get; }
+        public DbSet<T> Instances { get; }
     }
 }

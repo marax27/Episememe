@@ -7,19 +7,19 @@ namespace Episememe.Application.Features.SearchMedia
 {
     public class SearchMediaQuery : IRequest<IEnumerable<MediaInstanceDto>>
     {
-        public SearchMediaDto SearchMedia { get; }
+        public SearchMediaData SearchMediaData { get; }
 
-        private SearchMediaQuery(SearchMediaDto searchMedia)
+        private SearchMediaQuery(SearchMediaData searchMediaData)
         {
-            SearchMedia = searchMedia;
+            SearchMediaData = searchMediaData;
         }
 
-        public static SearchMediaQuery Create(SearchMediaDto searchMedia)
+        public static SearchMediaQuery Create(SearchMediaData searchMediaData)
         {
-            if (searchMedia == null)
-                throw new ArgumentNullException();
-            
-            return new SearchMediaQuery(searchMedia);
+            if(searchMediaData == null)
+                throw new ArgumentNullException(nameof(searchMediaData));
+
+            return new SearchMediaQuery(searchMediaData);
         }
     }
 }

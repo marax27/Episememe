@@ -44,7 +44,7 @@ namespace Episememe.Application.Features.FileUpload
                 var instanceId = GenerateMediaInstanceId();
                 try
                 {
-                    await CreateMediaFile(instanceId, dataType, request.Tags, request.AuthorId, request.FormFile);
+                    await CreateMediaFile(instanceId, dataType, request.Tags, request.AuthorId, request.FormFile, request.IsPrivate);
                     hasBeenCreated = true;
                 }
                 catch (FileExistsException)
@@ -58,14 +58,14 @@ namespace Episememe.Application.Features.FileUpload
         }
 
         private async Task CreateMediaFile(string instanceId, string dataType, IEnumerable<string> tags, string? authorId,
-            IFormFile formFile)
+            IFormFile formFile, bool isPrivate)
         {
             await CreateMediaFileInFileSystem(formFile, instanceId);
 
             using var transaction = _context.Database.BeginTransactionAsync();
             try
             {
-                await CreateMediaInstanceInDatabase(instanceId, dataType, tags, authorId);
+                await CreateMediaInstanceInDatabase(instanceId, dataType, tags, authorId, isPrivate);
                 await transaction.Result.CommitAsync(CancellationToken.None);
             }
             catch
@@ -82,13 +82,15 @@ namespace Episememe.Application.Features.FileUpload
             await formFile.CopyToAsync(stream);
         }
 
-        private async Task CreateMediaInstanceInDatabase(string id, string dataType, IEnumerable<string> tags, string? authorId)
+        private async Task CreateMediaInstanceInDatabase(string id, string dataType, IEnumerable<string> tags, string? authorId, 
+            bool isPrivate)
         {
             var mediaInstance = new MediaInstance()
             {
                 Id = id,
                 DataType = dataType,
-                AuthorId = authorId
+                AuthorId = authorId,
+                IsPrivate = isPrivate
             };
 
             ICollection<MediaTag> mediaTags = ConvertStringsToTags(tags)

@@ -10,6 +10,7 @@ namespace Episememe.Domain.Entities
         public DateTime Timestamp { get; set; }
         public string DataType { get; set; } = null!;
         public string? AuthorId { get; set; }
+        public bool IsPrivate { get; set; }
 
         public ICollection<MediaTag> MediaTags { get; set; } = new HashSet<MediaTag>();
     }

@@ -60,7 +60,7 @@ namespace Episememe.Application.Tests.FeatureTests.FileUpload
                 "pigeons", "flying rats"
             };
 
-            var command = FileUploadCommand.Create(givenFormFile, givenTags, string.Empty);
+            var command = FileUploadCommand.Create(givenFormFile, givenTags, string.Empty, false);
             var handler = new FileUploadCommandHandler(_fileStorageMock, _contextMock,
                 _timeProviderMock.Object, _mediaIdProviderMock.Object);
             handler.Handle(command, CancellationToken.None).Wait();
@@ -79,7 +79,7 @@ namespace Episememe.Application.Tests.FeatureTests.FileUpload
                 "pigeons", "flying rats"
             };
 
-            var command = FileUploadCommand.Create(givenFormFile, givenTags, string.Empty);
+            var command = FileUploadCommand.Create(givenFormFile, givenTags, string.Empty, false);
             var handler = new FileUploadCommandHandler(_fileStorageMock, _contextMock,
                 _timeProviderMock.Object, _mediaIdProviderMock.Object);
             handler.Handle(command, CancellationToken.None).Wait();
@@ -96,7 +96,7 @@ namespace Episememe.Application.Tests.FeatureTests.FileUpload
             var givenFormFile = FormFileFactory.Create(givenFileName, givenFileContent);
             var givenTags = new List<string>();
 
-            var command = FileUploadCommand.Create(givenFormFile, givenTags, string.Empty);
+            var command = FileUploadCommand.Create(givenFormFile, givenTags, string.Empty, false);
             var handler = new FileUploadCommandHandler(_fileStorageMock, _contextMock,
                 _timeProviderMock.Object, _mediaIdProviderMock.Object);
             handler.Handle(command, CancellationToken.None).Wait();
@@ -117,7 +117,7 @@ namespace Episememe.Application.Tests.FeatureTests.FileUpload
 
             _fileStorageMock.CreateNew(_givenMediaInstanceId);
 
-            var command = FileUploadCommand.Create(givenFormFile, givenTags, string.Empty);
+            var command = FileUploadCommand.Create(givenFormFile, givenTags, string.Empty, false);
             var handler = new FileUploadCommandHandler(_fileStorageMock, _contextMock,
                 _timeProviderMock.Object, _mediaIdProviderMock.Object);
             handler.Handle(command, CancellationToken.None).Wait();
@@ -137,7 +137,7 @@ namespace Episememe.Application.Tests.FeatureTests.FileUpload
                 "pigeons", "flying rats"
             };
 
-            var command = FileUploadCommand.Create(givenFormFile, givenTags, string.Empty);
+            var command = FileUploadCommand.Create(givenFormFile, givenTags, string.Empty, false);
             var handler = new FileUploadCommandHandler(_fileStorageMock, _contextMock,
                 _timeProviderMock.Object, _mediaIdProviderMock.Object);
             handler.Handle(command, CancellationToken.None).Wait();
@@ -156,7 +156,7 @@ namespace Episememe.Application.Tests.FeatureTests.FileUpload
                 "pigeons", "flying rats"
             };
 
-            var command = FileUploadCommand.Create(givenFormFile, givenTags, string.Empty);
+            var command = FileUploadCommand.Create(givenFormFile, givenTags, string.Empty, false);
             var handler = new FileUploadCommandHandler(_fileStorageMock, _contextMock,
                 _timeProviderMock.Object, _mediaIdProviderMock.Object);
             handler.Handle(command, CancellationToken.None).Wait();
@@ -176,7 +176,7 @@ namespace Episememe.Application.Tests.FeatureTests.FileUpload
                 "pigeons", "flying rats"
             };
 
-            var command = FileUploadCommand.Create(givenFormFile, givenTags, string.Empty);
+            var command = FileUploadCommand.Create(givenFormFile, givenTags, string.Empty, false);
             var handler = new FileUploadCommandHandler(_fileStorageMock, _contextMock,
                 _timeProviderMock.Object, _mediaIdProviderMock.Object);
             handler.Handle(command, CancellationToken.None).Wait();
@@ -196,7 +196,7 @@ namespace Episememe.Application.Tests.FeatureTests.FileUpload
                 givenTag
             };
 
-            var command = FileUploadCommand.Create(formFile, givenTags, string.Empty);
+            var command = FileUploadCommand.Create(formFile, givenTags, string.Empty, false);
             var handler = new FileUploadCommandHandler(_fileStorageMock, _contextMock,
                 _timeProviderMock.Object, _mediaIdProviderMock.Object);
             handler.Handle(command, CancellationToken.None).Wait();
@@ -218,7 +218,7 @@ namespace Episememe.Application.Tests.FeatureTests.FileUpload
             _contextMock.Tags.Add(new Tag() { Name = givenTag });
             _contextMock.SaveChanges();
 
-            var command = FileUploadCommand.Create(formFile, givenTags, string.Empty);
+            var command = FileUploadCommand.Create(formFile, givenTags, string.Empty, false);
             var handler = new FileUploadCommandHandler(_fileStorageMock, _contextMock,
                 _timeProviderMock.Object, _mediaIdProviderMock.Object);
             handler.Handle(command, CancellationToken.None).Wait();
