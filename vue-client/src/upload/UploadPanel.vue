@@ -5,61 +5,51 @@
     <v-card-text>
       <v-row dense align='stretch' justify='space-between'>
         <v-col cols='12' md='4'>
-          <v-card
-            ripple
-            tile
-            class='upload-field elevation-2 pa-1 d-flex flex-column align-center justify-center fill-height'>
-
-            <template v-if='isFileProvided()'>
-              <p class='font-weight-bold'>{{ currentFile.name }}</p>
-              <p>Click again to load a different file.</p>
-            </template>
-            <template v-else>
-              <v-icon class='upload-icon'>mdi-upload</v-icon>
-             <span>Click to load a file</span>
-            </template>
-
-            <input
-              class='file-input'
-              type='file'
-              ref='fileUpload'
-              @change='handleNewFile' />
-          </v-card>
+          <UploadTile @input='updateFile' />
         </v-col>
 
         <v-col cols='12' md='8'>
           <div class='d-flex flex-column align-center justify-space-between fill-height'>
-            <v-card
+
+
+            <UploadPanelSecondaryTile
               :disabled='!isFileProvided()'
-              tile
-              class='secondary-column-field align-self-stretch'
-              color='secondary darken-1'>
+              title='Tags'
+              class='secondary-column-field'>
 
-              <v-card-title>Tag Selection</v-card-title>
+              <BasicTagPicker v-model='tagNames' />
+            </UploadPanelSecondaryTile>
 
-              <v-card-text>
-                <BasicTagPicker
-                  v-model='tagNames'>
-                </BasicTagPicker>
-              </v-card-text>
-            </v-card>
-
-            <v-card
+            <UploadPanelSecondaryTile
               :disabled='!isFileProvided()'
-              tile
-              class='secondary-column-field align-self-stretch'
-              color='secondary darken-1'>
+              title='Properties'
+              class='secondary-column-field'>
 
-              <v-card-text>
-                <v-row columns='12' dense>
+              <v-row columns='12' dense>
+                <v-col cols='6'>
+                  <v-checkbox
+                    class='ma-0'
+                    v-model='isPrivate'
+                    prepend-icon='mdi-account-lock-outline'
+                    hint='A private file is not available to other users'
+                    persistent-hint
+                    label='Mark as private'>
+                  </v-checkbox>
+                </v-col>
+              </v-row>
+            </UploadPanelSecondaryTile>
 
-                  <v-col cols='6'>
-                    <DeduceTagsTile @click='deduceTags' />
-                  </v-col>
+            <UploadPanelSecondaryTile
+              :disabled='!isFileProvided()'
+              title='Actions'
+              class='secondary-column-field'>
 
-                </v-row>
-              </v-card-text>
-            </v-card>
+              <v-row columns='12' dense>
+                <v-col cols='6'>
+                  <DeduceTagsTile @click='deduceTags' />
+                </v-col>
+              </v-row>
+            </UploadPanelSecondaryTile>
 
             <v-btn
               :disabled='!isFileProvided()'
@@ -84,9 +74,13 @@ import BasicTagPicker from '../tags/components/BasicTagPicker.vue';
 import TagsProviderService from '../tags/mixins/tags-provider.service';
 import TagsDeductionService from '../tags/mixins/tags-deduction.service';
 import DeduceTagsTile from './components/DeduceTagsTile.vue';
+import UploadTile from './components/UploadTile.vue';
+import UploadPanelSecondaryTile from './components/UploadPanelSecondaryTile.vue';
 
 @Component({
   components: {
+    UploadPanelSecondaryTile,
+    UploadTile,
     BasicTagPicker,
     DeduceTagsTile
   }
@@ -98,12 +92,10 @@ export default class UploadPanel extends Mixins(ApiClientService, TagsDeductionS
   uploadInProgress = false;
   uploadButtonLabel = 'Upload';
 
-  handleNewFile() {
-    const fe = this.$refs.fileUpload as HTMLInputElement;
-    if (fe == null || fe.files == null) {
-      return;
-    }
-    this.currentFile = fe.files[0];
+  isPrivate = false;
+
+  updateFile(file: File | null) {
+    this.currentFile = file;
     this.uploadButtonLabel = 'Upload';
   }
 
@@ -121,6 +113,7 @@ export default class UploadPanel extends Mixins(ApiClientService, TagsDeductionS
     const data = new FormData();
     data.append('File', this.currentFile as any);
     data.append('Tags', JSON.stringify(this.tagNames));
+    data.append('IsPrivate', JSON.stringify(this.isPrivate));
     const headers = { 'Content-Type': 'multipart/form-data' };
 
     this.uploadInProgress = true;
@@ -140,28 +133,6 @@ export default class UploadPanel extends Mixins(ApiClientService, TagsDeductionS
 </script>
 
 <style scoped>
-.upload-field {
-  min-height: 50vh;
-  max-height: 90vh;
-  background-color: var(--v-secondary-darken1);
-}
-
-.upload-field .upload-icon {
-  font-size: 8em;
-  flex: 0 1 auto;
-}
-
-.upload-field .file-input {
-  opacity: 0;
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  width: 100%;
-  height: 100%;
-}
-
 .secondary-column-field + .secondary-column-field {
   margin-top: .5em;
 }
