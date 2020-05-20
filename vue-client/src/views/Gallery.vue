@@ -1,6 +1,12 @@
 <template>
   <div class='wrapper'>
-    <MediaGallery :instances='mediaInstances'></MediaGallery>
+    <MediaGallery
+      v-if='!isLoading'
+      :instances='mediaInstances'></MediaGallery>
+    <div v-else class='loading-spinner'>
+      <v-progress-circular indeterminate></v-progress-circular>
+    </div>
+
     <SettingsMenu
       @revise='isOpen = true'>
     </SettingsMenu>
@@ -30,6 +36,7 @@ export default class Gallery extends Mixins(ApiClientService) {
   mediaInstances: IMediaInstance[] = [];
 
   isOpen = false;
+  isLoading = true;
 
   created() {
     this.refreshBrowseToken(this.loadMedia);
@@ -41,9 +48,13 @@ export default class Gallery extends Mixins(ApiClientService) {
 
   private loadMedia() {
     this.$api.get<IMediaInstance[]>(`media?q=${this.galleryData}`)
-      .then(response => this.mediaInstances = response.data)
+      .then(response => {
+        this.mediaInstances = response.data;
+        this.isLoading = false;
+      })
       .catch(err => {
         this.$store.dispatch('reportError', 'Failed to load the media.');
+        this.isLoading = false;
       });
   }
 
@@ -67,9 +78,17 @@ export default class Gallery extends Mixins(ApiClientService) {
 
 <style scoped>
 .wrapper {
+  position: relative;
   width: 100%;
   height: 100%;
   margin: 0;
   padding: 0;
+}
+
+.loading-spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 </style>
