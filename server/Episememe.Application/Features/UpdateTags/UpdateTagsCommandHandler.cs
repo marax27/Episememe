@@ -27,7 +27,7 @@ namespace Episememe.Application.Features.UpdateTags
                 .SingleAsync(a => a.Id == request.Id, cancellationToken);
 
             if (editedInstance.IsPrivate && editedInstance.AuthorId != request.UserId)
-                throw new MediaDoesNotBelongToUser(request.UserId ?? string.Empty);
+                throw new MediaDoesNotBelongToUserException(request.UserId ?? string.Empty);
 
             ICollection<MediaTag> mediaTags = ConvertStringsToTags(request.Tags, editedInstance)
                 .Select(t => new MediaTag()

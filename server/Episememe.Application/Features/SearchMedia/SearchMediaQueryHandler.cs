@@ -1,12 +1,12 @@
 ﻿using Episememe.Application.DataTransfer;
+using Episememe.Application.Filtering;
+using Episememe.Application.Filtering.BaseFiltering;
 using Episememe.Application.Interfaces;
+using Episememe.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
-using Episememe.Application.Filtering;
-using Episememe.Application.Filtering.BaseFiltering;
-using Episememe.Domain.Entities;
 
 namespace Episememe.Application.Features.SearchMedia
 {
@@ -22,17 +22,24 @@ namespace Episememe.Application.Features.SearchMedia
             var mediaInstances = _context.MediaInstances
                 .Include(x => x.MediaTags)
                 .ThenInclude(x => x.Tag);
-            var mediaFilter = new MediaFilter(request.SearchMediaData.IncludedTags, request.SearchMediaData.ExcludedTags,
-                request.SearchMediaData.TimeRangeStart, request.SearchMediaData.TimeRangeEnd);
-            var privateMediaFilter = new PrivateMediaFilter(request.SearchMediaData.UserId);
-            var filterChain = new FilterChain<MediaInstance>(mediaFilter, privateMediaFilter);
 
-            var filteredMedia = filterChain.Filter(mediaInstances.ToList().AsReadOnly())
+            var filter = ConstructFilter(request.SearchMediaData);
+            var filteredMedia = filter.Filter(mediaInstances.ToList().AsReadOnly())
                 .Select(mi =>
                     new MediaInstanceDto(mi.Id, mi.DataType, mi.MediaTags.Select(mt => mt.Tag.Name))
                 );
 
             return filteredMedia;
+        }
+
+        private IFilter<MediaInstance> ConstructFilter(SearchMediaData searchMediaData)
+        {
+            var mediaFilter = new MediaFilter(searchMediaData.IncludedTags, searchMediaData.ExcludedTags,
+                searchMediaData.TimeRangeStart, searchMediaData.TimeRangeEnd);
+            var privateMediaFilter = new PrivateMediaFilter(searchMediaData.UserId);
+            var filterChain = new FilterChain<MediaInstance>(mediaFilter, privateMediaFilter);
+
+            return filterChain;
         }
     }
 }

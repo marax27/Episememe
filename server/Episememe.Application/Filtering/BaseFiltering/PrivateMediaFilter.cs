@@ -23,8 +23,7 @@ namespace Episememe.Application.Filtering.BaseFiltering
             var filteredMedia = mediaInstances;
             if (!string.IsNullOrEmpty(_userId))
             {
-                filteredMedia = mediaInstances.Where(mi => !mi.IsPrivate
-                                                           || (mi.IsPrivate && mi.AuthorId == _userId))
+                filteredMedia = mediaInstances.Where(mi => !mi.IsPrivate || mi.AuthorId == _userId)
                     .ToList()
                     .AsReadOnly();
             }

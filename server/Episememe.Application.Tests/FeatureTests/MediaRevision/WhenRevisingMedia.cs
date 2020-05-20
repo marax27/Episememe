@@ -94,7 +94,7 @@ namespace Episememe.Application.Tests.FeatureTests.MediaRevision
             var handler = new UpdateTagsCommandHandler(_contextMock);
             Action act = () => handler.Handle(command, CancellationToken.None).Wait();
 
-            act.Should().Throw<MediaDoesNotBelongToUser>();
+            act.Should().Throw<MediaDoesNotBelongToUserException>();
         }
 
         public MediaInstance CreateExampleDatabaseInstance()

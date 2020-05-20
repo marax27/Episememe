@@ -23,7 +23,7 @@ namespace Episememe.Application.Features.FileMedia
             var mediaInstance = _context.MediaInstances.Single(mi => mi.Id == request.Id);
 
             if (mediaInstance.IsPrivate && mediaInstance.AuthorId != request.UserId)
-                throw new MediaDoesNotBelongToUser(request.UserId ?? string.Empty);
+                throw new MediaDoesNotBelongToUserException(request.UserId ?? string.Empty);
 
             try
             {
