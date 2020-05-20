@@ -113,6 +113,7 @@ export default class UploadPanel extends Mixins(ApiClientService, TagsDeductionS
     const data = new FormData();
     data.append('File', this.currentFile as any);
     data.append('Tags', JSON.stringify(this.tagNames));
+    data.append('IsPrivate', JSON.stringify(this.isPrivate));
     const headers = { 'Content-Type': 'multipart/form-data' };
 
     this.uploadInProgress = true;
