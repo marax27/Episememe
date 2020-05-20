@@ -39,37 +39,43 @@ export default class Gallery extends Mixins(ApiClientService) {
   isLoading = true;
 
   created() {
-    this.refreshBrowseToken(this.loadMedia);
+    this.refreshBrowseToken()
+      .then(onSuccess => this.loadMedia())
+      .then(
+        onSuccess => this.finalizeLoading(),
+        onFailure => {
+          this.$store.dispatch('reportError', 'Failed to retrieve data from the server.');
+          this.finalizeLoading();
+        });
   }
 
   public get galleryData() {
     return this.$route.params.data;
   }
 
+  private finalizeLoading() {
+    this.isLoading = false;
+  }
+
   private loadMedia() {
-    this.$api.get<IMediaInstance[]>(`media?q=${this.galleryData}`)
+    return this.$api.get<IMediaInstance[]>(`media?q=${this.galleryData}`)
       .then(response => {
         this.mediaInstances = response.data;
-        this.isLoading = false;
       })
       .catch(err => {
         this.$store.dispatch('reportError', 'Failed to load the media.');
-        this.isLoading = false;
       });
   }
 
-  private refreshBrowseToken(afterCompletion: () => void) {
+  private refreshBrowseToken() {
     return this.$api
       .post<string>('authorization', {})
       .then(response => {
-        this.$store.dispatch('refreshBrowseToken', response.data)
-          .then(_ => afterCompletion());
-      })
-      .catch(err => {
-        if (this.$store.state.browseToken != null) {
-          afterCompletion();
-        } else {
-          this.$store.dispatch('reportError', 'Failed to retrieve data from the server.');
+        return this.$store.dispatch('refreshBrowseToken', response.data);
+      }, onFailure => {
+        // If there is a token in store, suppress the error and try with an existing token.
+        if (this.$store.state.browseToken == null) {
+          return Promise.reject();
         }
       });
   }
