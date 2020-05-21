@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Episememe.Api.Utilities;
 using Episememe.Application.Features.GenerateBrowseToken;
 using Episememe.Application.Features.IssueBrowseToken;
 using MediatR;
@@ -25,7 +26,7 @@ namespace Episememe.Api.Controllers
             var query = GenerateBrowseTokenQuery.Create();
             var browseToken = await _mediator.Send(query);
 
-            var command = IssueBrowseTokenCommand.Create(browseToken);
+            var command = IssueBrowseTokenCommand.Create(browseToken, User.GetUserId());
             await _mediator.Send(command);
             return browseToken;
         }

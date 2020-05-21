@@ -35,7 +35,7 @@ namespace Episememe.Api.Controllers
             if (!isTokenValid)
                 return Unauthorized();
 
-            var fileQuery = FileMediaQuery.Create(id, User.GetUserId());
+            var fileQuery = FileMediaQuery.Create(id, token);
             var result = await _mediator.Send(fileQuery);
             return result;
         }
