@@ -11,19 +11,22 @@ namespace Episememe.Application.Features.FileMedia
     {
         private readonly IFileStorage _storage;
         private readonly IApplicationContext _context;
+        private readonly IAuthorizationContext _authorization;
 
-        public FileMediaQueryHandler(IFileStorage storage, IApplicationContext context)
+        public FileMediaQueryHandler(IFileStorage storage, IApplicationContext context, IAuthorizationContext authorization)
         {
             _storage = storage;
             _context = context;
+            _authorization = authorization;
         }
 
         protected override IActionResult Handle(FileMediaQuery request)
         {
             var mediaInstance = _context.MediaInstances.Single(mi => mi.Id == request.Id);
+            var userId = _authorization.BrowseTokens.Single(bt => bt.Id == request.Token).UserId;
 
-            if (mediaInstance.IsPrivate && mediaInstance.AuthorId != request.UserId)
-                throw new MediaDoesNotBelongToUserException(request.UserId ?? string.Empty);
+            if (mediaInstance.IsPrivate && mediaInstance.AuthorId != userId)
+                throw new MediaDoesNotBelongToUserException(request.Token ?? string.Empty);
 
             try
             {
