@@ -6,7 +6,7 @@
 
     <span v-if='instance == null'>No media instance specified.</span>
     <v-list v-else nav dense>
-      <v-chip small color='secondary'
+      <v-chip small color='secondary' class='tag'
         v-for='item in instance.tags' :key='item'>
         {{ item }}
       </v-chip>
@@ -35,3 +35,9 @@ export default class MediaSidebar extends Vue {
   }
 }
 </script>
+
+<style scoped>
+.tag {
+  margin: 2px;
+}
+</style>
