@@ -1,6 +1,12 @@
 <template>
   <div class='wrapper'>
-    <MediaGallery :instances='mediaInstances'></MediaGallery>
+    <MediaGallery
+      v-if='!isLoading'
+      :instances='mediaInstances'></MediaGallery>
+    <div v-else class='loading-spinner'>
+      <v-progress-circular indeterminate></v-progress-circular>
+    </div>
+
     <SettingsMenu
       @revise='isOpen = true'>
     </SettingsMenu>
@@ -30,26 +36,65 @@ export default class Gallery extends Mixins(ApiClientService) {
   mediaInstances: IMediaInstance[] = [];
 
   isOpen = false;
+  isLoading = true;
 
   created() {
-    this.$api.get<IMediaInstance[]>(`media?q=${this.galleryData}`)
-      .then(response => this.mediaInstances = response.data)
+    this.refreshBrowseToken()
+      .then(onSuccess => this.loadMedia())
+      .then(
+        onSuccess => this.finalizeLoading(),
+        onFailure => {
+          this.$store.dispatch('reportError', 'Failed to retrieve data from the server.');
+          this.finalizeLoading();
+        });
+  }
+
+  public get galleryData() {
+    return this.$route.params.data;
+  }
+
+  private finalizeLoading() {
+    this.isLoading = false;
+  }
+
+  private loadMedia() {
+    return this.$api.get<IMediaInstance[]>(`media?q=${this.galleryData}`)
+      .then(response => {
+        this.mediaInstances = response.data;
+      })
       .catch(err => {
         this.$store.dispatch('reportError', 'Failed to load the media.');
       });
   }
 
-  public get galleryData() {
-    return this.$route.params.data;
+  private refreshBrowseToken() {
+    return this.$api
+      .post<string>('authorization', {})
+      .then(response => {
+        return this.$store.dispatch('refreshBrowseToken', response.data);
+      }, onFailure => {
+        // If there is a token in store, suppress the error and try with an existing token.
+        if (this.$store.state.browseToken == null) {
+          return Promise.reject();
+        }
+      });
   }
 }
 </script>
 
 <style scoped>
 .wrapper {
+  position: relative;
   width: 100%;
   height: 100%;
   margin: 0;
   padding: 0;
+}
+
+.loading-spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 </style>

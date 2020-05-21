@@ -29,29 +29,7 @@ export default class Home extends Mixins(ApiClientService) {
     const galleryData = this.createGalleryData(specification);
 
     this.searchInProgress = true;
-    this.refreshBrowseToken(() => {
-      router.push({ name: 'Gallery', params: { data: galleryData } });
-    });
-  }
-
-  private refreshBrowseToken(afterCompletion: () => void) {
-    return this.$api
-      .post<string>('authorization', {})
-      .then(response => {
-        this.$store.dispatch('refreshBrowseToken', response.data)
-          .then(_ => afterCompletion());
-      })
-      .catch(err => {
-        if (this.$store.state.browseToken != null) {
-          afterCompletion();
-        } else {
-          this.reportError();
-        }
-      });
-  }
-
-  private reportError() {
-    this.$store.dispatch('reportError', 'Failed to retrieve data from the server.');
+    router.push({ name: 'Gallery', params: { data: galleryData } });
   }
 
   private createGalleryData(specification: ISearchSpecification): string {
