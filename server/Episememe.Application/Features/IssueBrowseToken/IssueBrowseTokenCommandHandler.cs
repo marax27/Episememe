@@ -24,7 +24,7 @@ namespace Episememe.Application.Features.IssueBrowseToken
         public async Task<Unit> Handle(IssueBrowseTokenCommand request, CancellationToken cancellationToken)
         {
             RemoveExpiredTokens();
-            AddNewToken(request.TokenValue);
+            AddNewToken(request.TokenValue, request.UserId);
             await _context.SaveChangesAsync(CancellationToken.None);
             return Unit.Value;
         }
@@ -36,11 +36,12 @@ namespace Episememe.Application.Features.IssueBrowseToken
             _context.BrowseTokens.RemoveRange(expiredTokens);
         }
 
-        private void AddNewToken(string token)
+        private void AddNewToken(string token, string? userId)
         {
             var browseToken = new BrowseToken
             {
                 Id = token,
+                UserId = userId,
                 ExpirationTime = _timeProvider.GetUtc() + _timeToExpiration
             };
             _context.BrowseTokens.Add(browseToken);

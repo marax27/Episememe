@@ -50,7 +50,7 @@ namespace Episememe.Application.Tests.FeatureTests.IssueBrowseToken
         [Fact]
         public void GivenSampleToken_ThenSingleTokenIsAdded()
         {
-            var command = IssueBrowseTokenCommand.Create("AB12ab");
+            var command = IssueBrowseTokenCommand.Create("AB12ab", null);
 
             var sut = new IssueBrowseTokenCommandHandler(_authorizationContextMock.Object, _timeProviderMock.Object);
             sut.Handle(command, CancellationToken.None).Wait();
@@ -61,7 +61,7 @@ namespace Episememe.Application.Tests.FeatureTests.IssueBrowseToken
         [Fact]
         public void GivenSampleToken_ThenTokenHasExpectedValue()
         {
-            var command = IssueBrowseTokenCommand.Create("AB12ab");
+            var command = IssueBrowseTokenCommand.Create("AB12ab", null);
 
             var sut = new IssueBrowseTokenCommandHandler(_authorizationContextMock.Object, _timeProviderMock.Object);
             sut.Handle(command, CancellationToken.None).Wait();
@@ -72,7 +72,7 @@ namespace Episememe.Application.Tests.FeatureTests.IssueBrowseToken
         [Fact]
         public void GivenSampleToken_ThenExpirationTimeIsInTheFuture()
         {
-            var command = IssueBrowseTokenCommand.Create("AB12ab");
+            var command = IssueBrowseTokenCommand.Create("AB12ab", null);
 
             var sut = new IssueBrowseTokenCommandHandler(_authorizationContextMock.Object, _timeProviderMock.Object);
             sut.Handle(command, CancellationToken.None).Wait();
@@ -84,7 +84,7 @@ namespace Episememe.Application.Tests.FeatureTests.IssueBrowseToken
         public void GivenSampleToken_ThenExpiredTokensAreRemoved()
         {
             var expectedRemovedTokens = _givenBrowseTokens.Where(token => token.ExpirationTime <= _givenDate);
-            var command = IssueBrowseTokenCommand.Create("AB12ab");
+            var command = IssueBrowseTokenCommand.Create("AB12ab", null);
 
             var sut = new IssueBrowseTokenCommandHandler(_authorizationContextMock.Object, _timeProviderMock.Object);
             sut.Handle(command, CancellationToken.None).Wait();
