@@ -15,6 +15,7 @@ namespace Episememe.Application.Tests.FeatureTests.IssueBrowseToken
 {
     public class WhenIssuingBrowseToken
     {
+        private const string SampleUserId = "user";
         private readonly DateTime _givenDate = new DateTime(2020, 5, 1);
         private readonly ISet<BrowseToken> _givenBrowseTokens = new HashSet<BrowseToken>
         {
@@ -50,7 +51,7 @@ namespace Episememe.Application.Tests.FeatureTests.IssueBrowseToken
         [Fact]
         public void GivenSampleToken_ThenSingleTokenIsAdded()
         {
-            var command = IssueBrowseTokenCommand.Create("AB12ab", null);
+            var command = IssueBrowseTokenCommand.Create("AB12ab", SampleUserId);
 
             var sut = new IssueBrowseTokenCommandHandler(_authorizationContextMock.Object, _timeProviderMock.Object);
             sut.Handle(command, CancellationToken.None).Wait();
@@ -61,7 +62,7 @@ namespace Episememe.Application.Tests.FeatureTests.IssueBrowseToken
         [Fact]
         public void GivenSampleToken_ThenTokenHasExpectedValue()
         {
-            var command = IssueBrowseTokenCommand.Create("AB12ab", null);
+            var command = IssueBrowseTokenCommand.Create("AB12ab", SampleUserId);
 
             var sut = new IssueBrowseTokenCommandHandler(_authorizationContextMock.Object, _timeProviderMock.Object);
             sut.Handle(command, CancellationToken.None).Wait();
@@ -72,7 +73,7 @@ namespace Episememe.Application.Tests.FeatureTests.IssueBrowseToken
         [Fact]
         public void GivenSampleToken_ThenExpirationTimeIsInTheFuture()
         {
-            var command = IssueBrowseTokenCommand.Create("AB12ab", null);
+            var command = IssueBrowseTokenCommand.Create("AB12ab", SampleUserId);
 
             var sut = new IssueBrowseTokenCommandHandler(_authorizationContextMock.Object, _timeProviderMock.Object);
             sut.Handle(command, CancellationToken.None).Wait();
@@ -84,7 +85,7 @@ namespace Episememe.Application.Tests.FeatureTests.IssueBrowseToken
         public void GivenSampleToken_ThenExpiredTokensAreRemoved()
         {
             var expectedRemovedTokens = _givenBrowseTokens.Where(token => token.ExpirationTime <= _givenDate);
-            var command = IssueBrowseTokenCommand.Create("AB12ab", null);
+            var command = IssueBrowseTokenCommand.Create("AB12ab", SampleUserId);
 
             var sut = new IssueBrowseTokenCommandHandler(_authorizationContextMock.Object, _timeProviderMock.Object);
             sut.Handle(command, CancellationToken.None).Wait();
