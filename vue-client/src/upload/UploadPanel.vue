@@ -105,7 +105,9 @@ export default class UploadPanel extends Mixins(ApiClientService, TagsDeductionS
 
   deduceTags() {
     if (this.currentFile != null) {
-      this.tagNames = this.deduceTagsForFile(this.currentFile);
+      const newTagNames = this.deduceTagsForFile(this.currentFile)
+        .filter(name => !this.tagNames.includes(name));
+      newTagNames.forEach(name => this.tagNames.push(name));
     }
   }
 
