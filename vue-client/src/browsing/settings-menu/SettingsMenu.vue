@@ -3,7 +3,6 @@
     absolute
     v-model='speedDialIsOpen'
     :right='true' :bottom='true'
-    direction='top' transition='slide-y-reverse-transition'
     :open-on-hover='true'>
 
     <template v-slot:activator>
@@ -12,29 +11,29 @@
       </v-btn>
     </template>
 
-    <v-tooltip left v-for='item in menuButtons' :key='item.name'>
-      <template v-slot:activator='{ on }'>
-        <v-btn @click='item.callback'
-          v-on='on' fab small color='secondary' @click.stop>
-          <v-icon>{{ item.icon }}</v-icon>
-        </v-btn>
-      </template>
-      <span>{{ item.name }}</span>
-    </v-tooltip>
+    <BaseSettingsMenuButton
+      v-for='item in menuButtons' :key='item.name'
+      :label='item.name' :icon='item.icon'/>
 
   </v-speed-dial>
 </template>
 
 <script lang='ts'>
 import { Component, Vue } from 'vue-property-decorator';
+import BaseSettingsMenuButton from './buttons/BaseSettingsMenuButton.vue';
 
-@Component
+@Component({
+  components: {
+    BaseSettingsMenuButton,
+  }
+})
 export default class SettingsMenu extends Vue {
   menuButtons = [
     { name: 'Revise', icon: 'mdi-square-edit-outline', callback: this.startRevision },
     { name: 'Favourite', icon: 'mdi-star', callback: this.foo },
     { name: 'Hide', icon: 'mdi-eye-off', callback: this.foo },
     { name: 'Volume', icon: 'mdi-volume-high', callback: this.foo },
+    { name: 'Loop', icon: 'mdi-restart', callback: this.foo },
     { name: 'Fill space', icon: 'mdi-arrow-expand', callback: this.foo },
   ];
 
