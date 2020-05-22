@@ -9,7 +9,6 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import ContentWrapper from '../shared/components/content-wrapper/ContentWrapper.vue';
-import store from '../store';
 
 @Component({
   name: 'User',

@@ -21,7 +21,7 @@
 </template>
 
 <script lang='ts'>
-import { Component, Prop, Vue, Mixins } from 'vue-property-decorator';
+import { Component, Prop, Mixins } from 'vue-property-decorator';
 import { IMediaInstance } from '../../../shared/models/IMediaInstance';
 import ImageComponent from './subcomponents/ImageComponent.vue';
 import VideoComponent from './subcomponents/VideoComponent.vue';

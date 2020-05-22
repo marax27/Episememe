@@ -119,14 +119,14 @@ export default class UploadPanel extends Mixins(ApiClientService, TagsDeductionS
     const headers = { 'Content-Type': 'multipart/form-data' };
 
     this.uploadInProgress = true;
-    this.$api.post<any>('files', data, headers)
-      .then(response => {
+    this.$api.post<void>('files', data, headers)
+      .then(_response => {
         this.uploadInProgress = false;
         this.currentFile = null;
         this.uploadButtonLabel = 'Uploaded';
         this.refreshTags();
       })
-      .catch(err => {
+      .catch(_err => {
         this.uploadInProgress = false;
         this.$store.dispatch('reportError', 'Failed to upload the file.');
       });

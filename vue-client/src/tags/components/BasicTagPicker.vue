@@ -66,7 +66,7 @@ export default class BasicTagPicker extends Mixins(TagsProviderService) {
   }
 
   @Watch('selectedItems')
-  onSelectedItemsChange(value: string[]) {
+  onSelectedItemsChange(_newValue: string[]) {
     this.userInput = '';
     this._emitItems();
   }

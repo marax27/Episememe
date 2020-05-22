@@ -1,6 +1,5 @@
 import Vue from 'vue';
 import Vuetify from 'vuetify/lib';
-import colors from 'vuetify/lib/util/colors';
 
 const darkColorPalette = {
     primary: '#7462b5',

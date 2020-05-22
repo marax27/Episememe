@@ -30,7 +30,7 @@ export default class TagsProviderService extends Mixins(ApiClientService) {
     this.$api.get<ITag[]>('tags')
       .then(response => {
         this.$store.dispatch('updateTags', response.data);
-      }).catch(err => {
+      }).catch(_err => {
         this.$store.dispatch('reportError', 'Failed to load data from the server.');
       });
   }

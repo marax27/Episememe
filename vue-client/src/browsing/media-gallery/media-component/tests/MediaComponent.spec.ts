@@ -10,7 +10,7 @@ const apiClientMock = {
 };
 
 [
-  new ctx.GivenSampleImage(),
+  new ctx.GivenSampleImage(), 
   new ctx.GivenSampleVideo(),
   new ctx.GivenSamplePdf(),
   new ctx.GivenInactiveImage(),

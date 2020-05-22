@@ -26,9 +26,9 @@ describe('ApiClient Test: URL creation', () => {
       parameters: { x: '   ' },
       expectedResult: 'http://example/api/sample?x=%20%20%20'
     }
-  ].forEach(context => {
+  ].forEach((context: {parameters: {}; expectedResult: string}) => {
     it(`creates an expected URL for ${JSON.stringify(context.parameters)}`, () => {
-      const givenParameters = context.parameters as any;
+      const givenParameters = context.parameters;
       const actualResult = sut.createUrl(givenResource, givenParameters);
       expect(actualResult).toBe(context.expectedResult);
     });

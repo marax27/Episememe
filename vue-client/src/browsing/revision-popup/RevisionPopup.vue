@@ -92,13 +92,13 @@ export default class RevisionPopup extends Mixins(ApiClientService, TagsProvider
     const mediaId = this.currentInstance.id;
     const headers = { 'Content-Type': 'multipart/form-data' };
 
-    this.$api.patch<any>(`media/${mediaId}`, data, headers)
-      .then(response => {
+    this.$api.patch<void>(`media/${mediaId}`, data, headers)
+      .then(_response => {
         this.updateLocalMediaInstance();
         this.refreshTags();
         this.close();
       })
-      .catch(err => {
+      .catch(_err => {
         this.$store.dispatch('reportError', 'Failed to complete the revision.');
       });
   }

@@ -15,7 +15,6 @@
 
 <script lang='ts'>
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { IMediaInstance } from '../../../../shared/models/IMediaInstance';
 
 @Component
 export default class DownloadLinkComponent extends Vue {
