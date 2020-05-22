@@ -24,6 +24,7 @@ export default class VideoComponent extends Vue {
 
   mounted() {
     this.updateIsMuted();
+    this.updateAutoloop();
   }
 
   @Watch('active')
@@ -37,12 +38,23 @@ export default class VideoComponent extends Vue {
   private get isMuted(): boolean {
     return this.$store.state.gallery.isMuted;
   }
-  @Watch('isMuted') onIsMutedChange(newValue: boolean) {
+  @Watch('isMuted') onIsMutedChange() {
     this.updateIsMuted();
   }
 
   private updateIsMuted() {
     this.video.muted = this.isMuted;
+  }
+
+  private get autoloop(): boolean {
+    return this.$store.state.gallery.autoloop;
+  }
+  @Watch('autoloop') onAutoloopChange() {
+    this.updateAutoloop();
+  }
+
+  private updateAutoloop() {
+    this.video.loop = this.autoloop;
   }
 
   private get video(): HTMLMediaElement {
