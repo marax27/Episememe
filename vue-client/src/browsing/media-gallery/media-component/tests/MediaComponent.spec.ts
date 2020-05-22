@@ -27,7 +27,12 @@ const apiClientMock = {
       Vue.use(Vuex);
 
       store = new Vuex.Store({
-        state: { browseToken: 'sampleToken' }
+        state: {
+          browseToken: 'sampleToken',
+          gallery: {
+            state: { isMuted: true, autoloop: false }
+          }
+        },
       });
     });
   
