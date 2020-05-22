@@ -15,6 +15,7 @@
     <BaseSettingsMenuButton
       v-for='item in menuButtons' :key='item.name'
       :label='item.name' :icon='item.icon' />
+    <VolumeMenuButton @click='toggleVolume' />
 
   </v-speed-dial>
 </template>
@@ -23,18 +24,19 @@
 import { Component, Vue } from 'vue-property-decorator';
 import BaseSettingsMenuButton from './buttons/BaseSettingsMenuButton.vue';
 import RevisionMenuButton from './buttons/RevisionMenuButton.vue';
+import VolumeMenuButton from './buttons/VolumeMenuButton.vue';
 
 @Component({
   components: {
     BaseSettingsMenuButton,
     RevisionMenuButton,
+    VolumeMenuButton,
   }
 })
 export default class SettingsMenu extends Vue {
   menuButtons = [
     { name: 'Favourite', icon: 'mdi-star', callback: this.foo },
     { name: 'Hide', icon: 'mdi-eye-off', callback: this.foo },
-    { name: 'Volume', icon: 'mdi-volume-high', callback: this.foo },
     { name: 'Loop', icon: 'mdi-restart', callback: this.foo },
     { name: 'Fill space', icon: 'mdi-arrow-expand', callback: this.foo },
   ];
@@ -47,6 +49,10 @@ export default class SettingsMenu extends Vue {
 
   startRevision() {
     this.$emit('revise');
+  }
+
+  toggleVolume() {
+    this.$store.dispatch('gallery/toggleVolume');
   }
 }
 </script>

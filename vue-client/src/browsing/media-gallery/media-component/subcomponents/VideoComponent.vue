@@ -22,13 +22,31 @@ export default class VideoComponent extends Vue {
   @Prop()
   active?: boolean;
 
+  mounted() {
+    this.updateIsMuted();
+  }
+
   @Watch('active')
   private onActiveChanged(value: boolean) {
-    const el = this.$refs.videoRef as HTMLMediaElement;
-    el.load();
+    this.video.load();
     if (value) {
-      el.play();
+      this.video.play();
     }
+  }
+
+  private get isMuted(): boolean {
+    return this.$store.state.gallery.isMuted;
+  }
+  @Watch('isMuted') onIsMutedChange(newValue: boolean) {
+    this.updateIsMuted();
+  }
+
+  private updateIsMuted() {
+    this.video.muted = this.isMuted;
+  }
+
+  private get video(): HTMLMediaElement {
+    return this.$refs.videoRef as HTMLMediaElement;
   }
 }
 </script>
