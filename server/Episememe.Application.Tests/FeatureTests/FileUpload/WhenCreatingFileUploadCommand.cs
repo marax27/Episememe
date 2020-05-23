@@ -2,7 +2,6 @@
 using Episememe.Application.Tests.Helpers;
 using FluentAssertions;
 using System;
-using System.Collections.Generic;
 using Episememe.Application.DataTransfer;
 using Xunit;
 
@@ -14,7 +13,7 @@ namespace Episememe.Application.Tests.FeatureTests.FileUpload
         public const string SampleAuthorId = "SampleAuthor";
 
         [Fact]
-        public void GivenNullFormFile_ExceptionIsThrown()
+        public void GivenNullFormFile_ThenThrowsArgumentNullException()
         {
             var givenTags = new[] { "pigeons", "flying rats" };
             var givenMediaDto = new FileUploadDto(givenTags, SampleUploadDate, false);
@@ -24,14 +23,21 @@ namespace Episememe.Application.Tests.FeatureTests.FileUpload
         }
 
         [Fact]
-        public void GivenNullTags_ExceptionIsThrown()
+        public void GivenNullTags_ThenThrowsArgumentNullException()
         {
-            var givenFileName = "newFile";
-            var givenFileContent = "None";
-            var givenFormFile = FormFileFactory.Create(givenFileName, givenFileContent);
+            var givenFormFile = FormFileFactory.Create("filename1234", "file content");
             var givenMediaDto = new FileUploadDto(null, SampleUploadDate, false);
 
             Action act = () => FileUploadCommand.Create(givenFormFile, givenMediaDto, SampleAuthorId);
+            act.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        public void GivenNullMediaDto_ThenThrowsArgumentNullException()
+        {
+            var givenFormFile = FormFileFactory.Create("filename1234", "file content");
+
+            Action act = () => FileUploadCommand.Create(givenFormFile, null, SampleAuthorId);
             act.Should().Throw<ArgumentNullException>();
         }
     }
