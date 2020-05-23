@@ -113,8 +113,11 @@ export default class UploadPanel extends Mixins(ApiClientService, TagsDeductionS
   }
 
   upload() {
+    if (this.currentFile == null)
+      return;
+
     const headers = { 'Content-Type': 'multipart/form-data' };
-    const data = this.createRequestPayload();
+    const data = this.createRequestPayload(this.currentFile);
 
     this.uploadInProgress = true;
     this.$api.post<void>('files', data, headers)
@@ -130,13 +133,13 @@ export default class UploadPanel extends Mixins(ApiClientService, TagsDeductionS
       });
   }
 
-  private createRequestPayload(): FormData {
+  private createRequestPayload(file: File): FormData {
     const data = new FormData();
-    data.append('File', this.currentFile as any);
+    data.append('File', file as any);
 
     const mediaDto: FileUploadDto = {
       tags: this.tagNames,
-      timestamp: new Date(this.currentFile.lastModified),
+      timestamp: new Date(file.lastModified),
       isPrivate: this.isPrivate
     };
     data.append('Media', JSON.stringify(mediaDto));
