@@ -34,6 +34,7 @@ namespace Episememe.Application.Features.FileMedia
                 string mimeType = "application/octet-stream";
                 return new FileStreamResult(stream, mimeType)
                 {
+                    EnableRangeProcessing = true,
                     FileDownloadName = request.Id
                 };
             }
