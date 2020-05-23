@@ -1,33 +1,33 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Http;
 using System;
-using System.Collections.Generic;
+using Episememe.Application.DataTransfer;
 
 namespace Episememe.Application.Features.FileUpload
 {
     public class FileUploadCommand : IRequest
     {
         public IFormFile FormFile { get; }
-        public IEnumerable<string> Tags { get; }
+        public FileUploadDto MediaDto { get; }
         public string? AuthorId { get; }
-        public bool IsPrivate { get; }
 
-        private FileUploadCommand(IFormFile formFile, IEnumerable<string> tags, string? authorId, bool isPrivate)
+        private FileUploadCommand(IFormFile formFile, FileUploadDto mediaDto, string? authorId)
         {
             FormFile = formFile;
-            Tags = tags;
+            MediaDto = mediaDto;
             AuthorId = authorId;
-            IsPrivate = isPrivate;
         }
 
-        public static FileUploadCommand Create(IFormFile? formFile, IEnumerable<string>? tags, string? authorId, bool isPrivate)
+        public static FileUploadCommand Create(IFormFile? formFile, FileUploadDto mediaDto, string? authorId)
         {
             if (formFile == null)
                 throw new ArgumentNullException(nameof(formFile));
-            if (tags == null)
-                throw new ArgumentNullException(nameof(tags));
+            if (mediaDto == null)
+                throw new ArgumentNullException(nameof(mediaDto));
+            if (mediaDto.Tags == null)
+                throw new ArgumentNullException(nameof(mediaDto.Tags));
 
-            return new FileUploadCommand(formFile, tags, authorId, isPrivate);
+            return new FileUploadCommand(formFile, mediaDto, authorId);
         }
     }
 }
