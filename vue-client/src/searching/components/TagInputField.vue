@@ -28,7 +28,7 @@
       <template v-if='typeof data.item !== "object"'>
         <v-list-item-content v-text='data.item'></v-list-item-content>
       </template>
-      <template v-else>
+    <template v-else>
         <v-list-item-content>
           <v-list-item-title>{{ data.item.name }}</v-list-item-title>
           <v-list-item-subtitle v-if='data.item.name !== data.item.description'>{{ data.item.description }}</v-list-item-subtitle>
@@ -41,7 +41,6 @@
 
 <script lang='ts'>
 import { Component, Watch, Mixins } from 'vue-property-decorator';
-import { ITag } from '../../shared/models/ITag';
 import TagsProviderService from '../../tags/mixins/tags-provider.service';
 
 @Component
@@ -73,13 +72,13 @@ export default class TagInputField extends Mixins(TagsProviderService) {
   }
 
   @Watch('selectedItems')
-  onSelectedItemsChange(value: string[]) {
+  onSelectedItemsChange(_newValue: string[]) {
     this.userInput = '';
     this._emitItems();
   }
 
   @Watch('excludedTagNames')
-  onExcludedTagNamesChange(value: string[]) {
+  onExcludedTagNamesChange(_newValue: string[]) {
     this._emitItems();
   }
 

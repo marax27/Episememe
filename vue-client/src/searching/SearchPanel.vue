@@ -54,7 +54,7 @@
 </template>
 
 <script lang='ts'>
-import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
+import { Component, Vue, Prop } from 'vue-property-decorator';
 import { ISearchSpecification } from '../searching/interfaces/ISearchSpecification';
 import MonthPicker from './components/MonthPicker.vue';
 import TagInputField from './components/TagInputField.vue';

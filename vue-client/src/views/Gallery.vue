@@ -17,7 +17,7 @@
 </template>
 
 <script lang='ts'>
-import { Component, Vue, Mixins } from 'vue-property-decorator';
+import { Component, Mixins } from 'vue-property-decorator';
 import MediaGallery from '@/browsing/media-gallery/MediaGallery.vue';
 import RevisionPopup from '@/browsing/revision-popup/RevisionPopup.vue';
 import SettingsMenu from '@/browsing/SettingsMenu.vue';
@@ -40,10 +40,10 @@ export default class Gallery extends Mixins(ApiClientService) {
 
   created() {
     this.refreshBrowseToken()
-      .then(onSuccess => this.loadMedia())
+      .then(_onSuccess => this.loadMedia())
       .then(
-        onSuccess => this.finalizeLoading(),
-        onFailure => {
+        _onSuccess => this.finalizeLoading(),
+        _onFailure => {
           this.$store.dispatch('reportError', 'Failed to retrieve data from the server.');
           this.finalizeLoading();
         });
@@ -62,7 +62,7 @@ export default class Gallery extends Mixins(ApiClientService) {
       .then(response => {
         this.mediaInstances = response.data;
       })
-      .catch(err => {
+      .catch(_err => {
         this.$store.dispatch('reportError', 'Failed to load the media.');
       });
   }
@@ -72,7 +72,7 @@ export default class Gallery extends Mixins(ApiClientService) {
       .post<string>('authorization', {})
       .then(response => {
         return this.$store.dispatch('refreshBrowseToken', response.data);
-      }, onFailure => {
+      }, _onFailure => {
         // If there is a token in store, suppress the error and try with an existing token.
         if (this.$store.state.browseToken == null) {
           return Promise.reject();

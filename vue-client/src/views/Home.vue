@@ -5,14 +5,13 @@
 </template>
 
 <script lang='ts'>
-import { Component, Vue, Mixins } from 'vue-property-decorator';
+import { Component, Mixins } from 'vue-property-decorator';
 import router from '../router';
 import ContentWrapper from '../shared/components/content-wrapper/ContentWrapper.vue';
 import ApiClientService from '../shared/mixins/api-client/api-client.service';
 import SearchPanel from '../searching/SearchPanel.vue';
 import { ISearchSpecification } from '../searching/interfaces/ISearchSpecification';
 import { SearchSpecificationDto } from '../searching/interfaces/SearchSpecificationDto';
-import { ITag } from '../shared/models/ITag';
 
 @Component({
   name: 'Home',
