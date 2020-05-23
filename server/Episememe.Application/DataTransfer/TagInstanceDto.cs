@@ -4,14 +4,7 @@ namespace Episememe.Application.DataTransfer
 {
     public class TagInstanceDto
     {
-        public string Name { get; }
-        public string Description { get; }
-        
-        public TagInstanceDto(string name, string description)
-        {
-            Name = name;
-            Description = description;
-    
-        }
+        public string Name { get; set;} = null!;
+        public string? Description { get; set;}
     }
 }
