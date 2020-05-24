@@ -25,6 +25,8 @@ namespace Episememe.Application.Features.GetFavoriteMedia
         {
             var mediaInstances = _context.MediaInstances
                 .Include(mi => mi.FavoriteMedia)
+                .Include(x => x.MediaTags)
+                .ThenInclude(x => x.Tag)
                 .ToList()
                 .AsReadOnly();
 
