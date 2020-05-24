@@ -15,6 +15,7 @@
     <BaseSettingsMenuButton
       v-for='item in menuButtons' :key='item.name'
       :label='item.name' :icon='item.icon' />
+    <MediaLayoutMenuButton @click='toggleLayoutMode' />
     <VolumeMenuButton @click='toggleVolume' />
     <AutoloopMenuButton @click='toggleAutoloop' />
 
@@ -27,6 +28,7 @@ import BaseSettingsMenuButton from './buttons/BaseSettingsMenuButton.vue';
 import RevisionMenuButton from './buttons/RevisionMenuButton.vue';
 import VolumeMenuButton from './buttons/VolumeMenuButton.vue';
 import AutoloopMenuButton from './buttons/AutoloopMenuButton.vue';
+import MediaLayoutMenuButton from './buttons/MediaLayoutMenuButton.vue';
 
 @Component({
   components: {
@@ -34,13 +36,13 @@ import AutoloopMenuButton from './buttons/AutoloopMenuButton.vue';
     RevisionMenuButton,
     VolumeMenuButton,
     AutoloopMenuButton,
+    MediaLayoutMenuButton,
   }
 })
 export default class SettingsMenu extends Vue {
   menuButtons = [
     { name: 'Favourite', icon: 'mdi-star', callback: this.foo },
     { name: 'Hide', icon: 'mdi-eye-off', callback: this.foo },
-    { name: 'Fill space', icon: 'mdi-arrow-expand', callback: this.foo },
   ];
 
   speedDialIsOpen = false;
@@ -59,6 +61,10 @@ export default class SettingsMenu extends Vue {
 
   toggleAutoloop() {
     this.$store.dispatch('gallery/toggleAutoloop');
+  }
+
+  toggleLayoutMode() {
+    this.$store.dispatch('gallery/toggleLayoutMode');
   }
 }
 </script>
