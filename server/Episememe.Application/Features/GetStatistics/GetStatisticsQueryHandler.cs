@@ -19,6 +19,11 @@ namespace Episememe.Application.Features.GetStatistics
         protected override MediaTimeDto Handle(GetStatisticsQuery request)
         {
             var dates = _context.MediaInstances.Select(x => x.Timestamp).ToList();
+            if (!dates.Any() || dates == null)
+            {
+                long converted_date = (long) (_timeProvider.GetUtc().Date - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
+                return new MediaTimeDto {Dates = new List<List<long>> {new List<long> {converted_date, (long) 0}}};
+            }
             var start = dates.Min();
             var end = _timeProvider.GetUtc();
             var nbOfDailyInstances = dates.GroupBy(x => x.Date)
