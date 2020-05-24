@@ -35,8 +35,19 @@ export const gallery: Module<any, any> = {
       commit('setAutoloop', !state.autoloop);
     },
     toggleLayoutMode({ commit, state }) {
-      const newValue = state.layoutMode === LayoutModes.FitScreen
-        ? LayoutModes.FillHorizontally : LayoutModes.FitScreen;
+      let newValue: LayoutModes;
+      switch (state.layoutMode) {
+        case LayoutModes.FitScreen:
+          newValue = LayoutModes.FillHorizontally;
+          break;
+        case LayoutModes.FillHorizontally:
+          newValue = LayoutModes.FillVertically;
+          break;
+        default:
+          newValue = LayoutModes.FitScreen;
+          break;
+      }
+
       commit('setLayoutMode', newValue);
     }
   },

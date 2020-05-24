@@ -33,6 +33,10 @@ export default class MediaLayoutMenuButton extends Vue {
     [LayoutModes.FillHorizontally]: {
       label: 'Fill horizontally',
       icon: 'mdi-arrow-expand-horizontal'
+    },
+    [LayoutModes.FillVertically]: {
+      label: 'Fill vertically',
+      icon: 'mdi-arrow-expand-vertical'
     }
   };
 }

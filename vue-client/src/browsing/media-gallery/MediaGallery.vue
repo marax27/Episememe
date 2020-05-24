@@ -55,10 +55,8 @@ export default class MediaGallery extends Vue {
   sidebarOpen = false;
 
   get instanceClasses(): string[] {
-    const mode = this.$store.state.gallery.layoutMode;
-    const layoutClass = mode === LayoutModes.FitScreen
-      ? 'fit-screen' : 'fill-horizontal';
-    return ['media-instance', layoutClass];
+    const mode = this.$store.state.gallery.layoutMode as LayoutModes;
+    return ['media-instance', this.modeClasses[mode]];
   }
 
   public get isQueryEmpty(): boolean {
@@ -91,6 +89,12 @@ export default class MediaGallery extends Vue {
     // Necessary to detect when instances are first loaded.
     this.updateInstance();
   }
+
+  private modeClasses: { [key in LayoutModes]: string } = {
+    [LayoutModes.FitScreen]: 'fit-screen',
+    [LayoutModes.FillHorizontally]: 'fill-horizontal',
+    [LayoutModes.FillVertically]: 'fill-vertical',
+  };
 }
 </script>
 
@@ -117,6 +121,10 @@ export default class MediaGallery extends Vue {
 
 .media-gallery .media-instance.fill-horizontal {
   width: 100%;
+}
+
+.media-gallery .media-instance.fill-vertical {
+  height: calc(100vh - 64px);
 }
 
 .previous-instance, .next-instance {
