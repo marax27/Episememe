@@ -64,6 +64,10 @@ export default class MediaGallery extends Vue {
 
   currentlyBrowsedIndex = 0;
 
+  created() {
+    this.updateInstance();
+  }
+
   movePrevious() {
     --this.currentlyBrowsedIndex;
     if (this.currentlyBrowsedIndex < 0)
