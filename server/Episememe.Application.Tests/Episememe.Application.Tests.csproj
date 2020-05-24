@@ -22,4 +22,8 @@
     <ProjectReference Include="..\Episememe.Infrastructure\Episememe.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="FeatureTests\MarkFavoriteMedia\" />
+  </ItemGroup>
+
 </Project>
