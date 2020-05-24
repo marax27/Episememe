@@ -4,6 +4,8 @@ import Vue from 'vue';
 import MediaGallery from '../MediaGallery.vue';
 import MediaComponent from '../media-component/MediaComponent.vue';
 import * as ctx from './contexts';
+import Vuex, { Store } from 'vuex';
+import { LayoutModes } from '@/browsing/types/LayoutModes';
 
 [
   new ctx.GivenNoMediaInstances(),
@@ -13,13 +15,25 @@ import * as ctx from './contexts';
   describe(`MediaGallery Test: ${context.constructor.name}`, () => {
 
     let wrapper: ReturnType<typeof shallowMount>;
+    let store: Store<any>;
 
     beforeAll(() => {
       Vue.use(vuetify);
+      Vue.use(Vuex);
+
+      store = new Vuex.Store({
+        state: {
+          browseToken: 'sampleToken',
+          gallery: {
+            state: { layoutMode: LayoutModes.FitScreen }
+          }
+        },
+      });
     });
 
     beforeEach(() => {
       wrapper = shallowMount(MediaGallery, {
+        store,
         propsData: {
           instances: context.givenInstances
         }
