@@ -76,6 +76,7 @@ import TagsDeductionService from '../tags/mixins/tags-deduction.service';
 import DeduceTagsTile from './components/DeduceTagsTile.vue';
 import UploadTile from './components/UploadTile.vue';
 import UploadPanelSecondaryTile from './components/UploadPanelSecondaryTile.vue';
+import { FileUploadDto } from './interfaces/FileUploadDto';
 
 @Component({
   components: {
@@ -112,11 +113,11 @@ export default class UploadPanel extends Mixins(ApiClientService, TagsDeductionS
   }
 
   upload() {
-    const data = new FormData();
-    data.append('File', this.currentFile as any);
-    data.append('Tags', JSON.stringify(this.tagNames));
-    data.append('IsPrivate', JSON.stringify(this.isPrivate));
+    if (this.currentFile == null)
+      return;
+
     const headers = { 'Content-Type': 'multipart/form-data' };
+    const data = this.createRequestPayload(this.currentFile);
 
     this.uploadInProgress = true;
     this.$api.post<void>('files', data, headers)
@@ -130,6 +131,19 @@ export default class UploadPanel extends Mixins(ApiClientService, TagsDeductionS
         this.uploadInProgress = false;
         this.$store.dispatch('reportError', 'Failed to upload the file.');
       });
+  }
+
+  private createRequestPayload(file: File): FormData {
+    const data = new FormData();
+    data.append('File', file as any);
+
+    const mediaDto: FileUploadDto = {
+      tags: this.tagNames,
+      timestamp: new Date(file.lastModified),
+      isPrivate: this.isPrivate
+    };
+    data.append('Media', JSON.stringify(mediaDto));
+    return data;
   }
 }
 </script>

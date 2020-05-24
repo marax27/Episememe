@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Episememe.Application.DataTransfer;
 
 namespace Episememe.Application.Features.FileUpload
 {
@@ -17,15 +18,13 @@ namespace Episememe.Application.Features.FileUpload
     {
         private readonly IFileStorage _fileStorage;
         private readonly IWritableApplicationContext _context;
-        private readonly ITimeProvider _timeProvider;
         private readonly IMediaIdProvider _mediaIdProvider;
 
         public FileUploadCommandHandler(IFileStorage fileStorage, IWritableApplicationContext context, 
-            ITimeProvider timeProvider, IMediaIdProvider mediaIdProvider)
+            IMediaIdProvider mediaIdProvider)
         {
             _fileStorage = fileStorage;
             _context = context;
-            _timeProvider = timeProvider;
             _mediaIdProvider = mediaIdProvider;
         }
 
@@ -44,7 +43,7 @@ namespace Episememe.Application.Features.FileUpload
                 var instanceId = GenerateMediaInstanceId();
                 try
                 {
-                    await CreateMediaFile(instanceId, dataType, request.Tags, request.AuthorId, request.FormFile, request.IsPrivate);
+                    await CreateMediaFile(instanceId, dataType, request.AuthorId, request.FormFile, request.MediaDto);
                     hasBeenCreated = true;
                 }
                 catch (FileExistsException)
@@ -57,15 +56,15 @@ namespace Episememe.Application.Features.FileUpload
             return Unit.Value;
         }
 
-        private async Task CreateMediaFile(string instanceId, string dataType, IEnumerable<string> tags, string? authorId,
-            IFormFile formFile, bool isPrivate)
+        private async Task CreateMediaFile(string instanceId, string dataType, string? authorId,
+            IFormFile formFile, FileUploadDto mediaDto)
         {
             await CreateMediaFileInFileSystem(formFile, instanceId);
 
             using var transaction = _context.Database.BeginTransactionAsync();
             try
             {
-                await CreateMediaInstanceInDatabase(instanceId, dataType, tags, authorId, isPrivate);
+                await CreateMediaInstanceInDatabase(instanceId, dataType, authorId, mediaDto);
                 await transaction.Result.CommitAsync(CancellationToken.None);
             }
             catch
@@ -82,18 +81,18 @@ namespace Episememe.Application.Features.FileUpload
             await formFile.CopyToAsync(stream);
         }
 
-        private async Task CreateMediaInstanceInDatabase(string id, string dataType, IEnumerable<string> tags, string? authorId, 
-            bool isPrivate)
+        private async Task CreateMediaInstanceInDatabase(string id, string dataType, string? authorId, FileUploadDto mediaDto)
         {
             var mediaInstance = new MediaInstance()
             {
                 Id = id,
                 DataType = dataType,
                 AuthorId = authorId,
-                IsPrivate = isPrivate
+                IsPrivate = mediaDto.IsPrivate,
+                Timestamp = mediaDto.Timestamp
             };
 
-            ICollection<MediaTag> mediaTags = ConvertStringsToTags(tags)
+            ICollection<MediaTag> mediaTags = ConvertStringsToTags(mediaDto.Tags)
                 .Select(t => new MediaTag()
                 {
                     MediaInstance = mediaInstance,
@@ -102,7 +101,6 @@ namespace Episememe.Application.Features.FileUpload
                 .ToList();
 
             mediaInstance.MediaTags = mediaTags;
-            mediaInstance.Timestamp = _timeProvider.GetUtc();
 
             await _context.MediaInstances.AddAsync(mediaInstance);
             await _context.SaveChangesAsync(CancellationToken.None);

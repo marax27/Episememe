@@ -43,11 +43,11 @@ namespace Episememe.Api.Controllers
         [HttpPost]
         [Authorize]
         [Route("files")]
-        public async Task<IActionResult> UploadNewFile([FromForm] FileUploadDto fileUploadDto)
+        public async Task<IActionResult> UploadNewFile([FromForm] FileUploadFormData fileUploadFormData)
         {
-            var tagNames = JsonConvert.DeserializeObject<IEnumerable<string>>(fileUploadDto.Tags);
+            var mediaDto = JsonConvert.DeserializeObject<FileUploadDto>(fileUploadFormData.Media);
             var user = User.GetUserId();
-            var fileUploadCommand = FileUploadCommand.Create(fileUploadDto.File, tagNames, user, fileUploadDto.IsPrivate);
+            var fileUploadCommand = FileUploadCommand.Create(fileUploadFormData.File, mediaDto, user);
             await _mediator.Send(fileUploadCommand);
 
             return StatusCode(201);
