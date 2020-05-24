@@ -1,4 +1,5 @@
 using Episememe.Api.Configuration;
+using Episememe.Api.Utilities;
 using Episememe.Application;
 using Episememe.Infrastructure;
 using Episememe.Infrastructure.Database;
@@ -33,7 +34,15 @@ namespace Episememe.Api
                 services.ConfigureSwagger();
             }
 
-            services.AddJwtAuthentication(Configuration);
+            if (_env.IsDesktop())
+            {
+                services.DisableAuthentication();
+            }
+            else
+            {
+                services.AddJwtAuthentication(Configuration);
+            }
+
             services.AddControllers();
         }
 
@@ -42,10 +51,14 @@ namespace Episememe.Api
         {
             databaseMigration.Migrate();
 
+            if (_env.IsDevelopment() || _env.IsDesktop())
+            {
+                app.EnableCors();
+            }
+
             if (_env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.EnableCors();
                 app.ExposeSwagger();
             }
 
