@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card style='width: auto'>
     <v-card-title>{{ "#" + identifier }}</v-card-title>
 
     <v-card-text>

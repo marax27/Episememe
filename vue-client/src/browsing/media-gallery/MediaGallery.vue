@@ -9,7 +9,7 @@
         v-for='(item, index) in instances' :key='item.id'
         :active='index === currentlyBrowsedIndex'
         :instance='item'
-        class='media-instance'>
+        :class='instanceClasses'>
       </MediaComponent>
     </div>
 
@@ -40,6 +40,7 @@ import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import MediaComponent from './media-component/MediaComponent.vue';
 import MediaSidebar from './media-sidebar/MediaSidebar.vue';
 import { IMediaInstance } from '../../shared/models/IMediaInstance';
+import { LayoutModes } from '../types/LayoutModes';
 
 @Component({
   components: {
@@ -52,6 +53,13 @@ export default class MediaGallery extends Vue {
   instances!: IMediaInstance[];
 
   sidebarOpen = false;
+
+  get instanceClasses(): string[] {
+    const mode = this.$store.state.gallery.layoutMode;
+    const layoutClass = mode === LayoutModes.FitScreen
+      ? 'fit-screen' : 'fill-horizontal';
+    return ['media-instance', layoutClass];
+  }
 
   public get isQueryEmpty(): boolean {
     return this.instances == null || this.instances.length === 0;
@@ -102,9 +110,13 @@ export default class MediaGallery extends Vue {
   justify-content: center;
 }
 
-.media-gallery .media-instance {
+.media-gallery .media-instance.fit-screen {
   object-fit: contain;
   max-height: 90vh;
+}
+
+.media-gallery .media-instance.fill-horizontal {
+  width: 100%;
 }
 
 .previous-instance, .next-instance {
