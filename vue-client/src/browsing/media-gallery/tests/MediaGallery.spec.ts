@@ -4,6 +4,7 @@ import Vue from 'vue';
 import MediaGallery from '../MediaGallery.vue';
 import MediaComponent from '../media-component/MediaComponent.vue';
 import * as ctx from './contexts';
+import Vuex, { Store } from 'vuex';
 
 [
   new ctx.GivenNoMediaInstances(),
@@ -13,13 +14,31 @@ import * as ctx from './contexts';
   describe(`MediaGallery Test: ${context.constructor.name}`, () => {
 
     let wrapper: ReturnType<typeof shallowMount>;
+    let store: Store<any>;
+    let updateActionMock: jest.Mock;
 
     beforeAll(() => {
       Vue.use(vuetify);
+      Vue.use(Vuex);
+    });
+
+    beforeEach(() => {
+      updateActionMock = jest.fn();
+
+      store = new Vuex.Store({
+        modules: {
+          gallery: {
+            namespaced: true,
+            state: { currentMediaInstance: null },
+            actions: { updateCurrentMediaInstance: updateActionMock }
+          }
+        }
+      });
     });
 
     beforeEach(() => {
       wrapper = shallowMount(MediaGallery, {
+        store,
         propsData: {
           instances: context.givenInstances
         }
@@ -39,6 +58,12 @@ import * as ctx from './contexts';
       const allInstances = wrapper.findAll(MediaComponent);
       const visibleInstances = allInstances.filter(instance => instance.props('active'));
       expect(visibleInstances.length).toBeLessThanOrEqual(1);
+    });
+
+    const prefix = context.shouldUpdateStore ? 'updates' : 'does not update';
+    it(`${prefix} an in-store media instance once upon creation`, () => {
+      const expectedUpdateCount = context.shouldUpdateStore ? 1 : 0;
+      expect(updateActionMock).toHaveBeenCalledTimes(expectedUpdateCount);
     });
 
     const shouldContainWarning = context.shouldDisplayEmptyQueryWarning;
