@@ -2,7 +2,7 @@
   <v-navigation-drawer
     v-model='isOpen'
     color='secondary darken-1'
-    absolute temporary>
+    fixed temporary>
 
     <span v-if='instance == null'>No media instance specified.</span>
     <v-list v-else nav dense>
