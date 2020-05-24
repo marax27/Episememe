@@ -13,5 +13,6 @@ namespace Episememe.Domain.Entities
         public bool IsPrivate { get; set; }
 
         public ICollection<MediaTag> MediaTags { get; set; } = new HashSet<MediaTag>();
+        public ICollection<FavoriteMedia> FavoriteMedia { get; set; } = new HashSet<FavoriteMedia>();
     }
 }
