@@ -10,6 +10,7 @@
     <v-spacer></v-spacer>
 
     <AuthWidget v-if='authorizationEnabled'/>
+    <NavBarLink v-else link='/user' icon='mdi-home-account'>User panel</NavBarLink>
   </v-app-bar>
 </template>
 
