@@ -5,6 +5,7 @@ import Revision from '../views/Revision.vue';
 import Upload from '../views/Upload.vue';
 import Gallery from '../views/Gallery.vue';
 import { pageGuard } from '@/auth/page-guard';
+import { isAuthorizationEnabled } from '@/auth/helpers';
 
 Vue.use(VueRouter);
 
@@ -42,6 +43,8 @@ const router = new VueRouter({
   routes
 });
 
-router.beforeEach(pageGuard);
+if (isAuthorizationEnabled()) {
+  router.beforeEach(pageGuard);
+}
 
 export default router;
