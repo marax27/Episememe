@@ -58,11 +58,17 @@ export default class MediaGallery extends Vue {
   }
 
   private updateInstance() {
-    const currentInstance = this.instances[this.currentlyBrowsedIndex];
-    this.$store.dispatch('gallery/updateCurrentMediaInstance', currentInstance);
+    if (this.instances != null && this.instances.length > this.currentlyBrowsedIndex) {
+      const currentInstance = this.instances[this.currentlyBrowsedIndex];
+      this.$store.dispatch('gallery/updateCurrentMediaInstance', currentInstance);
+    }
   }
 
   currentlyBrowsedIndex = 0;
+
+  created() {
+    this.updateInstance();
+  }
 
   movePrevious() {
     --this.currentlyBrowsedIndex;
