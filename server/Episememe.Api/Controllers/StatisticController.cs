@@ -3,7 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Episememe.Application.Features.GetStatistics;
+using Episememe.Application.Features.GetStatistic;
 using Episememe.Application.DataTransfer;
 
 namespace Episememe.Api.Controllers
@@ -11,22 +11,20 @@ namespace Episememe.Api.Controllers
     [ApiController]
     [Route("api")]
     [Authorize]
-    public class StatisticsController : ControllerBase
+    public class StatisticController : ControllerBase
     {
-        private readonly ILogger<TagsController> _logger;
         private readonly IMediator _mediator;
 
-        public StatisticsController(ILogger<TagsController> logger, IMediator mediator)
+        public StatisticController(IMediator mediator)
         {
-            _logger = logger;
             _mediator = mediator;
         }
 
         [HttpGet]
-        [Route("statistics")]
-        public async Task<MediaTimeDto> GetStatistics()
+        [Route("statistic")]
+        public async Task<GetStatisticsDto> GetStatistic()
         {
-            var query = GetStatisticsQuery.Create();
+            var query = GetStatisticQuery.Create();
             var result = await _mediator.Send(query);
             return result;
         }

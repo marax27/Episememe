@@ -5,24 +5,24 @@ using System.Collections.Generic;
 using System;
 using System.Linq;
 
-namespace Episememe.Application.Features.GetStatistics
+namespace Episememe.Application.Features.GetStatistic
 {
-    public class GetStatisticsQueryHandler : RequestHandler<GetStatisticsQuery, MediaTimeDto>
+    public class GetStatisticQueryHandler : RequestHandler<GetStatisticQuery, GetStatisticsDto>
     {
         private readonly IApplicationContext _context;
         private readonly ITimeProvider _timeProvider;
-        public GetStatisticsQueryHandler(IApplicationContext context, ITimeProvider timeProvider)
+        public GetStatisticQueryHandler(IApplicationContext context, ITimeProvider timeProvider)
         {
             _context = context;
             _timeProvider = timeProvider;
         }
-        protected override MediaTimeDto Handle(GetStatisticsQuery request)
+        protected override GetStatisticsDto Handle(GetStatisticQuery request)
         {
             var dates = _context.MediaInstances.Select(x => x.Timestamp).ToList();
-            if (!dates.Any() || dates == null)
+            if (!dates.Any())
             {
-                long converted_date = (long) (_timeProvider.GetUtc().Date - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
-                return new MediaTimeDto {Dates = new List<List<long>> {new List<long> {converted_date, (long) 0}}};
+                long convertedDate = (long) (_timeProvider.GetUtc().Date - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
+                return new GetStatisticsDto {Data = new List<List<long>> {new List<long> {convertedDate, (long) 0}}};
             }
             var start = dates.Min();
             var end = _timeProvider.GetUtc();
@@ -38,10 +38,10 @@ namespace Episememe.Application.Features.GetStatistics
             {
                 var instance = nbOfDailyInstances.FirstOrDefault(x => x.Day == date.Date);
                 if (instance != null) count += instance.Value;
-                long converted_date = (long) (date.Date - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
-                statistics.Add(new List<long> {converted_date, count});
+                long convertedDate = (long) (date.Date - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
+                statistics.Add(new List<long> {convertedDate, count});
             }
-            return new MediaTimeDto {Dates = statistics};
+            return new GetStatisticsDto {Data = statistics};
         }
     }
 }

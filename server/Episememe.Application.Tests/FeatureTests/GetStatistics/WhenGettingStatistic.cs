@@ -6,7 +6,7 @@ using Episememe.Application.Interfaces;
 using Episememe.Application.Tests.Helpers;
 using Episememe.Domain.Entities;
 using Episememe.Application.DataTransfer;
-using Episememe.Application.Features.GetStatistics;
+using Episememe.Application.Features.GetStatistic;
 using MediatR;
 using Moq;
 using Xunit;
@@ -40,7 +40,7 @@ namespace Episememe.Application.Tests.FeatureTests.GetStatistics
                 new MediaInstance {Id = "media4", Timestamp = date2},
                 new MediaInstance {Id = "media5", Timestamp = date2},};
             
-            var expectedResult = new MediaTimeDto {Dates = new List<List<long>> 
+            var expectedResult = new GetStatisticsDto {Data = new List<List<long>> 
             {
                 new List<long> { (long) (date1.Date - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds, 2},
                 new List<long> { (long) (date2.Date - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds, 5},
@@ -48,8 +48,8 @@ namespace Episememe.Application.Tests.FeatureTests.GetStatistics
             }};
 
             IApplicationContext context = CreateMockApplicationContext(givenMedia);
-            var query = GetStatisticsQuery.Create();
-            IRequestHandler<GetStatisticsQuery, MediaTimeDto> sut = new GetStatisticsQueryHandler(context, _timeProviderMock.Object);
+            var query = GetStatisticQuery.Create();
+            IRequestHandler<GetStatisticQuery, GetStatisticsDto> sut = new GetStatisticQueryHandler(context, _timeProviderMock.Object);
             var actualResult = sut.Handle(query, CancellationToken.None).Result;
 
             actualResult.Should().BeEquivalentTo(expectedResult);
@@ -61,14 +61,14 @@ namespace Episememe.Application.Tests.FeatureTests.GetStatistics
             var date3 = new DateTime(2020, 5, 25, 15, 34, 1, DateTimeKind.Utc);
             IEnumerable<MediaInstance> givenMedia = new List<MediaInstance>();
 
-            var expectedResult = new MediaTimeDto {Dates = new List<List<long>> 
+            var expectedResult = new GetStatisticsDto {Data = new List<List<long>> 
             {
                 new List<long> { (long) (date3.Date - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds, 0}
             }};
 
             IApplicationContext context = CreateMockApplicationContext(givenMedia);
-            var query = GetStatisticsQuery.Create();
-            IRequestHandler<GetStatisticsQuery, MediaTimeDto> sut = new GetStatisticsQueryHandler(context, _timeProviderMock.Object);
+            var query = GetStatisticQuery.Create();
+            IRequestHandler<GetStatisticQuery, GetStatisticsDto> sut = new GetStatisticQueryHandler(context, _timeProviderMock.Object);
             var actualResult = sut.Handle(query, CancellationToken.None).Result;
 
             actualResult.Should().BeEquivalentTo(expectedResult);
