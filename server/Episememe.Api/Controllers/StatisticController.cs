@@ -11,20 +11,20 @@ namespace Episememe.Api.Controllers
     [ApiController]
     [Route("api")]
     [Authorize]
-    public class StatisticController : ControllerBase
+    public class StatisticsController : ControllerBase
     {
         private readonly IMediator _mediator;
 
-        public StatisticController(IMediator mediator)
+        public StatisticsController(IMediator mediator)
         {
             _mediator = mediator;
         }
 
         [HttpGet]
-        [Route("statistic")]
+        [Route("statistics")]
         public async Task<GetStatisticsDto> GetStatistic()
         {
-            var query = GetStatisticQuery.Create();
+            var query = GetStatisticsQuery.Create();
             var result = await _mediator.Send(query);
             return result;
         }

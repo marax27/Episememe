@@ -3,13 +3,13 @@ using Episememe.Application.DataTransfer;
 
 namespace Episememe.Application.Features.GetStatistic
 {
-    public class GetStatisticQuery : IRequest<GetStatisticsDto>
+    public class GetStatisticsQuery : IRequest<GetStatisticsDto>
     {
-        private GetStatisticQuery(){}
+        private GetStatisticsQuery(){}
     
-        public static GetStatisticQuery Create()
+        public static GetStatisticsQuery Create()
         {
-            return new GetStatisticQuery();
+            return new GetStatisticsQuery();
         }
     }
 }

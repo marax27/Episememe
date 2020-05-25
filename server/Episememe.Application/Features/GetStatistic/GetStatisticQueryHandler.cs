@@ -7,16 +7,16 @@ using System.Linq;
 
 namespace Episememe.Application.Features.GetStatistic
 {
-    public class GetStatisticQueryHandler : RequestHandler<GetStatisticQuery, GetStatisticsDto>
+    public class GetStatisticsQueryHandler : RequestHandler<GetStatisticsQuery, GetStatisticsDto>
     {
         private readonly IApplicationContext _context;
         private readonly ITimeProvider _timeProvider;
-        public GetStatisticQueryHandler(IApplicationContext context, ITimeProvider timeProvider)
+        public GetStatisticsQueryHandler(IApplicationContext context, ITimeProvider timeProvider)
         {
             _context = context;
             _timeProvider = timeProvider;
         }
-        protected override GetStatisticsDto Handle(GetStatisticQuery request)
+        protected override GetStatisticsDto Handle(GetStatisticsQuery request)
         {
             var dates = _context.MediaInstances.Select(x => x.Timestamp).ToList();
             if (!dates.Any())
@@ -30,7 +30,7 @@ namespace Episememe.Application.Features.GetStatistic
                 .Select(x => new 
                 {
                     Value = x.Count(),
-                    Day = (DateTime) x.Key.Date!
+                    Day = (DateTime) x.Key
                 }).ToList();
             List<List<long>> statistics = new List<List<long>>();
             long count = 0;

@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Threading;
 using Episememe.Application.Interfaces;
@@ -48,8 +47,8 @@ namespace Episememe.Application.Tests.FeatureTests.GetStatistics
             }};
 
             IApplicationContext context = CreateMockApplicationContext(givenMedia);
-            var query = GetStatisticQuery.Create();
-            IRequestHandler<GetStatisticQuery, GetStatisticsDto> sut = new GetStatisticQueryHandler(context, _timeProviderMock.Object);
+            var query = GetStatisticsQuery.Create();
+            IRequestHandler<GetStatisticsQuery, GetStatisticsDto> sut = new GetStatisticsQueryHandler(context, _timeProviderMock.Object);
             var actualResult = sut.Handle(query, CancellationToken.None).Result;
 
             actualResult.Should().BeEquivalentTo(expectedResult);
@@ -67,8 +66,8 @@ namespace Episememe.Application.Tests.FeatureTests.GetStatistics
             }};
 
             IApplicationContext context = CreateMockApplicationContext(givenMedia);
-            var query = GetStatisticQuery.Create();
-            IRequestHandler<GetStatisticQuery, GetStatisticsDto> sut = new GetStatisticQueryHandler(context, _timeProviderMock.Object);
+            var query = GetStatisticsQuery.Create();
+            IRequestHandler<GetStatisticsQuery, GetStatisticsDto> sut = new GetStatisticsQueryHandler(context, _timeProviderMock.Object);
             var actualResult = sut.Handle(query, CancellationToken.None).Result;
 
             actualResult.Should().BeEquivalentTo(expectedResult);
