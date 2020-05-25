@@ -1,9 +1,9 @@
 ﻿using Episememe.Application.Interfaces;
+using Episememe.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Threading;
 using System.Threading.Tasks;
-using Episememe.Domain.Entities;
 
 namespace Episememe.Application.Features.MarkFavoriteMedia
 {

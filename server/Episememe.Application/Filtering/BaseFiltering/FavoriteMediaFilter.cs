@@ -23,7 +23,7 @@ namespace Episememe.Application.Filtering.BaseFiltering
             var filteredMedia = mediaInstances;
             if (!string.IsNullOrEmpty(_userId))
             {
-                filteredMedia = mediaInstances.Where(mi => 
+                filteredMedia = mediaInstances.Where(mi =>
                         mi.FavoriteMedia.Select(fm => fm.UserId).Contains(_userId)
                         )
                     .ToList()

@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Episememe.Application.DataTransfer;
+﻿using Episememe.Application.DataTransfer;
 using Episememe.Application.Filtering.BaseFiltering;
 using Episememe.Application.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Episememe.Application.Features.GetFavoriteMedia
 {

@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Episememe.Application.Features.RemoveFavoriteMedia;
 using Episememe.Application.Interfaces;
+using Episememe.Application.Tests.Helpers;
 using Episememe.Domain.Entities;
+using FluentAssertions;
+using System;
 using System.Data.Common;
 using System.Threading;
-using Episememe.Application.Features.RemoveFavoriteMedia;
-using Episememe.Application.Tests.Helpers;
-using FluentAssertions;
 using Xunit;
 
 namespace Episememe.Application.Tests.FeatureTests.RemoveFavoriteMedia
@@ -56,8 +56,7 @@ namespace Episememe.Application.Tests.FeatureTests.RemoveFavoriteMedia
             var newMediaInstance = new MediaInstance()
             {
                 Id = id,
-                DataType = "png",
-                IsPrivate = false
+                DataType = "png"
             };
 
             _contextMock.MediaInstances.Add(newMediaInstance);

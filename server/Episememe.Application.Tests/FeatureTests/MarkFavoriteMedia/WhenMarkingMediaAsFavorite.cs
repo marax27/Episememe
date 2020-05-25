@@ -1,12 +1,9 @@
-﻿using System;
-using Episememe.Application.Features.MarkFavoriteMedia;
+﻿using Episememe.Application.Features.MarkFavoriteMedia;
 using Episememe.Application.Interfaces;
 using Episememe.Application.Tests.Helpers;
 using Episememe.Domain.Entities;
 using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
-using Moq;
-using System.Collections.Generic;
+using System;
 using System.Data.Common;
 using System.Threading;
 using Xunit;
@@ -43,8 +40,7 @@ namespace Episememe.Application.Tests.FeatureTests.MarkFavoriteMedia
             var newMediaInstance = new MediaInstance()
             {
                 Id = id,
-                DataType = "png",
-                IsPrivate = false
+                DataType = "png"
             };
 
             _contextMock.MediaInstances.Add(newMediaInstance);

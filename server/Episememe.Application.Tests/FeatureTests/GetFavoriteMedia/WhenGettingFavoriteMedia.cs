@@ -28,17 +28,12 @@ namespace Episememe.Application.Tests.FeatureTests.GetFavoriteMedia
         {
             var givenMediaInstanceId1 = "1";
             var givenMediaInstanceId2 = "2";
-            var givenMediaInstanceId3 = "3";
             var givenUserId1 = "user1";
-            var givenUserId2 = "user2";
             var givenDataType = "png";
             AddMediaInstance(givenMediaInstanceId1, givenDataType);
             AddMediaInstance(givenMediaInstanceId2, givenDataType);
-            AddMediaInstance(givenMediaInstanceId3, givenDataType);
             AddFavoriteMedia(givenMediaInstanceId1, givenUserId1);
             AddFavoriteMedia(givenMediaInstanceId2, givenUserId1);
-            AddFavoriteMedia(givenMediaInstanceId1, givenUserId2);
-            AddFavoriteMedia(givenMediaInstanceId3, givenUserId2);
 
             var expectedMediaInstanceDto = new List<MediaInstanceDto>()
             {
