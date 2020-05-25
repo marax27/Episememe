@@ -3,7 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Episememe.Application.Features.GetStatistic;
+using Episememe.Application.Features.GetStatistics;
 using Episememe.Application.DataTransfer;
 
 namespace Episememe.Api.Controllers
@@ -22,7 +22,7 @@ namespace Episememe.Api.Controllers
 
         [HttpGet]
         [Route("statistics")]
-        public async Task<GetStatisticsDto> GetStatistic()
+        public async Task<GetStatisticsDto> GetStatistics()
         {
             var query = GetStatisticsQuery.Create();
             var result = await _mediator.Send(query);

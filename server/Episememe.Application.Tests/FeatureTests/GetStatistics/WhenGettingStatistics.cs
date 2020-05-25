@@ -5,7 +5,7 @@ using Episememe.Application.Interfaces;
 using Episememe.Application.Tests.Helpers;
 using Episememe.Domain.Entities;
 using Episememe.Application.DataTransfer;
-using Episememe.Application.Features.GetStatistic;
+using Episememe.Application.Features.GetStatistics;
 using MediatR;
 using Moq;
 using Xunit;

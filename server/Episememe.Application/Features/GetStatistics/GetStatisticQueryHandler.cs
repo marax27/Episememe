@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System;
 using System.Linq;
 
-namespace Episememe.Application.Features.GetStatistic
+namespace Episememe.Application.Features.GetStatistics
 {
     public class GetStatisticsQueryHandler : RequestHandler<GetStatisticsQuery, GetStatisticsDto>
     {

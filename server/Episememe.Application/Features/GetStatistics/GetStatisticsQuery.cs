@@ -1,7 +1,7 @@
 using MediatR;
 using Episememe.Application.DataTransfer;
 
-namespace Episememe.Application.Features.GetStatistic
+namespace Episememe.Application.Features.GetStatistics
 {
     public class GetStatisticsQuery : IRequest<GetStatisticsDto>
     {
