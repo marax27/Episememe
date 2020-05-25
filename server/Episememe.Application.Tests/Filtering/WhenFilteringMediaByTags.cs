@@ -7,12 +7,11 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Episememe.Application.Filtering;
 using Xunit;
 
 namespace Episememe.Application.Tests.Filtering
 {
-    public class WhenFilteringMedia
+    public class WhenFilteringMediaByTags
     {
         [Fact]
         public void GivenNullFilterArguments_AllMediaAreReturned()
@@ -98,102 +97,14 @@ namespace Episememe.Application.Tests.Filtering
             filteredMedia.Should().BeEmpty();
         }
 
-        [Fact]
-        public void GivenTimeRange_MediaCreatedInTimeRangeAreReturned()
-        {
-            var timeRangeStart = new DateTime(2007, 6, 1, 0, 0, 0);
-            var timeRangeEnd = new DateTime(2008, 9, 1, 0, 0, 0);
-            var searchMedia = new SearchMediaData()
-            {
-                TimeRangeStart = timeRangeStart,
-                TimeRangeEnd = timeRangeEnd
-            };
-            var mediaInstances = new TimeRangeTestsDbSet().Instances;
-            var filteredMedia = GetFilteredMedia(searchMedia, mediaInstances);
-
-            filteredMedia.Should().HaveCount(2);
-            filteredMedia.Should().Contain(mi => mi.Id == "2");
-            filteredMedia.Should().Contain(mi => mi.Id == "3");
-        }
-
-        [Fact]
-        public void GivenTimeRangeStart_MediaCreatedAfterAreReturned()
-        {
-            var timeRangeStart = new DateTime(2008, 3, 1, 0, 0, 0);
-            var searchMedia = new SearchMediaData()
-            {
-                TimeRangeStart = timeRangeStart
-            };
-            var mediaInstances = new TimeRangeTestsDbSet().Instances;
-            var filteredMedia = GetFilteredMedia(searchMedia, mediaInstances);
-
-            filteredMedia.Should().HaveCount(2);
-            filteredMedia.Should().Contain(mi => mi.Id == "1");
-            filteredMedia.Should().Contain(mi => mi.Id == "3");
-        }
-
-        [Fact]
-        public void GivenTimeRangeEnd_MediaCreatedBeforeAreReturned()
-        {
-            var timeRangeEnd = new DateTime(2008, 9, 1, 0, 0, 0);
-            var searchMedia = new SearchMediaData()
-            {
-                TimeRangeEnd = timeRangeEnd
-            };
-
-            var mediaInstances = new TimeRangeTestsDbSet().Instances;
-            var filteredMedia = GetFilteredMedia(searchMedia, mediaInstances);
-
-            filteredMedia.Should().HaveCount(2);
-            filteredMedia.Should().Contain(mi => mi.Id == "2");
-            filteredMedia.Should().Contain(mi => mi.Id == "3");
-        }
-
-        [Fact]
-        public void GivenUserId_PublicMediaAndUsersPrivateMediaAreReturned()
-        {
-            var userId = "user1";
-            var searchMedia = new SearchMediaData()
-            {
-                UserId = userId
-            };
-            var mediaInstances= new PrivateInstancesTestsDbSet().Instances;
-            var filteredMedia = GetFilteredMedia(searchMedia, mediaInstances);
-
-            filteredMedia.Should().HaveCount(4);
-            filteredMedia.Should().Contain(mi => mi.Id == "1");
-            filteredMedia.Should().Contain(mi => mi.Id == "2");
-            filteredMedia.Should().Contain(mi => mi.Id == "4");
-            filteredMedia.Should().Contain(mi => mi.Id == "5");
-        }
-
-        [Fact]
-        public void GivenUserIdNotConnectedToAnyMedia_PublicMediaAreReturned()
-        {
-            var userId = "randomUser";
-            var searchMedia = new SearchMediaData()
-            {
-                UserId = userId
-            };
-            var mediaInstances = new PrivateInstancesTestsDbSet().Instances;
-            var filteredMedia = GetFilteredMedia(searchMedia, mediaInstances);
-
-            filteredMedia.Should().HaveCount(3);
-            filteredMedia.Should().Contain(mi => mi.Id == "2");
-            filteredMedia.Should().Contain(mi => mi.Id == "4");
-            filteredMedia.Should().Contain(mi => mi.Id == "5");
-        }
-
-
         private ISet<MediaInstance> GetFilteredMedia(SearchMediaData searchMedia, DbSet<MediaInstance> mediaInstances)
         {
             var mediaFilter = new MediaFilter(searchMedia.IncludedTags, searchMedia.ExcludedTags, 
                 searchMedia.TimeRangeStart, searchMedia.TimeRangeEnd);
-            var privateMediaFilter = new PrivateMediaFilter(searchMedia.UserId);
-            var filterChain = new FilterChain<MediaInstance>(mediaFilter, privateMediaFilter);
-            var filteredMedia = filterChain.Filter(mediaInstances.ToList().AsReadOnly());
+            var filteredMedia = mediaFilter.Filter(mediaInstances.ToList().AsReadOnly())
+                .ToHashSet();
 
-            return filteredMedia.ToHashSet();
+            return filteredMedia;
         }
     }
 }
