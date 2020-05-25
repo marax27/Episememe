@@ -17,7 +17,7 @@ namespace Episememe.Application.Features.GetTags
 
         protected override IEnumerable<TagInstanceDto> Handle(GetTagsQuery request)
         {
-            var Tags = _context.Tags.Select(mi => new TagInstanceDto(){Name = mi.Name, Description = mi.Description});
+            var Tags = _context.Tags.Select(mi => new TagInstanceDto(mi.Name, mi.Description));
             return Tags;
         }
     }
