@@ -46,7 +46,7 @@ namespace Episememe.Application.Features.UpdateTags
         {
             var tagNames = _context.Tags.Select(t => t.Name);
             var tags = stringTags.Select(st =>
-                tagNames.Contains(st) ? _context.Tags.Single(t => t.Name == st) : new Tag() { Name = st, Description = st });
+                tagNames.Contains(st) ? _context.Tags.Single(t => t.Name == st) : new Tag() { Name = st});
 
             return tags;
         }

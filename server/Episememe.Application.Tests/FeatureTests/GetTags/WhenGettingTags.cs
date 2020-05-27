@@ -18,7 +18,11 @@ namespace Episememe.Application.Tests.FeatureTests.GetTags
         public void GivenContextWithSampleTags_ThenAllTagsAreReturned()
         {
             var givenTags = new[] { new Tag{Id = 52, Name = "random", Description = "It is so random"}, new Tag{Id = 62, Name = "expected", Description = "Spanish Inquisition"} };
-            var expectedResult = new[] {new TagInstanceDto("random", "It is so random"), new TagInstanceDto("expected", "Spanish Inquisition")};
+            var expectedResult = new[] 
+            {
+                new TagInstanceDto("random", "It is so random"), 
+                new TagInstanceDto("expected", "Spanish Inquisition")
+            };
             IApplicationContext context = CreateMockApplicationContext(givenTags);
 
             var query = GetTagsQuery.Create();
