@@ -5,21 +5,30 @@
 </template>
 
 <script lang='ts'>
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue, Mixins } from 'vue-property-decorator';
 import { Chart } from 'highcharts-vue';
 import * as Highcharts from 'highcharts';
 import { colors } from '../plugins/vuetify';
-import { mockData } from './mockData';
+import { StatisticsDto } from './interfaces/StatisticsDto';
+import ApiClientService from '../shared/mixins/api-client/api-client.service';
 
 @Component({
   components: {
     'Chart': Chart,
   }
 })
-export default class StatisticsPanel extends Vue {
+export default class StatisticsPanel extends Mixins(ApiClientService) {
 
   private textColor = '#cccccc';
   private darkTextColor = '#2a2a2a';
+  private chartColor = colors.accent;
+
+  mounted() {
+    this.$api.get<StatisticsDto>('statistics')
+      .then(response => {
+        this.options.series[0].data = response.data.data;
+      });
+  }
 
   options = {
     chart: {
@@ -71,7 +80,8 @@ export default class StatisticsPanel extends Vue {
         style: {
           color: this.textColor
         }
-      }
+      },
+      min: 0
     },
     legend: {
       enabled: false
@@ -86,15 +96,15 @@ export default class StatisticsPanel extends Vue {
                 y2: 1
             },
             stops: [
-                [0, Highcharts.color(colors.accent).get('rgba')],
-                [1, Highcharts.color(colors.accent).setOpacity(0).get('rgba')],
+                [0, Highcharts.color(this.chartColor).get('rgba')],
+                [1, Highcharts.color(this.chartColor).setOpacity(0).get('rgba')],
             ]
         },
         marker: {
           radius: 2
         },
         lineWidth: 1,
-        lineColor: colors.accent,
+        lineColor: this.chartColor,
         states: {
           hover: {
             lineWidth: 1
@@ -110,11 +120,15 @@ export default class StatisticsPanel extends Vue {
         color: this.darkTextColor
       }
     },
+    loading: {
+      hideDuration: 1000,
+      showDuration: 1000,
+    },
     series: [{
       type: 'area',
       name: 'No. of instances in repository',
-      color: colors.accent,
-      data: mockData
+      color: this.chartColor,
+      data: [] as number[][]
     }]
   }
 }
