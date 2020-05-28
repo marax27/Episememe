@@ -35,6 +35,23 @@ namespace Episememe.Application.Tests.FeatureTests.MarkFavoriteMedia
                 .Contain(fm => fm.UserId == givenSampleUserId && fm.MediaInstanceId == givenSampleMediaInstanceId);
         }
 
+        [Fact]
+        public void GivenHandleIsCalledMultipleTimesForTheSameFavoriteMedia_FavoriteMediaIsAddedExactlyOnce()
+        {
+            var givenSampleUserId = "user1";
+            var givenSampleMediaInstanceId = "1";
+            AddMediaInstance(givenSampleMediaInstanceId);
+
+            var command = MarkFavoriteMediaCommand.Create(givenSampleMediaInstanceId, givenSampleUserId);
+            var handler = new MarkFavoriteMediaCommandHandler(_contextMock);
+            handler.Handle(command, CancellationToken.None).Wait();
+            handler.Handle(command, CancellationToken.None).Wait();
+            handler.Handle(command, CancellationToken.None).Wait();
+
+            _contextMock.FavoriteMedia.Should()
+                .Contain(fm => fm.UserId == givenSampleUserId && fm.MediaInstanceId == givenSampleMediaInstanceId);
+        }
+
         private void AddMediaInstance(string id)
         {
             var newMediaInstance = new MediaInstance()

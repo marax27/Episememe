@@ -16,7 +16,7 @@ namespace Episememe.Application.Features.GetFavoriteMedia
 
         public static GetFavoriteMediaQuery Create(string userId)
         {
-            if (string.IsNullOrEmpty(userId))
+            if (userId == null)
                 throw new ArgumentNullException(nameof(userId));
 
             return new GetFavoriteMediaQuery(userId);

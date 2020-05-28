@@ -18,7 +18,7 @@ namespace Episememe.Application.Features.MarkFavoriteMedia
         {
             if (mediaInstanceId == null)
                 throw new ArgumentNullException(nameof(mediaInstanceId));
-            if (string.IsNullOrEmpty(userId))
+            if (userId == null)
                 throw new ArgumentNullException(nameof(userId));
 
             return new MarkFavoriteMediaCommand(mediaInstanceId, userId);

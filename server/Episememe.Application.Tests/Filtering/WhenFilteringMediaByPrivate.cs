@@ -23,7 +23,7 @@ namespace Episememe.Application.Tests.Filtering
         }
 
         [Fact]
-        public void GivenUserId_PublicMediaAndUsersPrivateMediaAreReturned()
+        public void GivenUserId_UsersPrivateMediaAreReturned()
         {
             var userId = "user1";
             var searchMedia = new SearchMediaData()
@@ -33,11 +33,37 @@ namespace Episememe.Application.Tests.Filtering
             var mediaInstances = new PrivateInstancesTestsDbSet().Instances;
             var filteredMedia = GetFilteredMedia(searchMedia, mediaInstances);
 
-            filteredMedia.Should().HaveCount(4);
             filteredMedia.Should().Contain(mi => mi.Id == "1");
-            filteredMedia.Should().Contain(mi => mi.Id == "2");
-            filteredMedia.Should().Contain(mi => mi.Id == "4");
-            filteredMedia.Should().Contain(mi => mi.Id == "5");
+        }
+
+        [Fact]
+        public void GivenUserId_PublicMediaAreReturned()
+        {
+            var userId = "user1";
+            var searchMedia = new SearchMediaData()
+            {
+                UserId = userId
+            };
+            var mediaInstances = new PrivateInstancesTestsDbSet().Instances;
+            var filteredMedia = GetFilteredMedia(searchMedia, mediaInstances);
+
+            filteredMedia.Should().Contain(mi => mi.Id == "2")
+                .And.Contain(mi => mi.Id == "4")
+                .And.Contain(mi => mi.Id == "5");
+        }
+
+        [Fact]
+        public void GivenUserId_OtherUsersPrivateMediaAreNotReturned()
+        {
+            var userId = "user1";
+            var searchMedia = new SearchMediaData()
+            {
+                UserId = userId
+            };
+            var mediaInstances = new PrivateInstancesTestsDbSet().Instances;
+            var filteredMedia = GetFilteredMedia(searchMedia, mediaInstances);
+
+            filteredMedia.Should().NotContain(mi => mi.Id == "3");
         }
 
         [Fact]
@@ -51,10 +77,10 @@ namespace Episememe.Application.Tests.Filtering
             var mediaInstances = new PrivateInstancesTestsDbSet().Instances;
             var filteredMedia = GetFilteredMedia(searchMedia, mediaInstances);
 
-            filteredMedia.Should().HaveCount(3);
-            filteredMedia.Should().Contain(mi => mi.Id == "2");
-            filteredMedia.Should().Contain(mi => mi.Id == "4");
-            filteredMedia.Should().Contain(mi => mi.Id == "5");
+            filteredMedia.Should().HaveCount(3)
+                .And.Contain(mi => mi.Id == "2")
+                .And.Contain(mi => mi.Id == "4")
+                .And.Contain(mi => mi.Id == "5");
         }
 
         private ISet<MediaInstance> GetFilteredMedia(SearchMediaData searchMedia, DbSet<MediaInstance> mediaInstances)

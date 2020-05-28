@@ -28,12 +28,17 @@ namespace Episememe.Application.Tests.FeatureTests.GetFavoriteMedia
         {
             var givenMediaInstanceId1 = "1";
             var givenMediaInstanceId2 = "2";
+            var givenMediaInstanceId3 = "3";
             var givenUserId1 = "user1";
+            var givenUserId2 = "user2";
             var givenDataType = "png";
             AddMediaInstance(givenMediaInstanceId1, givenDataType);
             AddMediaInstance(givenMediaInstanceId2, givenDataType);
+            AddMediaInstance(givenMediaInstanceId3, givenDataType);
             AddFavoriteMedia(givenMediaInstanceId1, givenUserId1);
             AddFavoriteMedia(givenMediaInstanceId2, givenUserId1);
+            AddFavoriteMedia(givenMediaInstanceId2, givenUserId2);
+            AddFavoriteMedia(givenMediaInstanceId3, givenUserId2);
 
             var expectedMediaInstanceDto = new List<MediaInstanceDto>()
             {
@@ -42,6 +47,21 @@ namespace Episememe.Application.Tests.FeatureTests.GetFavoriteMedia
             };
 
             var query = GetFavoriteMediaQuery.Create(givenUserId1);
+            IRequestHandler<GetFavoriteMediaQuery, IEnumerable<MediaInstanceDto>> handler =
+                new GetFavoriteMediaQueryHandler(_contextMock);
+            var result = handler.Handle(query, CancellationToken.None).Result;
+
+            result.Should().BeEquivalentTo(expectedMediaInstanceDto);
+        }
+
+        [Fact]
+        public void GivenNoFavoriteMediaInDatabase_EmptyCollectionIsReturned()
+        {
+            var givenUserId = "user";
+
+            var expectedMediaInstanceDto = new List<MediaInstanceDto>();
+
+            var query = GetFavoriteMediaQuery.Create(givenUserId);
             IRequestHandler<GetFavoriteMediaQuery, IEnumerable<MediaInstanceDto>> handler =
                 new GetFavoriteMediaQueryHandler(_contextMock);
             var result = handler.Handle(query, CancellationToken.None).Result;

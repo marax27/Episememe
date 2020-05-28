@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Episememe.Api.Utilities;
+﻿using Episememe.Api.Utilities;
 using Episememe.Application.DataTransfer;
 using Episememe.Application.Features.GetFavoriteMedia;
 using Episememe.Application.Features.MarkFavoriteMedia;
@@ -8,7 +6,8 @@ using Episememe.Application.Features.RemoveFavoriteMedia;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Episememe.Api.Controllers
 {
@@ -17,12 +16,10 @@ namespace Episememe.Api.Controllers
     [Authorize]
     public class FavoriteMediaController : ControllerBase
     {
-        private readonly ILogger<MediaController> _logger;
         private readonly IMediator _mediator;
 
-        public FavoriteMediaController(ILogger<MediaController> logger, IMediator mediator)
+        public FavoriteMediaController(IMediator mediator)
         {
-            _logger = logger;
             _mediator = mediator;
         }
 
@@ -36,14 +33,14 @@ namespace Episememe.Api.Controllers
             return favoriteMediaInstances;
         }
 
-        [HttpPost]
+        [HttpPut]
         [Route("favorite/{id}")]
         public async Task<IActionResult> MarkMediaAsFavorite(string id)
         {
             var command = MarkFavoriteMediaCommand.Create(id, User.GetUserId());
             await _mediator.Send(command);
 
-            return StatusCode(200);
+            return Ok();
         }
 
         [HttpDelete]
@@ -53,7 +50,7 @@ namespace Episememe.Api.Controllers
             var command = RemoveFavoriteMediaCommand.Create(id, User.GetUserId());
             await _mediator.Send(command);
 
-            return StatusCode(200);
+            return Ok();
         }
     }
 }

@@ -11,18 +11,17 @@ namespace Episememe.Application.Tests.FeatureTests.MarkFavoriteMedia
         public void GivenMediaInstanceIdIsNull_ArgumentNullExceptionIsThrown()
         {
             string givenMediaInstanceId = null;
-            var givenSampleUser = "sampleUser";
+            var givenSampleUserId = "sampleUserId";
 
-            Action act = () => MarkFavoriteMediaCommand.Create(givenMediaInstanceId, givenSampleUser);
+            Action act = () => MarkFavoriteMediaCommand.Create(givenMediaInstanceId, givenSampleUserId);
 
             act.Should().Throw<ArgumentNullException>();
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        public void GivenUserIdIsNullOrEmpty_ArgumentNullExceptionIsThrown(string givenUserId)
+        [Fact]
+        public void GivenUserIdIsNull_ArgumentNullExceptionIsThrown()
         {
+            string givenUserId = null;
             var givenSampleMediaInstanceId = "abcdefgh";
 
             Action act = () => MarkFavoriteMediaCommand.Create(givenSampleMediaInstanceId, givenUserId);

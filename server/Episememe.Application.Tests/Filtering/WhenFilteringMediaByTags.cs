@@ -4,7 +4,6 @@ using Episememe.Application.Tests.Helpers.Contexts.Filtering;
 using Episememe.Domain.Entities;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
@@ -40,7 +39,7 @@ namespace Episememe.Application.Tests.Filtering
         [Fact]
         public void GivenNonexistentTag_NoMediaIsReturned()
         {
-            string[] includedTags = {"politics"};
+            string[] includedTags = { "politics" };
             var searchMedia = new SearchMediaData()
             {
                 IncludedTags = includedTags,
@@ -99,7 +98,7 @@ namespace Episememe.Application.Tests.Filtering
 
         private ISet<MediaInstance> GetFilteredMedia(SearchMediaData searchMedia, DbSet<MediaInstance> mediaInstances)
         {
-            var mediaFilter = new MediaFilter(searchMedia.IncludedTags, searchMedia.ExcludedTags, 
+            var mediaFilter = new MediaFilter(searchMedia.IncludedTags, searchMedia.ExcludedTags,
                 searchMedia.TimeRangeStart, searchMedia.TimeRangeEnd);
             var filteredMedia = mediaFilter.Filter(mediaInstances.ToList().AsReadOnly())
                 .ToHashSet();

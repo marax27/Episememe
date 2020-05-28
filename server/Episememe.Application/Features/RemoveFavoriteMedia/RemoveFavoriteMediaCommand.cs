@@ -5,8 +5,8 @@ namespace Episememe.Application.Features.RemoveFavoriteMedia
 {
     public class RemoveFavoriteMediaCommand : IRequest
     {
-        public string MediaInstanceId { get; set; }
-        public string UserId { get; set; }
+        public string MediaInstanceId { get; }
+        public string UserId { get; }
 
         private RemoveFavoriteMediaCommand(string mediaInstanceId, string userId)
         {
@@ -18,7 +18,7 @@ namespace Episememe.Application.Features.RemoveFavoriteMedia
         {
             if (mediaInstanceId == null)
                 throw new ArgumentNullException(nameof(mediaInstanceId));
-            if (string.IsNullOrEmpty(userId))
+            if (userId == null)
                 throw new ArgumentNullException(nameof(userId));
 
             return new RemoveFavoriteMediaCommand(mediaInstanceId, userId);

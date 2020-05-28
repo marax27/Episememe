@@ -18,12 +18,11 @@ namespace Episememe.Application.Tests.FeatureTests.RemoveFavoriteMedia
             act.Should().Throw<ArgumentNullException>();
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        public void GivenUserIdIsNullOrEmpty_ArgumentNullExceptionIsThrown(string givenUserId)
+        [Fact]
+        public void GivenUserIdIsNull_ArgumentNullExceptionIsThrown()
         {
             var givenSampleMediaInstanceId = "abcdefgh";
+            string givenUserId = null;
 
             Action act = () => RemoveFavoriteMediaCommand.Create(givenSampleMediaInstanceId, givenUserId);
 

@@ -1,7 +1,6 @@
 ﻿using Episememe.Application.Interfaces;
 using Episememe.Domain.Entities;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,19 +14,19 @@ namespace Episememe.Application.Features.MarkFavoriteMedia
         {
             _context = context;
         }
+
         public async Task<Unit> Handle(MarkFavoriteMediaCommand request, CancellationToken cancellationToken)
         {
-            var mediaInstance = await _context.MediaInstances
-                .Include(mi => mi.FavoriteMedia)
-                .SingleAsync(mi => mi.Id == request.MediaInstanceId, cancellationToken);
+            if (await _context.FavoriteMedia.FindAsync(request.MediaInstanceId, request.UserId) != null)
+                return Unit.Value;
 
             var newFavoriteMedia = new FavoriteMedia()
             {
-                MediaInstance = mediaInstance,
+                MediaInstanceId = request.MediaInstanceId,
                 UserId = request.UserId
             };
 
-            mediaInstance.FavoriteMedia.Add(newFavoriteMedia);
+            await _context.FavoriteMedia.AddAsync(newFavoriteMedia, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
 
             return Unit.Value;

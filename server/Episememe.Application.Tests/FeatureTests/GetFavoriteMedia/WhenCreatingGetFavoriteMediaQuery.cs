@@ -7,11 +7,10 @@ namespace Episememe.Application.Tests.FeatureTests.GetFavoriteMedia
 {
     public class WhenCreatingGetFavoriteMediaQuery
     {
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        public void GivenUserIdIsNullOrEmpty_ArgumentNullExceptionIsThrown(string givenUserId)
+        [Fact]
+        public void GivenUserIdIsNull_ArgumentNullExceptionIsThrown()
         {
+            string givenUserId = null;
             Action act = () => GetFavoriteMediaQuery.Create(givenUserId);
 
             act.Should().Throw<ArgumentNullException>();

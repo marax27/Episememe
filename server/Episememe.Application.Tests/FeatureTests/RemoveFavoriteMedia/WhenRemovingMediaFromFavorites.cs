@@ -36,7 +36,7 @@ namespace Episememe.Application.Tests.FeatureTests.RemoveFavoriteMedia
         }
 
         [Fact]
-        public void GivenNoMatchingFavoriteMediaInDatabase_ExceptionIsThrown()
+        public void GivenNoMatchingFavoriteMediaInDatabase_NoActionIsDone()
         {
             var givenUserId = "user1";
             var givenMediaInstanceId = "1";
@@ -48,7 +48,7 @@ namespace Episememe.Application.Tests.FeatureTests.RemoveFavoriteMedia
             var handler = new RemoveFavoriteMediaCommandHandler(_contextMock);
             Action act = () => handler.Handle(command, CancellationToken.None).Wait();
 
-            act.Should().Throw<Exception>();
+            act.Should().NotThrow<Exception>();
         }
 
         private void AddMediaInstance(string id)
