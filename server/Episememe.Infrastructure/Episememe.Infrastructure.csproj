@@ -7,6 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20200524174303_AddFavoriteMediaTable.cs" />
+    <Compile Remove="Migrations\20200524174303_AddFavoriteMediaTable.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.2" />
     <PackageReference Include="System.IO.Abstractions" Version="10.0.8" />
   </ItemGroup>
