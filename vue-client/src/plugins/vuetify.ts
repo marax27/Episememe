@@ -13,6 +13,8 @@ const darkColorPalette = {
 
 Vue.use(Vuetify);
 
+export const colors = darkColorPalette;
+
 export default new Vuetify({
     theme: {
         dark: true,

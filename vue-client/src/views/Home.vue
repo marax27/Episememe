@@ -1,6 +1,17 @@
 <template>
   <ContentWrapper>
-    <SearchPanel :loading='searchInProgress' @submit='onSubmit'></SearchPanel>
+    <SearchPanel
+      :loading='searchInProgress'
+      @submit='onSubmit'
+      class='home-panel' />
+
+    <v-row>
+      <v-spacer></v-spacer>
+      <v-col cols='12' sm='6'>
+        <StatisticsPanel
+          class='home-panel' />
+      </v-col>
+    </v-row>
   </ContentWrapper>
 </template>
 
@@ -10,6 +21,7 @@ import router from '../router';
 import ContentWrapper from '../shared/components/content-wrapper/ContentWrapper.vue';
 import ApiClientService from '../shared/mixins/api-client/api-client.service';
 import SearchPanel from '../searching/SearchPanel.vue';
+import StatisticsPanel from '../statistics/StatisticsPanel.vue';
 import { ISearchSpecification } from '../searching/interfaces/ISearchSpecification';
 import { SearchSpecificationDto } from '../searching/interfaces/SearchSpecificationDto';
 
@@ -17,7 +29,8 @@ import { SearchSpecificationDto } from '../searching/interfaces/SearchSpecificat
   name: 'Home',
   components: {
     ContentWrapper,
-    SearchPanel
+    SearchPanel,
+    StatisticsPanel,
   }
 })
 export default class Home extends Mixins(ApiClientService) {
@@ -42,3 +55,9 @@ export default class Home extends Mixins(ApiClientService) {
   }
 }
 </script>
+
+<style scoped>
+.home-panel + .home-panel {
+  margin-top: 1em;
+}
+</style>
