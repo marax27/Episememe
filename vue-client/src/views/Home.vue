@@ -5,8 +5,13 @@
       @submit='onSubmit'
       class='home-panel' />
 
-    <StatisticsPanel
-      class='home-panel' />
+    <v-row>
+      <v-spacer></v-spacer>
+      <v-col cols='12' sm='6'>
+        <StatisticsPanel
+          class='home-panel' />
+      </v-col>
+    </v-row>
   </ContentWrapper>
 </template>
 
