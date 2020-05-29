@@ -12,3 +12,9 @@ cd vue-client
 npm install
 ```
 5. In order to start an application, run `npm run serve`.
+
+## Useful commands
+See `vue-client/README.md`.
+
+## Desktop mode
+See `build/README-desktop-mode.md`.
