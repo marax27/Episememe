@@ -10,5 +10,7 @@ namespace Episememe.Domain.Entities
         public string? Description { get; set; }
 
         public ICollection<MediaTag> MediaTags { get; set; } = new HashSet<MediaTag>();
+        public ICollection<TagConnection> Successors { get; set; } = new HashSet<TagConnection>();
+        public ICollection<TagConnection> Ancestors { get; set; } = new HashSet<TagConnection>();
     }
 }
