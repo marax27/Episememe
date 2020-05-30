@@ -9,7 +9,8 @@
 
     <v-spacer></v-spacer>
 
-    <AuthWidget/>
+    <AuthWidget v-if='authorizationEnabled'/>
+    <NavBarLink v-else link='/user' icon='mdi-home-account'>User panel</NavBarLink>
   </v-app-bar>
 </template>
 
@@ -17,6 +18,7 @@
 import { Vue, Component } from 'vue-property-decorator';
 import AuthWidget from './components/AuthWidget.vue';
 import NavBarLink from './components/NavBarLink.vue';
+import { isAuthorizationEnabled } from '../auth/helpers';
 
 @Component({
   name: 'NavBar',
@@ -25,5 +27,12 @@ import NavBarLink from './components/NavBarLink.vue';
     NavBarLink
   }
 })
-export default class NavBar extends Vue {}
+export default class NavBar extends Vue {
+
+  authorizationEnabled = true;
+
+  created() {
+    this.authorizationEnabled = isAuthorizationEnabled();
+  }
+}
 </script>

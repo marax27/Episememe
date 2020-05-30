@@ -16,7 +16,5 @@ import ContentWrapper from '../shared/components/content-wrapper/ContentWrapper.
     ContentWrapper
   }
 })
-export default class User extends Vue {
-  $auth: any;
-}
+export default class User extends Vue {}
 </script>

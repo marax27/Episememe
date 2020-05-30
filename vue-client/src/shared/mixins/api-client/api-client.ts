@@ -2,7 +2,7 @@ import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 
 export default class ApiClient {
   constructor(
-    private _auth: any,
+    private _auth: any | null,
     private _apiUrl: string) {}
 
   public async get<T>(resource: string, extraHeaders: {[key: string]: string} = {}): Promise<AxiosResponse<T>> {
@@ -48,14 +48,15 @@ export default class ApiClient {
   }
 
   private async getConfig(extraHeaders: {[key: string]: string}): Promise<AxiosRequestConfig> {
-    const token = await this._auth.getTokenSilently();
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`
-      },
+    const baseHeaders: {[key: string]: string} = {};
+    if (this._auth != null) {
+      const token = await this._auth.getTokenSilently();
+      baseHeaders['Authorization'] = `Bearer ${token}`;
+    }
+
+    return {
+      headers: {...baseHeaders, ...extraHeaders},
       timeout: 5000
     };
-    config.headers = {...config.headers, ...extraHeaders};
-    return config;
   }
 }
