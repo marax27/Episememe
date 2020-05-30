@@ -4,9 +4,13 @@
 ```
 npm run build -- --mode desktop
 ```
-3. The output files should appear in `dist` directory. They can be served by an HTTP server, e.g. using the [serve package](https://www.npmjs.com/package/serve):
-
+3. The output files should appear in `dist` directory. They can be served by an HTTP server, e.g.:
 ```
+npx serve dist/ -l 8080
+```
+You can also install the [serve package](https://www.npmjs.com/package/serve):
+```
+npm i -g serve
 serve dist/ -l 8080
 ```
 
