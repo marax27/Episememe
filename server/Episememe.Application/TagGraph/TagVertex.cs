@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Episememe.Application.Common;
+using Episememe.Application.TagGraph.Exceptions;
 using Episememe.Domain.Entities;
 using Episememe.Domain.HelperEntities;
 
@@ -15,6 +16,11 @@ namespace Episememe.Application.TagGraph
 
         public void AddParent(TagVertex parent)
         {
+            if (AddingParentCreatesCycle(parent))
+            {
+                throw new CycleException($"Making '{parent._tag.Name}' a parent of '{_tag.Name}' would create a cycle.");
+            }
+
             var directConnection = new TagConnection
             {
                 Successor = _tag,
@@ -44,5 +50,16 @@ namespace Episememe.Application.TagGraph
 
         public IEnumerable<Tag> SuccessorTags
             => _tag.Successors.Select(tc => tc.Successor);
+
+        private bool AddingParentCreatesCycle(TagVertex potentialParent)
+        {
+            var ancestorIds = potentialParent._tag.Ancestors
+                .Select(tc => tc.AncestorId)
+                .Concat(new[] { potentialParent._tag.Id });
+            var currentSuccessorIds = _tag.Successors
+                .Select(tc => tc.SuccessorId);
+
+            return ancestorIds.Intersect(currentSuccessorIds).Any();
+        }
     }
 }
