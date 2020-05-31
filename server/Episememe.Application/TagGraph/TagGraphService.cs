@@ -1,5 +1,7 @@
 ﻿using System.Linq;
 using Episememe.Application.Interfaces;
+using Episememe.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Episememe.Application.TagGraph
 {
@@ -19,6 +21,17 @@ namespace Episememe.Application.TagGraph
             => _context.SaveChanges();
 
         public TagVertex this[string name]
-            => new TagVertex(_context.Tags.Single(tag => tag.Name == name));
+            => new TagVertex(LoadTagByName(name));
+
+        private Tag LoadTagByName(string name)
+        {
+            return _context.Tags
+                .Where(tag => tag.Name == name)
+                .Include(tag => tag.Successors)
+                    .ThenInclude(c => c.Successor)
+                .Include(tag => tag.Ancestors)
+                    .ThenInclude(c => c.Ancestor)
+                .Single();
+        }
     }
 }
