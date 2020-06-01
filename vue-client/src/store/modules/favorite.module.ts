@@ -3,7 +3,7 @@ import { Module } from 'vuex';
 export const favorite: Module<any, any> = {
   namespaced: true,
   state: () => ({
-    favoriteIds: [],
+    favoriteIds: null,
   }),
   mutations: {
     toggleFavoriteId(state, mediaId: string) {
@@ -13,11 +13,17 @@ export const favorite: Module<any, any> = {
       } else {
         state.favoriteIds.splice(index, 1);
       }
+    },
+    setFavoriteIds(state, mediaIds: string[]) {
+      state.favoriteIds = mediaIds;
     }
   },
   actions: {
     toggleFavoriteId({ commit }, mediaId: string) {
       commit('toggleFavoriteId', mediaId);
+    },
+    updateFavoriteIds({ commit }, mediaIds: string[]) {
+      commit('setFavoriteIds', mediaIds);
     }
   }
 }
