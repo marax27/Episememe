@@ -2,6 +2,7 @@
   <BaseSettingsMenuButton
     label='Favorite'
     :icon='isFavorite ? "mdi-star" : "mdi-star-outline"'
+    :color='isFavorite ? "accent" : undefined'
     @click='toggleFavorite' />
 </template>
 

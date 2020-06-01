@@ -3,7 +3,7 @@
     <template v-slot:activator='{ on }'>
       <v-btn @click='$emit("click", $event)'
         v-on='on' fab small color='secondary' @click.stop>
-        <v-icon>{{ icon }}</v-icon>
+        <v-icon :color='color'>{{ icon }}</v-icon>
       </v-btn>
     </template>
     <span>{{ label }}</span>
@@ -20,5 +20,8 @@ export default class BaseSettingsMenuButton extends Vue {
 
   @Prop()
   label?: string;
+
+  @Prop()
+  color?: string;
 }
 </script>
