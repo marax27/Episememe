@@ -46,10 +46,12 @@ namespace Episememe.Application.TagGraph
         }
 
         public IEnumerable<Tag> AncestorTags
-            => _tag.Ancestors.Select(tc => tc.Ancestor);
+            => _tag.Ancestors.Select(tc => tc.Ancestor)
+                .Distinct();
 
         public IEnumerable<Tag> SuccessorTags
-            => _tag.Successors.Select(tc => tc.Successor);
+            => _tag.Successors.Select(tc => tc.Successor)
+                .Distinct();
 
         private bool AddingParentCreatesCycle(TagVertex potentialParent)
         {
