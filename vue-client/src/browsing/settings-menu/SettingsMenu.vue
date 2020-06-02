@@ -17,6 +17,7 @@
       :label='item.name' :icon='item.icon' />
     <VolumeMenuButton @click='toggleVolume' />
     <AutoloopMenuButton @click='toggleAutoloop' />
+    <FavoriteMenuButton />
 
   </v-speed-dial>
 </template>
@@ -27,6 +28,7 @@ import BaseSettingsMenuButton from './buttons/BaseSettingsMenuButton.vue';
 import RevisionMenuButton from './buttons/RevisionMenuButton.vue';
 import VolumeMenuButton from './buttons/VolumeMenuButton.vue';
 import AutoloopMenuButton from './buttons/AutoloopMenuButton.vue';
+import FavoriteMenuButton from './buttons/FavoriteMenuButton.vue';
 
 @Component({
   components: {
@@ -34,11 +36,11 @@ import AutoloopMenuButton from './buttons/AutoloopMenuButton.vue';
     RevisionMenuButton,
     VolumeMenuButton,
     AutoloopMenuButton,
+    FavoriteMenuButton,
   }
 })
 export default class SettingsMenu extends Vue {
   menuButtons = [
-    { name: 'Favourite', icon: 'mdi-star', callback: this.foo },
     { name: 'Hide', icon: 'mdi-eye-off', callback: this.foo },
     { name: 'Fill space', icon: 'mdi-arrow-expand', callback: this.foo },
   ];

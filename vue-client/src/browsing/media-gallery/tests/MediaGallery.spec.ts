@@ -31,6 +31,9 @@ import Vuex, { Store } from 'vuex';
             namespaced: true,
             state: { currentMediaInstance: null },
             actions: { updateCurrentMediaInstance: updateActionMock }
+          },
+          favorite: {
+            state: { favoriteIds: [] }
           }
         }
       });

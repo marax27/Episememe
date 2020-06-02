@@ -36,9 +36,10 @@
 </template>
 
 <script lang='ts'>
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import { Component, Prop, Vue, Watch, Mixins } from 'vue-property-decorator';
 import MediaComponent from './media-component/MediaComponent.vue';
 import MediaSidebar from './media-sidebar/MediaSidebar.vue';
+import FavoriteMediaProvider from '../mixins/favorite-media-provider.service';
 import { IMediaInstance } from '../../shared/models/IMediaInstance';
 
 @Component({
@@ -47,7 +48,7 @@ import { IMediaInstance } from '../../shared/models/IMediaInstance';
     MediaSidebar
   }
 })
-export default class MediaGallery extends Vue {
+export default class MediaGallery extends Mixins(FavoriteMediaProvider) {
   @Prop({ default: [] })
   instances!: IMediaInstance[];
 

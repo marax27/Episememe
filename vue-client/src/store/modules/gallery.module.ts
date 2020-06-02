@@ -31,6 +31,8 @@ export const gallery: Module<any, any> = {
     }
   },
   getters: {
-    
+    currentMediaId: state => {
+      return state.currentMediaInstance.id;
+    }
   }
 };
