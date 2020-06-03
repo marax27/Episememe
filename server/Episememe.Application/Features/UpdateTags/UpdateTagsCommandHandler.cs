@@ -15,9 +15,13 @@ namespace Episememe.Application.Features.UpdateTags
     public class UpdateTagsCommandHandler : IRequestHandler<UpdateTagsCommand>
     {
         private readonly IWritableApplicationContext _context;
+        private readonly ITimeProvider _timeProvider;
 
-        public UpdateTagsCommandHandler(IWritableApplicationContext context)
-            => _context = context;
+        public UpdateTagsCommandHandler(IWritableApplicationContext context, ITimeProvider timeProvider)
+        {
+            _context = context;
+            _timeProvider = timeProvider;
+        }
 
         public async Task<Unit> Handle(UpdateTagsCommand request, CancellationToken cancellationToken)
         {
@@ -39,6 +43,8 @@ namespace Episememe.Application.Features.UpdateTags
             editedInstance.MediaTags = mediaTags;
             await _context.SaveChangesAsync(cancellationToken);
 
+            await CreateMediaChangeOnTagsUpdate(editedInstance.Id, request.UserId);
+
             return Unit.Value;
         }
 
@@ -51,5 +57,18 @@ namespace Episememe.Application.Features.UpdateTags
             return tags;
         }
 
+        private async Task CreateMediaChangeOnTagsUpdate(string mediaInstanceId, string userId)
+        {
+            var newMediaChange = new MediaChange
+            {
+                MediaInstanceId = mediaInstanceId,
+                UserId = userId,
+                Timestamp = _timeProvider.GetUtc(),
+                Type = MediaChangeType.Update
+            };
+
+            await _context.MediaChanges.AddAsync(newMediaChange);
+            await _context.SaveChangesAsync(CancellationToken.None);
+        }
     }
 }

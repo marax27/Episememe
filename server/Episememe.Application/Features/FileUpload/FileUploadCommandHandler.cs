@@ -1,4 +1,5 @@
-﻿using Episememe.Application.Exceptions;
+﻿using Episememe.Application.DataTransfer;
+using Episememe.Application.Exceptions;
 using Episememe.Application.Interfaces;
 using Episememe.Domain.Entities;
 using Episememe.Domain.HelperEntities;
@@ -10,7 +11,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Episememe.Application.DataTransfer;
 
 namespace Episememe.Application.Features.FileUpload
 {
@@ -19,13 +19,15 @@ namespace Episememe.Application.Features.FileUpload
         private readonly IFileStorage _fileStorage;
         private readonly IWritableApplicationContext _context;
         private readonly IMediaIdProvider _mediaIdProvider;
+        private readonly ITimeProvider _timeProvider;
 
-        public FileUploadCommandHandler(IFileStorage fileStorage, IWritableApplicationContext context, 
-            IMediaIdProvider mediaIdProvider)
+        public FileUploadCommandHandler(IFileStorage fileStorage, IWritableApplicationContext context,
+            IMediaIdProvider mediaIdProvider, ITimeProvider timeProvider)
         {
             _fileStorage = fileStorage;
             _context = context;
             _mediaIdProvider = mediaIdProvider;
+            _timeProvider = timeProvider;
         }
 
         public async Task<Unit> Handle(FileUploadCommand request, CancellationToken cancellationToken)
@@ -45,6 +47,7 @@ namespace Episememe.Application.Features.FileUpload
                 {
                     await CreateMediaFile(instanceId, dataType, request.AuthorId, request.FormFile, request.MediaDto);
                     hasBeenCreated = true;
+                    await CreateMediaChangeOnMediaInstanceCreation(instanceId, request.AuthorId);
                 }
                 catch (FileExistsException)
                 {
@@ -132,6 +135,20 @@ namespace Episememe.Application.Features.FileUpload
                 tagNames.Contains(st) ? _context.Tags.Single(t => t.Name == st) : new Tag() { Name = st });
 
             return tags;
+        }
+
+        private async Task CreateMediaChangeOnMediaInstanceCreation(string mediaInstanceId, string userId)
+        {
+            var newMediaChange = new MediaChange
+            {
+                MediaInstanceId = mediaInstanceId,
+                UserId = userId,
+                Timestamp = _timeProvider.GetUtc(),
+                Type = MediaChangeType.Create
+            };
+
+            await _context.MediaChanges.AddAsync(newMediaChange);
+            await _context.SaveChangesAsync(CancellationToken.None);
         }
     }
 }
