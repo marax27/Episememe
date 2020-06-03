@@ -17,6 +17,7 @@ namespace Episememe.Infrastructure.Database
         public DbSet<FavoriteMedia> FavoriteMedia { get; set; } = null!;
 
         public DbSet<BrowseToken> BrowseTokens { get; set; } = null!;
+        public DbSet<MediaChange> MediaChanges { get; set; } = null!;
 
         public void Migrate() => Database.Migrate();
 
