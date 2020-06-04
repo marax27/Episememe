@@ -1,4 +1,5 @@
-﻿using Episememe.Application.Features.FileUpload;
+﻿using Episememe.Application.DataTransfer;
+using Episememe.Application.Features.FileUpload;
 using Episememe.Application.Interfaces;
 using Episememe.Application.Tests.Helpers;
 using Episememe.Domain.Entities;
@@ -7,12 +8,11 @@ using FluentAssertions;
 using Microsoft.Extensions.Options;
 using Moq;
 using System;
-using System.Collections.Generic;
 using System.Data.Common;
 using System.IO;
 using System.IO.Abstractions.TestingHelpers;
 using System.Threading;
-using Episememe.Application.DataTransfer;
+using Episememe.Domain.HelperEntities;
 using Xunit;
 
 namespace Episememe.Application.Tests.FeatureTests.FileUpload
@@ -22,10 +22,12 @@ namespace Episememe.Application.Tests.FeatureTests.FileUpload
         private readonly string _givenMediaInstanceId = "abcdefgh";
         private readonly string _givenAlternativeMediaInstanceId = "qwertyui";
         private readonly DateTime _givenDate = new DateTime(2010, 1, 1);
+        private readonly DateTime _givenProvidedUtcDateTime = new DateTime(2010, 1, 1, 1, 0, 0);
 
         private readonly IFileStorage _fileStorageMock;
         private readonly IWritableApplicationContext _contextMock;
         private readonly Mock<IMediaIdProvider> _mediaIdProviderMock;
+        private readonly Mock<ITimeProvider> _timeProviderMock;
 
         private readonly DbConnection _connection;
 
@@ -43,6 +45,10 @@ namespace Episememe.Application.Tests.FeatureTests.FileUpload
             _mediaIdProviderMock.SetupSequence(provider => provider.Generate())
                 .Returns(_givenMediaInstanceId)
                 .Returns(_givenAlternativeMediaInstanceId);
+
+            _timeProviderMock = new Mock<ITimeProvider>();
+            _timeProviderMock.Setup(provider => provider.GetUtc())
+                .Returns(_givenProvidedUtcDateTime);
         }
 
         [Fact]
@@ -56,7 +62,7 @@ namespace Episememe.Application.Tests.FeatureTests.FileUpload
 
             var command = FileUploadCommand.Create(givenFormFile, givenMediaDto, string.Empty);
             var handler = new FileUploadCommandHandler(_fileStorageMock, _contextMock,
-                _mediaIdProviderMock.Object);
+                _mediaIdProviderMock.Object, _timeProviderMock.Object);
             handler.Handle(command, CancellationToken.None).Wait();
 
             _contextMock.MediaInstances.Find(_givenMediaInstanceId).Should().NotBeNull();
@@ -73,7 +79,7 @@ namespace Episememe.Application.Tests.FeatureTests.FileUpload
 
             var command = FileUploadCommand.Create(givenFormFile, givenMediaDto, string.Empty);
             var handler = new FileUploadCommandHandler(_fileStorageMock, _contextMock,
-                _mediaIdProviderMock.Object);
+                _mediaIdProviderMock.Object, _timeProviderMock.Object);
             handler.Handle(command, CancellationToken.None).Wait();
 
             var streamContent = GetFileContent(_fileStorageMock.Read(_givenMediaInstanceId));
@@ -91,7 +97,7 @@ namespace Episememe.Application.Tests.FeatureTests.FileUpload
 
             var command = FileUploadCommand.Create(givenFormFile, givenMediaDto, string.Empty);
             var handler = new FileUploadCommandHandler(_fileStorageMock, _contextMock,
-                _mediaIdProviderMock.Object);
+                _mediaIdProviderMock.Object, _timeProviderMock.Object);
             handler.Handle(command, CancellationToken.None).Wait();
 
             _contextMock.MediaInstances.Find(_givenMediaInstanceId).MediaTags.Should().BeEmpty();
@@ -110,7 +116,7 @@ namespace Episememe.Application.Tests.FeatureTests.FileUpload
 
             var command = FileUploadCommand.Create(givenFormFile, givenMediaDto, string.Empty);
             var handler = new FileUploadCommandHandler(_fileStorageMock, _contextMock,
-                _mediaIdProviderMock.Object);
+                _mediaIdProviderMock.Object, _timeProviderMock.Object);
             handler.Handle(command, CancellationToken.None).Wait();
 
             var streamContent = GetFileContent(_fileStorageMock.Read(_givenAlternativeMediaInstanceId));
@@ -128,7 +134,7 @@ namespace Episememe.Application.Tests.FeatureTests.FileUpload
 
             var command = FileUploadCommand.Create(givenFormFile, givenMediaDto, string.Empty);
             var handler = new FileUploadCommandHandler(_fileStorageMock, _contextMock,
-                _mediaIdProviderMock.Object);
+                _mediaIdProviderMock.Object, _timeProviderMock.Object);
             handler.Handle(command, CancellationToken.None).Wait();
 
             _contextMock.MediaInstances.Find(_givenMediaInstanceId).DataType.Should().BeEmpty();
@@ -145,7 +151,7 @@ namespace Episememe.Application.Tests.FeatureTests.FileUpload
 
             var command = FileUploadCommand.Create(givenFormFile, givenMediaDto, string.Empty);
             var handler = new FileUploadCommandHandler(_fileStorageMock, _contextMock,
-                _mediaIdProviderMock.Object);
+                _mediaIdProviderMock.Object, _timeProviderMock.Object);
             handler.Handle(command, CancellationToken.None).Wait();
 
             _contextMock.MediaInstances.Find(_givenMediaInstanceId).DataType.Should().BeEmpty();
@@ -163,7 +169,7 @@ namespace Episememe.Application.Tests.FeatureTests.FileUpload
 
             var command = FileUploadCommand.Create(givenFormFile, givenMediaDto, string.Empty);
             var handler = new FileUploadCommandHandler(_fileStorageMock, _contextMock,
-                _mediaIdProviderMock.Object);
+                _mediaIdProviderMock.Object, _timeProviderMock.Object);
             handler.Handle(command, CancellationToken.None).Wait();
 
             _contextMock.MediaInstances.Find(_givenMediaInstanceId).DataType.Should().BeEquivalentTo(givenExtension);
@@ -181,7 +187,7 @@ namespace Episememe.Application.Tests.FeatureTests.FileUpload
 
             var command = FileUploadCommand.Create(formFile, givenMediaDto, string.Empty);
             var handler = new FileUploadCommandHandler(_fileStorageMock, _contextMock,
-                _mediaIdProviderMock.Object);
+                _mediaIdProviderMock.Object, _timeProviderMock.Object);
             handler.Handle(command, CancellationToken.None).Wait();
 
             _contextMock.Tags.Should().ContainSingle(t => t.Name == givenTag);
@@ -202,10 +208,49 @@ namespace Episememe.Application.Tests.FeatureTests.FileUpload
 
             var command = FileUploadCommand.Create(formFile, givenMediaDto, string.Empty);
             var handler = new FileUploadCommandHandler(_fileStorageMock, _contextMock,
-                _mediaIdProviderMock.Object);
+                _mediaIdProviderMock.Object, _timeProviderMock.Object);
             handler.Handle(command, CancellationToken.None).Wait();
 
             _contextMock.Tags.Should().ContainSingle(t => t.Name == givenTag);
+        }
+
+        [Fact]
+        public void GivenNewMediaIsUploaded_MediaChangeIsSavedInDatabase()
+        {
+            var givenFileName = "newFile";
+            var givenFileContent = "None";
+            var givenFormFile = FormFileFactory.Create(givenFileName, givenFileContent);
+            var givenTags = new[] { "pigeons", "flying rats" };
+            var givenMediaDto = new FileUploadDto(givenTags, _givenDate, false);
+            var givenUserId = "user";
+
+            var command = FileUploadCommand.Create(givenFormFile, givenMediaDto, givenUserId);
+            var handler = new FileUploadCommandHandler(_fileStorageMock, _contextMock,
+                _mediaIdProviderMock.Object, _timeProviderMock.Object);
+            handler.Handle(command, CancellationToken.None).Wait();
+
+            _contextMock.MediaChanges.Should().ContainSingle(mc => mc.MediaInstanceId == _givenMediaInstanceId
+                                                             && mc.UserId == givenUserId);
+        }
+
+        [Fact]
+        public void GivenMediaChangeIsSavedInDatabase_MediaChangeIsOfTypeCreate()
+        {
+            var givenFileName = "newFile";
+            var givenFileContent = "None";
+            var givenFormFile = FormFileFactory.Create(givenFileName, givenFileContent);
+            var givenTags = new[] { "pigeons", "flying rats" };
+            var givenMediaDto = new FileUploadDto(givenTags, _givenDate, false);
+            var givenUserId = "user";
+
+            var command = FileUploadCommand.Create(givenFormFile, givenMediaDto, givenUserId);
+            var handler = new FileUploadCommandHandler(_fileStorageMock, _contextMock,
+                _mediaIdProviderMock.Object, _timeProviderMock.Object);
+            handler.Handle(command, CancellationToken.None).Wait();
+
+            _contextMock.MediaChanges.Should().ContainSingle(mc => mc.MediaInstanceId == _givenMediaInstanceId
+                                                             && mc.UserId == givenUserId
+                                                             && mc.Type == MediaChangeType.Create);
         }
 
         private string GetFileContent(Stream stream)
