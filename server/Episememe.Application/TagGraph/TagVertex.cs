@@ -17,16 +17,6 @@ namespace Episememe.Application.TagGraph
             _context = context;
         }
 
-        public void AddParent(TagVertex newParent)
-        {
-            ConnectTags(_tag.Id, newParent._tag.Id);
-        }
-
-        public void DeleteParent(TagVertex parent)
-        {
-            DisconnectTags(_tag.Id, parent._tag.Id);
-        }
-
         public IEnumerable<Tag> Successors
             => _context.TagConnections
                 .Where(tc => tc.Ancestor == _tag.Id)
@@ -39,26 +29,35 @@ namespace Episememe.Application.TagGraph
                 .Select(tc => _context.Tags.Single(x => x.Id == tc.Ancestor))
                 .Distinct();
 
-        private void ConnectTags(int childId, int parentId)
+        public void AddParent(TagVertex newParent)
         {
-            // Direct connection exists.
-            if (_context.TagConnections
-                .Any(tc => tc.Successor == childId && tc.Ancestor == parentId && tc.Hops == 0))
+            var parentTag = newParent._tag;
+            if (GetDirectConnection(_tag, parentTag) != null)
                 return;
 
-            if (childId == parentId)
-                return;
+            if (_tag == parentTag)
+                throw new CycleException($"Loop on element (id: {_tag.Id}) would create a cycle.");
 
-            // Check for circular references?
-            if (_context.TagConnections
-                .Any(tc => tc.Successor == parentId && tc.Ancestor == childId))
-                return;
+            if (WillConnectionCreateCycle(_tag.Id, parentTag.Id))
+                throw new CycleException($"Connection (id: {_tag.Id}) -> (id: {parentTag.Id}) would create a cycle.");
 
-            // Direct edge.
+            ConnectTags(_tag, newParent._tag);
+        }
+
+        public void DeleteParent(TagVertex parent)
+        {
+            var connectionToRemove = GetDirectConnection(_tag, parent._tag);
+            if (connectionToRemove != null)
+                DeleteEdge(connectionToRemove);
+        }
+
+        private void ConnectTags(Tag child, Tag parent)
+        {
+            // 1. Direct edge.
             var newDirectEdge = new TagConnection
             {
-                Successor = childId,
-                Ancestor = parentId,
+                Successor = child.Id,
+                Ancestor = parent.Id,
                 Hops = 0
             };
             _context.TagConnections.Add(newDirectEdge);
@@ -69,42 +68,42 @@ namespace Episememe.Application.TagGraph
             newDirectEdge.ExitEdgeId = newDirectEdgeId;
             newDirectEdge.DirectEdgeId = newDirectEdgeId;
 
-            // (quote) Step 1: A's incoming edges to B.
+            // 2. A's incoming edges to B.
             _context.TagConnections.AddRange(
                 _context.TagConnections
-                    .Where(tc => tc.Ancestor == childId)
+                    .Where(tc => tc.Ancestor == child.Id)
                     .Select(tc => new TagConnection
                     {
                         EntryEdgeId = tc.Id,
                         DirectEdgeId = newDirectEdgeId,
                         ExitEdgeId = newDirectEdgeId,
                         Successor = tc.Successor,
-                        Ancestor = parentId,
+                        Ancestor = parent.Id,
                         Hops = tc.Hops + 1
                     })
             );
 
-            // (quote) Step 2: A to B's outgoing edges.
+            // 3. A to B's outgoing edges.
             _context.TagConnections.AddRange(
                 _context.TagConnections
-                    .Where(tc => tc.Successor == parentId)
+                    .Where(tc => tc.Successor == parent.Id)
                     .Select(tc => new TagConnection
                     {
                         EntryEdgeId = newDirectEdgeId,
                         DirectEdgeId = newDirectEdgeId,
                         ExitEdgeId = tc.Id,
-                        Successor = childId,
+                        Successor = child.Id,
                         Ancestor = tc.Ancestor,
                         Hops = tc.Hops + 1
                     })
             );
 
-            // (quote) Step 3: A's incoming edges to end vertex of B's outgoing edges.
+            // 4. A's incoming edges to end vertex of B's outgoing edges.
             var joinResult =
                 from start in _context.TagConnections
                 from end in _context.TagConnections
-                where start.Ancestor == childId
-                      && end.Successor == parentId
+                where start.Ancestor == child.Id
+                      && end.Successor == parent.Id
                 select new { A = start, B = end };
 
             _context.TagConnections.AddRange(
@@ -120,31 +119,21 @@ namespace Episememe.Application.TagGraph
             );
         }
 
-        private void DisconnectTags(int child, int parent)
+        private void DeleteEdge(TagConnection edge)
         {
-            var directEdge = _context.TagConnections
-                .SingleOrDefault(tc =>
-                    tc.Successor == child
-                    && tc.Ancestor == parent
-                    && tc.Hops == 0);
-
-            if (directEdge == null)
-                return;
-            DeleteEdge(directEdge.Id);
+            var purgeList = GetRelatedEdgesToRemove(edge);
+            _context.TagConnections.RemoveRange(purgeList);
         }
 
-        private void DeleteEdge(int edgeId)
+        private IEnumerable<TagConnection> GetRelatedEdgesToRemove(TagConnection edge)
         {
-            if (_context.TagConnections.Find(edgeId) == null)
-                return;
-
             var purgeList = new List<TagConnection>();
 
-            // (quote) 1. Rows originally inserted with the 1st AddEdge call, for this direct edge.
+            // 1. Rows originally inserted with the 1st AddEdge call, for this direct edge.
             purgeList.AddRange(_context.TagConnections
-                .Where(tc => tc.DirectEdgeId == edgeId));
+                .Where(tc => tc.DirectEdgeId == edge.Id));
 
-            // (quote) 2. All dependent rows inserted afterwards.
+            // 2. All dependent rows inserted afterwards.
             while (true)
             {
                 var edgesToRemove = _context.TagConnections
@@ -161,7 +150,17 @@ namespace Episememe.Application.TagGraph
                     break;
             }
 
-            _context.TagConnections.RemoveRange(purgeList);
+            return purgeList;
         }
+
+        private TagConnection? GetDirectConnection(Tag child, Tag parent)
+            => _context.TagConnections.SingleOrDefault(tc =>
+                    tc.Successor == child.Id
+                    && tc.Ancestor == parent.Id
+                    && tc.Hops == 0);
+
+        private bool WillConnectionCreateCycle(int childId, int parentId)
+            => _context.TagConnections
+                .Any(tc => tc.Successor == parentId && tc.Ancestor == childId);
     }
 }
