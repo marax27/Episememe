@@ -1,52 +1,55 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Episememe.Application.Graphs.Exceptions;
+using Episememe.Application.Graphs.Interfaces;
 using Episememe.Application.Interfaces;
 using Episememe.Domain.Entities;
 using Episememe.Domain.HelperEntities;
 
-namespace Episememe.Application.TagGraph
+namespace Episememe.Application.Graphs.Tags
 {
-    public class TagVertex
+    public class TagVertex : IVertex<Tag>
     {
-        private readonly Tag _tag;
         private readonly IWritableApplicationContext _context;
 
         public TagVertex(Tag tag, IWritableApplicationContext context)
         {
-            _tag = tag;
+            Entity = tag;
             _context = context;
         }
 
+        public Tag Entity { get; }
+
         public IEnumerable<Tag> Successors
             => _context.TagConnections
-                .Where(tc => tc.Ancestor == _tag.Id)
+                .Where(tc => tc.Ancestor == Entity.Id)
                 .Select(tc => _context.Tags.Single(x => x.Id == tc.Successor))
                 .Distinct();
 
         public IEnumerable<Tag> Ancestors
             => _context.TagConnections
-                .Where(tc => tc.Successor == _tag.Id)
+                .Where(tc => tc.Successor == Entity.Id)
                 .Select(tc => _context.Tags.Single(x => x.Id == tc.Ancestor))
                 .Distinct();
 
-        public void AddParent(TagVertex newParent)
+        public void AddParent(IVertex<Tag> newParent)
         {
-            var parentTag = newParent._tag;
-            if (GetDirectConnection(_tag, parentTag) != null)
+            var parentTag = newParent.Entity;
+            if (GetDirectConnection(Entity, parentTag) != null)
                 return;
 
-            if (_tag == parentTag)
-                throw new CycleException($"Loop on element (id: {_tag.Id}) would create a cycle.");
+            if (Entity == parentTag)
+                throw new CycleException($"Loop on element (id: {Entity.Id}) would create a cycle.");
 
-            if (WillConnectionCreateCycle(_tag.Id, parentTag.Id))
-                throw new CycleException($"Connection (id: {_tag.Id}) -> (id: {parentTag.Id}) would create a cycle.");
+            if (WillConnectionCreateCycle(Entity.Id, parentTag.Id))
+                throw new CycleException($"Connection (id: {Entity.Id}) -> (id: {parentTag.Id}) would create a cycle.");
 
-            ConnectTags(_tag, newParent._tag);
+            ConnectTags(Entity, newParent.Entity);
         }
 
-        public void DeleteParent(TagVertex parent)
+        public void DeleteParent(IVertex<Tag> parent)
         {
-            var connectionToRemove = GetDirectConnection(_tag, parent._tag);
+            var connectionToRemove = GetDirectConnection(Entity, parent.Entity);
             if (connectionToRemove != null)
                 DeleteEdge(connectionToRemove);
         }

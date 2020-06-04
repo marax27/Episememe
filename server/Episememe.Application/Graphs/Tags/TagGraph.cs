@@ -1,22 +1,15 @@
 ﻿using System.Linq;
+using Episememe.Application.Graphs.Interfaces;
 using Episememe.Application.Interfaces;
 using Episememe.Domain.Entities;
 
-namespace Episememe.Application.TagGraph
+namespace Episememe.Application.Graphs.Tags
 {
-    public interface ITagGraphService
-    {
-        TagVertex Add(Tag tag);
-        TagVertex this[string name] { get; }
-
-        void SaveChanges();
-    }
-
-    public class TagGraphService : ITagGraphService
+    public class TagGraph : IGraph<Tag>
     {
         private readonly IWritableApplicationContext _context;
 
-        public TagGraphService(IWritableApplicationContext context)
+        public TagGraph(IWritableApplicationContext context)
         {
             _context = context;
         }
@@ -26,13 +19,13 @@ namespace Episememe.Application.TagGraph
             _context.SaveChanges();
         }
 
-        public TagVertex Add(Tag tag)
+        public IVertex<Tag> Add(Tag tag)
         {
             _context.Tags.Add(tag);
             return new TagVertex(tag, _context);
         }
 
-        public TagVertex this[string name]
+        public IVertex<Tag> this[string name]
         {
             get
             {

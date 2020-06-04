@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Episememe.Application.TagGraph
+namespace Episememe.Application.Graphs.Exceptions
 {
     public class CycleException : Exception
     {

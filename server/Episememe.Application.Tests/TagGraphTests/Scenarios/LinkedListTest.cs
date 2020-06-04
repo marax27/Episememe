@@ -1,13 +1,14 @@
 ﻿using System.Data.Common;
 using System.Linq;
+using Episememe.Application.Graphs.Interfaces;
+using Episememe.Application.Graphs.Tags;
 using Episememe.Application.Interfaces;
-using Episememe.Application.TagGraph;
 using Episememe.Application.Tests.Helpers;
 using Episememe.Domain.Entities;
 using FluentAssertions;
 using Xunit;
 
-namespace Episememe.Application.Tests.TagGraph.Scenarios
+namespace Episememe.Application.Tests.TagGraphTests.Scenarios
 {
     /* Tested graph:
      * 0 ⭢ 1 ⭢ 2 ⭢ 3 ⭢ 4 ⭢ 5
@@ -16,12 +17,12 @@ namespace Episememe.Application.Tests.TagGraph.Scenarios
     {
         private readonly IWritableApplicationContext _context;
         private readonly DbConnection _connection;
-        private readonly ITagGraphService _sut;
+        private readonly IGraph<Tag> _sut;
 
         public LinkedListTest()
         {
             (_context, _connection) = InMemoryDatabaseFactory.CreateSqliteDbContext();
-            _sut = new TagGraphService(_context);
+            _sut = new TagGraph(_context);
             ConstructGraph();
         }
 
