@@ -1,7 +1,9 @@
 ﻿using System.Data.Common;
+using System.Linq;
 using Episememe.Application.Interfaces;
 using Episememe.Application.TagGraph;
 using Episememe.Application.Tests.Helpers;
+using Episememe.Domain.Entities;
 using FluentAssertions;
 using Xunit;
 
@@ -26,46 +28,66 @@ namespace Episememe.Application.Tests.TagGraph.Scenarios
         [Fact]
         public void TopVertexHasExpectedSuccessors()
         {
-            _sut.Successors(5).Should().BeEquivalentTo(0, 1, 2, 3, 4);
+            var actualSuccessorNames = _sut["5"].Successors
+                .Select(tag => tag.Name);
+            actualSuccessorNames.Should().BeEquivalentTo("0", "1", "2", "3", "4");
         }
 
         [Fact]
         public void TopVertexHasNoAncestors()
         {
-            _sut.Ancestors(5).Should().BeEmpty();
+            var actualAncestorNames = _sut["5"].Ancestors
+                .Select(tag => tag.Name);
+            actualAncestorNames.Should().BeEmpty();
         }
 
         [Fact]
         public void BottomVertexHasNoSuccessors()
         {
-            _sut.Successors(0).Should().BeEmpty();
+            var actualSuccessorNames = _sut["0"].Successors
+                .Select(tag => tag.Name);
+            actualSuccessorNames.Should().BeEmpty();
         }
 
         [Fact]
         public void BottomVertexHasExpectedAncestors()
         {
-            _sut.Ancestors(0).Should().BeEquivalentTo(1, 2, 3, 4, 5);
+            var actualAncestorNames = _sut["0"].Ancestors
+                .Select(tag => tag.Name);
+            actualAncestorNames.Should().BeEquivalentTo("1", "2", "3", "4", "5");
         }
 
         [Fact]
         public void MiddleVertexHasExpectedSuccessors()
         {
-            _sut.Successors(3).Should().BeEquivalentTo(0, 1, 2);
+            var actualSuccessorNames = _sut["3"].Successors
+                .Select(tag => tag.Name);
+            actualSuccessorNames.Should().BeEquivalentTo("0", "1", "2");
         }
 
         [Fact]
         public void MiddleVertexHasExpectedAncestors()
         {
-            _sut.Ancestors(3).Should().BeEquivalentTo(4, 5);
+            var actualAncestorNames = _sut["3"].Ancestors
+                .Select(tag => tag.Name);
+            actualAncestorNames.Should().BeEquivalentTo("4", "5");
         }
 
         private void ConstructGraph()
         {
-            _sut.Connect(2, 3);
-            _sut.Connect(0, 1);
-            _sut.Connect(3, 4);
-            _sut.Connect(4, 5);
-            _sut.Connect(1, 2);
+            _sut.Add(new Tag {Name = "0"});
+            _sut.Add(new Tag {Name = "1"});
+            _sut.Add(new Tag {Name = "2"});
+            _sut.Add(new Tag {Name = "3"});
+            _sut.Add(new Tag {Name = "4"});
+            _sut.Add(new Tag {Name = "5"});
+            _sut.SaveChanges();
+
+            _sut["2"].AddParent(_sut["3"]);
+            _sut["0"].AddParent(_sut["1"]);
+            _sut["3"].AddParent(_sut["4"]);
+            _sut["4"].AddParent(_sut["5"]);
+            _sut["1"].AddParent(_sut["2"]);
             _sut.SaveChanges();
         }
     }
