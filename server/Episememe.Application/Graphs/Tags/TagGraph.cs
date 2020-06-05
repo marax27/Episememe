@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Episememe.Application.Graphs.Interfaces;
 using Episememe.Application.Interfaces;
 using Episememe.Domain.Entities;
@@ -14,13 +16,22 @@ namespace Episememe.Application.Graphs.Tags
             _context = context;
         }
 
+        public IEnumerable<Tag> Nodes
+            => _context.Tags;
+
         public void SaveChanges()
+            => _context.SaveChanges();
+        
+        public void CommitAllChanges()
         {
-            _context.SaveChanges();
+            SaveChanges();
+            if (_context.Database.CurrentTransaction != null)
+                _context.Database.CommitTransaction();
         }
 
         public IVertex<Tag> Add(Tag tag)
         {
+            EnsureTransactionIsOpen();
             _context.Tags.Add(tag);
             return new TagVertex(tag, _context);
         }
@@ -32,6 +43,12 @@ namespace Episememe.Application.Graphs.Tags
                 var tagEntity = _context.Tags.Single(tag => tag.Name == name);
                 return new TagVertex(tagEntity, _context);
             }
+        }
+
+        private void EnsureTransactionIsOpen()
+        {
+            if (_context.Database.CurrentTransaction == null)
+                _context.Database.BeginTransaction();
         }
     }
 }

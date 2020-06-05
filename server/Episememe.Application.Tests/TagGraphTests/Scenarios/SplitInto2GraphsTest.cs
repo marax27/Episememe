@@ -74,7 +74,7 @@ namespace Episememe.Application.Tests.TagGraphTests.Scenarios
             _sut.SaveChanges();
 
             _sut["0"].DeleteParent(_sut["1"]);
-            _sut.SaveChanges();
+            _sut.CommitAllChanges();
         }
     }
 }

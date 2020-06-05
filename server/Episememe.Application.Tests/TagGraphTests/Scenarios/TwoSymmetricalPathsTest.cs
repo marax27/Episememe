@@ -79,7 +79,7 @@ namespace Episememe.Application.Tests.TagGraphTests.Scenarios
             b1.AddParent(a1);
             s1.AddParent(u2);
 
-            _sut.SaveChanges();
+            _sut.CommitAllChanges();
         }
     }
 }

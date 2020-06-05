@@ -1,4 +1,5 @@
-﻿using Episememe.Domain.Entities;
+﻿using System.Collections.Generic;
+using Episememe.Domain.Entities;
 
 namespace Episememe.Application.Graphs.Interfaces
 {
@@ -7,6 +8,9 @@ namespace Episememe.Application.Graphs.Interfaces
         IVertex<TEntity> Add(Tag tag);
         IVertex<TEntity> this[string name] { get; }
 
+        IEnumerable<TEntity> Nodes { get; }
+
         void SaveChanges();
+        void CommitAllChanges();
     }
 }

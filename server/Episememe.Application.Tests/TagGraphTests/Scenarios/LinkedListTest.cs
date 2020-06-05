@@ -89,7 +89,7 @@ namespace Episememe.Application.Tests.TagGraphTests.Scenarios
             _sut["3"].AddParent(_sut["4"]);
             _sut["4"].AddParent(_sut["5"]);
             _sut["1"].AddParent(_sut["2"]);
-            _sut.SaveChanges();
+            _sut.CommitAllChanges();
         }
     }
 }

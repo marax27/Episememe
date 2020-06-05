@@ -44,6 +44,7 @@ namespace Episememe.Application.Graphs.Tags
             if (WillConnectionCreateCycle(Entity.Id, parentTag.Id))
                 throw new CycleException($"Connection (id: {Entity.Id}) -> (id: {parentTag.Id}) would create a cycle.");
 
+            EnsureTransactionIsOpen();
             ConnectTags(Entity, newParent.Entity);
         }
 
@@ -51,7 +52,10 @@ namespace Episememe.Application.Graphs.Tags
         {
             var connectionToRemove = GetDirectConnection(Entity, parent.Entity);
             if (connectionToRemove != null)
+            {
+                EnsureTransactionIsOpen();
                 DeleteEdge(connectionToRemove);
+            }
         }
 
         private void ConnectTags(Tag child, Tag parent)
@@ -165,5 +169,11 @@ namespace Episememe.Application.Graphs.Tags
         private bool WillConnectionCreateCycle(int childId, int parentId)
             => _context.TagConnections
                 .Any(tc => tc.Successor == parentId && tc.Ancestor == childId);
+
+        private void EnsureTransactionIsOpen()
+        {
+            if (_context.Database.CurrentTransaction == null)
+                _context.Database.BeginTransaction();
+        }
     }
 }
