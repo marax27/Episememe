@@ -4,7 +4,6 @@ using Episememe.Domain.Entities;
 using Episememe.Domain.HelperEntities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -25,7 +24,6 @@ namespace Episememe.Application.Features.UpdateTags
 
         public async Task<Unit> Handle(UpdateTagsCommand request, CancellationToken cancellationToken)
         {
-
             var editedInstance = await _context.MediaInstances
                 .Include(mi => mi.MediaTags)
                 .SingleAsync(a => a.Id == request.Id, cancellationToken);
@@ -39,11 +37,10 @@ namespace Episememe.Application.Features.UpdateTags
                     MediaInstance = editedInstance,
                     Tag = t
                 }).ToList();
-
             editedInstance.MediaTags = mediaTags;
-            await _context.SaveChangesAsync(cancellationToken);
 
             await CreateMediaChangeOnTagsUpdate(editedInstance.Id, request.UserId);
+            await _context.SaveChangesAsync(cancellationToken);
 
             return Unit.Value;
         }
@@ -68,7 +65,6 @@ namespace Episememe.Application.Features.UpdateTags
             };
 
             await _context.MediaChanges.AddAsync(newMediaChange);
-            await _context.SaveChangesAsync(CancellationToken.None);
         }
     }
 }

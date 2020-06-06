@@ -115,8 +115,7 @@ namespace Episememe.Application.Tests.FeatureTests.MediaRevision
             {
                 Id = givenMediaId,
                 AuthorId = givenUser,
-                DataType = "png",
-                IsPrivate = true
+                DataType = "png"
             };
             var givenTags = new List<string>
             {
@@ -129,8 +128,7 @@ namespace Episememe.Application.Tests.FeatureTests.MediaRevision
             var handler = new UpdateTagsCommandHandler(_contextMock, _timeProviderMock.Object);
             handler.Handle(command, CancellationToken.None).Wait();
 
-            _contextMock.MediaChanges.Should().ContainSingle(mc => mc.MediaInstanceId == givenMediaId
-                                                             && mc.UserId == givenUser);
+            _contextMock.MediaChanges.Should().ContainSingle();
         }
 
         [Fact]
@@ -142,8 +140,7 @@ namespace Episememe.Application.Tests.FeatureTests.MediaRevision
             {
                 Id = givenMediaId,
                 AuthorId = givenUser,
-                DataType = "png",
-                IsPrivate = true
+                DataType = "png"
             };
             var givenTags = new List<string>
             {
@@ -156,9 +153,7 @@ namespace Episememe.Application.Tests.FeatureTests.MediaRevision
             var handler = new UpdateTagsCommandHandler(_contextMock, _timeProviderMock.Object);
             handler.Handle(command, CancellationToken.None).Wait();
 
-            _contextMock.MediaChanges.Should().ContainSingle(mc => mc.MediaInstanceId == givenMediaId
-                                                             && mc.UserId == givenUser
-                                                             && mc.Type == MediaChangeType.Update);
+            _contextMock.MediaChanges.Should().ContainSingle(mc => mc.Type == MediaChangeType.Update);
         }
 
         public MediaInstance CreateExampleDatabaseInstance()

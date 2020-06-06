@@ -3,6 +3,7 @@ using Episememe.Application.Interfaces;
 using MediatR;
 using System.Collections.Generic;
 using System.Linq;
+using Episememe.Application.Exceptions;
 
 namespace Episememe.Application.Features.MediaRevisionHistory
 {
@@ -17,11 +18,17 @@ namespace Episememe.Application.Features.MediaRevisionHistory
 
         protected override IEnumerable<MediaRevisionHistoryDto> Handle(MediaRevisionHistoryQuery request)
         {
-            var mediaChanges = _context.MediaChanges
+            var mediaInstance = _context.MediaInstances.Find(request.MediaInstanceId);
+
+            if (mediaInstance == null)
+                return new List<MediaRevisionHistoryDto>();
+
+            if (mediaInstance.IsPrivate && mediaInstance.AuthorId != request.UserId)
+                throw new MediaDoesNotBelongToUserException(request.UserId ?? string.Empty);
+
+            return _context.MediaChanges
                 .Where(mc => mc.MediaInstanceId == request.MediaInstanceId)
                 .Select(mc => new MediaRevisionHistoryDto(mc.UserId, mc.Type, mc.Timestamp));
-
-            return mediaChanges;
         }
     }
 }

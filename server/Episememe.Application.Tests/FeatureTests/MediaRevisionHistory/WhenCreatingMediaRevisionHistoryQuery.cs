@@ -12,7 +12,17 @@ namespace Episememe.Application.Tests.FeatureTests.MediaRevisionHistory
         {
             string givenMediaInstanceId = null;
 
-            Action act = () => MediaRevisionHistoryQuery.Create(givenMediaInstanceId);
+            Action act = () => MediaRevisionHistoryQuery.Create(givenMediaInstanceId, string.Empty);
+
+            act.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        public void GivenNullUserId_ArgumentNullExceptionIsThrown()
+        {
+            string givenUserId = null;
+
+            Action act = () => MediaRevisionHistoryQuery.Create("abcedfgh", givenUserId);
 
             act.Should().Throw<ArgumentNullException>();
         }

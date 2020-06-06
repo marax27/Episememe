@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Threading;
+using Episememe.Application.Exceptions;
 using Xunit;
 
 namespace Episememe.Application.Tests.FeatureTests.MediaRevisionHistory
@@ -29,7 +30,7 @@ namespace Episememe.Application.Tests.FeatureTests.MediaRevisionHistory
         {
             var givenMediaInstanceId = "abcdefgh";
 
-            var query = MediaRevisionHistoryQuery.Create(givenMediaInstanceId);
+            var query = MediaRevisionHistoryQuery.Create(givenMediaInstanceId, string.Empty);
             IRequestHandler<MediaRevisionHistoryQuery, IEnumerable<MediaRevisionHistoryDto>> handler =
                 new MediaRevisionHistoryQueryHandler(_contextMock);
             var result = handler.Handle(query, CancellationToken.None).Result;
@@ -65,12 +66,35 @@ namespace Episememe.Application.Tests.FeatureTests.MediaRevisionHistory
                 new MediaRevisionHistoryDto(givenUserId, MediaChangeType.Update, givenMediaUpdateTime)
             };
 
-            var query = MediaRevisionHistoryQuery.Create(givenMediaInstanceId);
+            var query = MediaRevisionHistoryQuery.Create(givenMediaInstanceId, givenUserId);
             IRequestHandler<MediaRevisionHistoryQuery, IEnumerable<MediaRevisionHistoryDto>> handler =
                 new MediaRevisionHistoryQueryHandler(_contextMock);
             var result = handler.Handle(query, CancellationToken.None).Result;
 
             result.Should().BeEquivalentTo(expectedMediaRevisionHistoryDtos);
+        }
+
+        [Fact]
+        public void GivenAnotherUsersPrivateMedia_ThenMediaDoesNotBelongToUserIsThrown()
+        {
+            var givenUser1 = "user1";
+            var givenUser2 = "user2";
+            var givenMediaId = "abcdefgh";
+            var givenMediaInstance = new MediaInstance()
+            {
+                Id = givenMediaId,
+                AuthorId = givenUser1,
+                DataType = "png",
+                IsPrivate = true
+            };
+            AddMediaInstance(givenMediaInstance);
+
+            var query = MediaRevisionHistoryQuery.Create(givenMediaId, givenUser2);
+            IRequestHandler<MediaRevisionHistoryQuery, IEnumerable<MediaRevisionHistoryDto>> handler =
+                new MediaRevisionHistoryQueryHandler(_contextMock);
+            Action act = () => handler.Handle(query, CancellationToken.None).Wait();
+
+            act.Should().Throw<MediaDoesNotBelongToUserException>();
         }
 
         private void AddMediaInstance(MediaInstance mediaInstance)

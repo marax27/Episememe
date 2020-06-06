@@ -60,7 +60,7 @@ namespace Episememe.Api.Controllers
         [Route("media/{id}/history")]
         public async Task<IEnumerable<MediaRevisionHistoryDto>> GetMediaRevisionHistory(string id)
         {
-            var query = MediaRevisionHistoryQuery.Create(id);
+            var query = MediaRevisionHistoryQuery.Create(id, User.GetUserId());
             var result = await _mediator.Send(query);
 
             return result;

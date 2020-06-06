@@ -217,9 +217,7 @@ namespace Episememe.Application.Tests.FeatureTests.FileUpload
         [Fact]
         public void GivenNewMediaIsUploaded_MediaChangeIsSavedInDatabase()
         {
-            var givenFileName = "newFile";
-            var givenFileContent = "None";
-            var givenFormFile = FormFileFactory.Create(givenFileName, givenFileContent);
+            var givenFormFile = FormFileFactory.Create("newFile", string.Empty);
             var givenTags = new[] { "pigeons", "flying rats" };
             var givenMediaDto = new FileUploadDto(givenTags, _givenDate, false);
             var givenUserId = "user";
@@ -229,16 +227,13 @@ namespace Episememe.Application.Tests.FeatureTests.FileUpload
                 _mediaIdProviderMock.Object, _timeProviderMock.Object);
             handler.Handle(command, CancellationToken.None).Wait();
 
-            _contextMock.MediaChanges.Should().ContainSingle(mc => mc.MediaInstanceId == _givenMediaInstanceId
-                                                             && mc.UserId == givenUserId);
+            _contextMock.MediaChanges.Should().ContainSingle();
         }
 
         [Fact]
         public void GivenMediaChangeIsSavedInDatabase_MediaChangeIsOfTypeCreate()
         {
-            var givenFileName = "newFile";
-            var givenFileContent = "None";
-            var givenFormFile = FormFileFactory.Create(givenFileName, givenFileContent);
+            var givenFormFile = FormFileFactory.Create("newFile", string.Empty);
             var givenTags = new[] { "pigeons", "flying rats" };
             var givenMediaDto = new FileUploadDto(givenTags, _givenDate, false);
             var givenUserId = "user";
@@ -248,9 +243,7 @@ namespace Episememe.Application.Tests.FeatureTests.FileUpload
                 _mediaIdProviderMock.Object, _timeProviderMock.Object);
             handler.Handle(command, CancellationToken.None).Wait();
 
-            _contextMock.MediaChanges.Should().ContainSingle(mc => mc.MediaInstanceId == _givenMediaInstanceId
-                                                             && mc.UserId == givenUserId
-                                                             && mc.Type == MediaChangeType.Create);
+            _contextMock.MediaChanges.Should().ContainSingle(mc => mc.Type == MediaChangeType.Create);
         }
 
         private string GetFileContent(Stream stream)
