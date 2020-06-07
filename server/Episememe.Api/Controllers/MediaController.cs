@@ -1,5 +1,6 @@
 ﻿using Episememe.Api.Utilities;
 using Episememe.Application.DataTransfer;
+using Episememe.Application.Features.MediaRevisionHistory;
 using Episememe.Application.Features.SearchMedia;
 using Episememe.Application.Features.UpdateTags;
 using MediatR;
@@ -53,6 +54,16 @@ namespace Episememe.Api.Controllers
             await _mediator.Send(command);
 
             return StatusCode(204);
+        }
+
+        [HttpGet]
+        [Route("media/{id}/history")]
+        public async Task<IEnumerable<MediaRevisionHistoryDto>> GetMediaRevisionHistory(string id)
+        {
+            var query = MediaRevisionHistoryQuery.Create(id, User.GetUserId());
+            var result = await _mediator.Send(query);
+
+            return result;
         }
     }
 }

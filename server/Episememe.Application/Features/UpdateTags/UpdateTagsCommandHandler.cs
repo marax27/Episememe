@@ -4,7 +4,6 @@ using Episememe.Domain.Entities;
 using Episememe.Domain.HelperEntities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -15,13 +14,16 @@ namespace Episememe.Application.Features.UpdateTags
     public class UpdateTagsCommandHandler : IRequestHandler<UpdateTagsCommand>
     {
         private readonly IWritableApplicationContext _context;
+        private readonly ITimeProvider _timeProvider;
 
-        public UpdateTagsCommandHandler(IWritableApplicationContext context)
-            => _context = context;
+        public UpdateTagsCommandHandler(IWritableApplicationContext context, ITimeProvider timeProvider)
+        {
+            _context = context;
+            _timeProvider = timeProvider;
+        }
 
         public async Task<Unit> Handle(UpdateTagsCommand request, CancellationToken cancellationToken)
         {
-
             var editedInstance = await _context.MediaInstances
                 .Include(mi => mi.MediaTags)
                 .SingleAsync(a => a.Id == request.Id, cancellationToken);
@@ -35,8 +37,9 @@ namespace Episememe.Application.Features.UpdateTags
                     MediaInstance = editedInstance,
                     Tag = t
                 }).ToList();
-
             editedInstance.MediaTags = mediaTags;
+
+            await CreateMediaChangeOnTagsUpdate(editedInstance.Id, request.UserId);
             await _context.SaveChangesAsync(cancellationToken);
 
             return Unit.Value;
@@ -51,5 +54,17 @@ namespace Episememe.Application.Features.UpdateTags
             return tags;
         }
 
+        private async Task CreateMediaChangeOnTagsUpdate(string mediaInstanceId, string userId)
+        {
+            var newMediaChange = new MediaChange
+            {
+                MediaInstanceId = mediaInstanceId,
+                UserId = userId,
+                Timestamp = _timeProvider.GetUtc(),
+                Type = MediaChangeType.Update
+            };
+
+            await _context.MediaChanges.AddAsync(newMediaChange);
+        }
     }
 }

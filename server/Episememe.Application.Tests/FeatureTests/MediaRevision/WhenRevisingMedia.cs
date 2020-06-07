@@ -10,18 +10,27 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 using System.Threading;
+using Moq;
 using Xunit;
 
 namespace Episememe.Application.Tests.FeatureTests.MediaRevision
 {
     public class WhenRevisingMedia : IDisposable
     {
+        private readonly DateTime _givenProvidedUtcDateTime = new DateTime(2010, 1, 1, 1, 0, 0);
+
         private readonly IWritableApplicationContext _contextMock;
+        private readonly Mock<ITimeProvider> _timeProviderMock;
+
         private readonly DbConnection _connection;
 
         public WhenRevisingMedia()
         {
             (_contextMock, _connection) = InMemoryDatabaseFactory.CreateSqliteDbContext();
+
+            _timeProviderMock = new Mock<ITimeProvider>();
+            _timeProviderMock.Setup(provider => provider.GetUtc())
+                .Returns(_givenProvidedUtcDateTime);
         }
 
         [Fact]
@@ -35,7 +44,7 @@ namespace Episememe.Application.Tests.FeatureTests.MediaRevision
             };
 
             var command = UpdateTagsCommand.Create("k8wetest", tags, string.Empty);
-            var handler = new UpdateTagsCommandHandler(_contextMock);
+            var handler = new UpdateTagsCommandHandler(_contextMock, _timeProviderMock.Object);
             handler.Handle(command, CancellationToken.None).Wait();
 
             _contextMock.MediaInstances.Single().MediaTags.Select(t => t.Tag.Name).Should().BeEquivalentTo(tags);
@@ -52,7 +61,7 @@ namespace Episememe.Application.Tests.FeatureTests.MediaRevision
             };
 
             var command = UpdateTagsCommand.Create("xdxdxdxd", tags, string.Empty);
-            var handler = new UpdateTagsCommandHandler(_contextMock);
+            var handler = new UpdateTagsCommandHandler(_contextMock, _timeProviderMock.Object);
 
             Action act = () => handler.Handle(command, CancellationToken.None).Wait();
 
@@ -91,10 +100,60 @@ namespace Episememe.Application.Tests.FeatureTests.MediaRevision
             _contextMock.SaveChanges();
 
             var command = UpdateTagsCommand.Create(givenMediaId, givenTags, givenUser2);
-            var handler = new UpdateTagsCommandHandler(_contextMock);
+            var handler = new UpdateTagsCommandHandler(_contextMock, _timeProviderMock.Object);
             Action act = () => handler.Handle(command, CancellationToken.None).Wait();
 
             act.Should().Throw<MediaDoesNotBelongToUserException>();
+        }
+
+        [Fact]
+        public void GivenMediaTagsAreUpdated_MediaChangeIsSavedInDatabase()
+        {
+            var givenUser = "user";
+            var givenMediaId = "abcdefgh";
+            var givenMediaInstance = new MediaInstance
+            {
+                Id = givenMediaId,
+                AuthorId = givenUser,
+                DataType = "png"
+            };
+            var givenTags = new List<string>
+            {
+                "test everything"
+            };
+            _contextMock.MediaInstances.Add(givenMediaInstance);
+            _contextMock.SaveChanges();
+
+            var command = UpdateTagsCommand.Create(givenMediaId, givenTags, givenUser);
+            var handler = new UpdateTagsCommandHandler(_contextMock, _timeProviderMock.Object);
+            handler.Handle(command, CancellationToken.None).Wait();
+
+            _contextMock.MediaChanges.Should().ContainSingle();
+        }
+
+        [Fact]
+        public void GivenMediaChangeIsSavedInDatabase_MediaChangeIsOfTypeUpdate()
+        {
+            var givenUser = "user";
+            var givenMediaId = "abcdefgh";
+            var givenMediaInstance = new MediaInstance
+            {
+                Id = givenMediaId,
+                AuthorId = givenUser,
+                DataType = "png"
+            };
+            var givenTags = new List<string>
+            {
+                "test everything"
+            };
+            _contextMock.MediaInstances.Add(givenMediaInstance);
+            _contextMock.SaveChanges();
+
+            var command = UpdateTagsCommand.Create(givenMediaId, givenTags, givenUser);
+            var handler = new UpdateTagsCommandHandler(_contextMock, _timeProviderMock.Object);
+            handler.Handle(command, CancellationToken.None).Wait();
+
+            _contextMock.MediaChanges.Should().ContainSingle(mc => mc.Type == MediaChangeType.Update);
         }
 
         public MediaInstance CreateExampleDatabaseInstance()
