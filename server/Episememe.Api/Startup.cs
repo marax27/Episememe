@@ -1,4 +1,5 @@
 using Episememe.Api.Configuration;
+using Episememe.Api.Json;
 using Episememe.Api.Utilities;
 using Episememe.Application;
 using Episememe.Infrastructure;
@@ -43,7 +44,11 @@ namespace Episememe.Api
                 services.AddJwtAuthentication(Configuration);
             }
 
-            services.AddControllers();
+            services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.Converters.Add(new UtcTimeConverter());
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
