@@ -18,10 +18,7 @@ namespace Episememe.Application.Features.MediaRevisionHistory
 
         protected override IEnumerable<MediaRevisionHistoryDto> Handle(MediaRevisionHistoryQuery request)
         {
-            var mediaInstance = _context.MediaInstances.Find(request.MediaInstanceId);
-
-            if (mediaInstance == null)
-                return new List<MediaRevisionHistoryDto>();
+            var mediaInstance = _context.MediaInstances.Single(mi => mi.Id == request.MediaInstanceId);
 
             if (mediaInstance.IsPrivate && mediaInstance.AuthorId != request.UserId)
                 throw new MediaDoesNotBelongToUserException(request.UserId ?? string.Empty);

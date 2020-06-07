@@ -29,6 +29,12 @@ namespace Episememe.Application.Tests.FeatureTests.MediaRevisionHistory
         public void GivenNoMediaChanges_EmptyCollectionIsReturned()
         {
             var givenMediaInstanceId = "abcdefgh";
+            var givenMediaInstance = new MediaInstance
+            {
+                Id = givenMediaInstanceId,
+                DataType = "png"
+            };
+            AddMediaInstance(givenMediaInstance);
 
             var query = MediaRevisionHistoryQuery.Create(givenMediaInstanceId, string.Empty);
             IRequestHandler<MediaRevisionHistoryQuery, IEnumerable<MediaRevisionHistoryDto>> handler =
