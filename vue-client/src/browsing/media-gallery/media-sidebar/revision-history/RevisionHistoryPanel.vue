@@ -21,16 +21,57 @@
 </template>
 
 <script lang='ts'>
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue, Prop, Mixins, Watch } from 'vue-property-decorator';
+import ApiClientService from '../../../../shared/mixins/api-client/api-client.service';
+import { IMediaRevisionHistoryDto, ChangeType } from '../../../interfaces/IMediaRevisionHistoryDto';
+import { formatDate, formatTime } from '../../../../shared/helpers/time-format';
+import { RevisionHistoryViewModel } from './RevisionHistoryViewModel';
 
 @Component
-export default class RevisionHistoryPanel extends Vue {
+export default class RevisionHistoryPanel extends Mixins(ApiClientService) {
 
-  items = [
-    { id: '1', date: '2020-02-01', time: '12:05', description: 'Created' },
-    { id: '2', date: '2020-02-10', time: '08:54', description: 'Added 2, deleted 1 tag' },
-    { id: '3', date: '2020-03-19', time: '07:33', description: 'Added 4, deleted 2 tags' },
-    { id: '4', date: '2020-02-01', time: '12:05', description: 'Added 1, deleted 1 tag' },
-  ];
+  @Prop({ default: false })
+  public visible!: boolean;
+
+  items: RevisionHistoryViewModel[] = [];
+
+  @Watch('visible')
+  onVisibleChange(isVisible: boolean) {
+    if (isVisible)
+      this.loadHistory();
+  }
+
+  private get currentMediaId(): string {
+    return this.$store.getters['gallery/currentMediaId'];
+  }
+
+  private loadHistory() {
+    const url = `media/${this.currentMediaId}/history`;
+    this.$api.get<IMediaRevisionHistoryDto[]>(url)
+      .then(response => response.data)
+      .then(records => {
+        this.items = records.map(this.mapHistoryDto);
+      })
+      .catch(err => this.$store.dispatch(
+        'reportError', 'Failed to load history: ' + err));
+  }
+
+  private mapHistoryDto(dto: IMediaRevisionHistoryDto, id: number): RevisionHistoryViewModel {
+    const timestamp = new Date(dto.timeStamp);
+    return {
+      id: id,
+      date: formatDate(timestamp),
+      time: formatTime(timestamp),
+      description: this.getChangeDescription(dto.mediaChangeType)
+    };
+  }
+
+  private getChangeDescription(changeType: ChangeType) {
+    switch(changeType) {
+      case ChangeType.Create:  return "Created";
+      case ChangeType.Update:  return "Updated";
+      default:  return "Unknown";
+    }
+  }
 }
 </script>

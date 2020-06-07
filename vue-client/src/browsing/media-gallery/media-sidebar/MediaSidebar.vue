@@ -13,7 +13,7 @@
     </v-list>
 
     <template v-slot:append>
-      <RevisionHistoryPanel />
+      <RevisionHistoryPanel :visible='isOpen' />
     </template>
 
   </v-navigation-drawer>
