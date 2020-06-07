@@ -8,7 +8,7 @@ namespace Episememe.Application.Graphs.Interfaces
         IVertex<TEntity> Add(Tag tag);
         IVertex<TEntity> this[string name] { get; }
 
-        IEnumerable<TEntity> Nodes { get; }
+        IEnumerable<IVertex<TEntity>> Vertices { get; }
 
         void SaveChanges();
         void CommitAllChanges();

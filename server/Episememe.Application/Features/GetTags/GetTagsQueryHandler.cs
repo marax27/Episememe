@@ -1,24 +1,27 @@
 using Episememe.Application.DataTransfer;
-using Episememe.Application.Interfaces;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
-using Episememe.Application.Filtering.BaseFiltering;
+using Episememe.Application.Graphs.Interfaces;
+using Episememe.Domain.Entities;
 
 namespace Episememe.Application.Features.GetTags
 {
     public class GetTagsQueryHandler : RequestHandler<GetTagsQuery, IEnumerable<TagInstanceDto>>
     {
-        private readonly IApplicationContext _context;
+        private readonly IGraph<Tag> _graph;
 
-        public GetTagsQueryHandler(IApplicationContext context)
-            => _context = context;
+        public GetTagsQueryHandler(IGraph<Tag> graph)
+            => _graph = graph;
 
         protected override IEnumerable<TagInstanceDto> Handle(GetTagsQuery request)
         {
-            var Tags = _context.Tags.Select(mi => new TagInstanceDto(mi.Name, mi.Description));
-            return Tags;
+            return _graph.Vertices.Select(vertex => new TagInstanceDto(
+                vertex.Entity.Name,
+                vertex.Entity.Description,
+                vertex.Successors.Select(tag => tag.Name),
+                vertex.Ancestors.Select(tag => tag.Name)
+            ));
         }
     }
 }

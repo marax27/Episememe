@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Episememe.Application.Graphs.Interfaces;
 using Episememe.Application.Interfaces;
@@ -16,8 +15,8 @@ namespace Episememe.Application.Graphs.Tags
             _context = context;
         }
 
-        public IEnumerable<Tag> Nodes
-            => _context.Tags;
+        public IEnumerable<IVertex<Tag>> Vertices
+            => _context.Tags.Select(tag => new TagVertex(tag, _context));
 
         public void SaveChanges()
             => _context.SaveChanges();
