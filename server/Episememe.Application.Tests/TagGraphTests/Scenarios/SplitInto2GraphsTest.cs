@@ -45,7 +45,8 @@ namespace Episememe.Application.Tests.TagGraphTests.Scenarios
             var upperSuccessors = _upperGraphNames
                 .SelectMany(name => _sut[name].Successors);
 
-            upperSuccessors.Should().NotContain(tag => _lowerGraphNames.Contains(tag.Name));
+            upperSuccessors.Select(successor => successor.Name)
+                .Should().NotIntersectWith(_lowerGraphNames);
         }
 
         [Fact]
@@ -54,7 +55,8 @@ namespace Episememe.Application.Tests.TagGraphTests.Scenarios
             var lowerAncestors = _lowerGraphNames
                 .SelectMany(name => _sut[name].Ancestors);
 
-            lowerAncestors.Should().NotContain(tag => _upperGraphNames.Contains(tag.Name));
+            lowerAncestors.Select(ancestor => ancestor.Name)
+                .Should().NotIntersectWith(_upperGraphNames);
         }
 
         private void ConstructGraph()
