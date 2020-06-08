@@ -4,7 +4,14 @@
       <v-icon left>mdi-history</v-icon> History
     </v-card-title>
 
-    <v-list-item v-for='item in items' :key='item.id'
+    <v-progress-circular
+      v-show='loadingInProgress'
+      class='loading-spinner'
+      indeterminate>
+    </v-progress-circular>
+    <v-list-item
+      v-show='!loadingInProgress'
+      v-for='item in items' :key='item.id'
       two-line>
 
       <v-list-item-content>
@@ -34,6 +41,7 @@ export default class RevisionHistoryPanel extends Mixins(ApiClientService) {
   public visible!: boolean;
 
   items: RevisionHistoryViewModel[] = [];
+  loadingInProgress = false;
 
   @Watch('visible')
   onVisibleChange(isVisible: boolean) {
@@ -47,13 +55,18 @@ export default class RevisionHistoryPanel extends Mixins(ApiClientService) {
 
   private loadHistory() {
     const url = `media/${this.currentMediaId}/history`;
+    this.loadingInProgress = true;
+
     this.$api.get<IMediaRevisionHistoryDto[]>(url)
       .then(response => response.data)
       .then(records => {
         this.items = records.map(this.mapHistoryDto);
+        this.loadingInProgress = false;
       })
-      .catch(err => this.$store.dispatch(
-        'reportError', 'Failed to load history: ' + err));
+      .catch(err => {
+        this.$store.dispatch('reportError', 'Failed to load history: ' + err);
+        this.loadingInProgress = false;
+      });
   }
 
   private mapHistoryDto(dto: IMediaRevisionHistoryDto, id: number): RevisionHistoryViewModel {
@@ -75,3 +88,10 @@ export default class RevisionHistoryPanel extends Mixins(ApiClientService) {
   }
 }
 </script>
+
+<style scoped>
+.loading-spinner {
+  display: block;
+  margin: 0 auto;
+}
+</style>
