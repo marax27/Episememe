@@ -10,5 +10,6 @@ namespace Episememe.Application.Interfaces
         DbSet<Tag> Tags { get; set; }
         DbSet<FavoriteMedia> FavoriteMedia { get; set; }
         DbSet<MediaChange> MediaChanges { get; set; }
+        DbSet<TagConnection> TagConnections { get; set; }
     }
 }

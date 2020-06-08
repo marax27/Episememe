@@ -18,6 +18,7 @@ namespace Episememe.Infrastructure.Database
 
         public DbSet<BrowseToken> BrowseTokens { get; set; } = null!;
         public DbSet<MediaChange> MediaChanges { get; set; } = null!;
+        public DbSet<TagConnection> TagConnections { get; set; } = null!;
 
         public void Migrate() => Database.Migrate();
 

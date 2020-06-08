@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using Episememe.Application.Features.GetTags;
 using Episememe.Application.DataTransfer;
+using Episememe.Application.Features.SetTag;
 
 namespace Episememe.Api.Controllers
 {
@@ -30,6 +31,15 @@ namespace Episememe.Api.Controllers
             var query = GetTagsQuery.Create();
             var result = await _mediator.Send(query);
             return result;
+        }
+
+        [HttpPut]
+        [Route("tags/{name}")]
+        public async Task<NoContentResult> SetTag(string name, [FromBody] SetTagDto setTagDto)
+        {
+            var command = SetTagCommand.Create(name, setTagDto);
+            await _mediator.Send(command);
+            return NoContent();
         }
     }
 }
