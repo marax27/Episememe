@@ -1,31 +1,28 @@
 ﻿using Episememe.Application.Features.SearchMedia;
 using Episememe.Application.Filtering.BaseFiltering;
 using Episememe.Application.Graphs.Interfaces;
-using Episememe.Application.Graphs.Tags;
-using Episememe.Application.Interfaces;
-using Episememe.Application.Tests.Helpers;
 using Episememe.Domain.Entities;
 using Episememe.Domain.HelperEntities;
 using FluentAssertions;
+using Moq;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Data.Common;
 using System.Linq;
 using Xunit;
 
 namespace Episememe.Application.Tests.Filtering
 {
-    public class WhenFilteringMediaByTags : IDisposable
+    public class WhenFilteringMediaByTags
     {
-        private readonly IWritableApplicationContext _context;
-        private readonly DbConnection _connection;
-        private readonly IGraph<Tag> _tagGraph;
+        private readonly ICollection<MediaInstance> _mediaInstances;
+        private readonly Mock<IGraph<Tag>> _tagGraph;
 
         public WhenFilteringMediaByTags()
         {
-            (_context, _connection) = InMemoryDatabaseFactory.CreateSqliteDbContext();
-            _tagGraph = new TagGraph(_context);
-            FillDatabase();
+            _mediaInstances = new List<MediaInstance>();
+            _tagGraph = new Mock<IGraph<Tag>>();
+            SetupMocks();
         }
 
         [Fact]
@@ -33,7 +30,7 @@ namespace Episememe.Application.Tests.Filtering
         {
             var filteredMedia = GetFilteredMedia(new SearchMediaData());
 
-            filteredMedia.Should().BeEquivalentTo(_context.MediaInstances);
+            filteredMedia.Should().BeEquivalentTo(_mediaInstances);
         }
 
         [Fact]
@@ -72,7 +69,7 @@ namespace Episememe.Application.Tests.Filtering
             };
             var filteredMedia = GetFilteredMedia(searchMedia);
 
-            filteredMedia.Should().BeEquivalentTo(_context.MediaInstances);
+            filteredMedia.Should().BeEquivalentTo(_mediaInstances);
         }
 
         [Fact]
@@ -180,8 +177,8 @@ namespace Episememe.Application.Tests.Filtering
         private ReadOnlyCollection<MediaInstance> GetFilteredMedia(SearchMediaData searchMedia)
         {
             var mediaFilter = new MediaFilter(searchMedia.IncludedTags, searchMedia.ExcludedTags,
-                searchMedia.TimeRangeStart, searchMedia.TimeRangeEnd, _tagGraph);
-            var filteredMedia = mediaFilter.Filter(_context.MediaInstances.ToList().AsReadOnly());
+                searchMedia.TimeRangeStart, searchMedia.TimeRangeEnd, _tagGraph.Object);
+            var filteredMedia = mediaFilter.Filter(_mediaInstances.ToList().AsReadOnly());
 
             return filteredMedia;
         }
@@ -197,51 +194,89 @@ namespace Episememe.Application.Tests.Filtering
         //      schwarzenegger   white house
         //
 
-        private void FillDatabase()
+        private void SetupMocks()
         {
             var tagNames = new[]
             {
                 "books", "islands", "sport", "university",
                 "politics", "usa", "germany", "famous building", "white house", "schwarzenegger"
             };
-            foreach (var tagName in tagNames)
-                _tagGraph.Add(new Tag() { Name = tagName });
-            _tagGraph.CommitAllChanges();
 
-            AddMediaInstance("1");
-            AddMediaInstance("2");
-            AddMediaInstance("3");
+            var tagId = 0;
+            var tagDict = tagNames
+                .Select(name => new Tag() { Id = ++tagId, Name = name })
+                .ToDictionary(t => t.Name);
 
-            AddMediaTag("1", "books");
-            AddMediaTag("1", "islands");
-            AddMediaTag("2", "islands");
-            AddMediaTag("2", "sport");
-            AddMediaTag("3", "university");
+            var vertices = new List<IVertex<Tag>>
+            {
+                CreateTagVertex(tagDict["books"], Array.Empty<Tag>(), Array.Empty<Tag>()),
+                CreateTagVertex(tagDict["islands"], Array.Empty<Tag>(), Array.Empty<Tag>()),
+                CreateTagVertex(tagDict["sport"], Array.Empty<Tag>(), Array.Empty<Tag>()),
+                CreateTagVertex(tagDict["university"], Array.Empty<Tag>(), Array.Empty<Tag>()),
+                CreateTagVertex(tagDict["politics"],
+                    Array.Empty<Tag>(),
+                    new[] {tagDict["germany"], tagDict["usa"], tagDict["schwarzenegger"], tagDict["white house"]}),
+                CreateTagVertex(tagDict["germany"],
+                    new[] {tagDict["politics"]},
+                    new[] {tagDict["schwarzenegger"]}),
+                CreateTagVertex(tagDict["usa"],
+                    new[] {tagDict["politics"]},
+                    new[] {tagDict["schwarzenegger"], tagDict["white house"]}),
+                CreateTagVertex(tagDict["schwarzenegger"],
+                    new[] {tagDict["politics"], tagDict["germany"], tagDict["usa"]},
+                    Array.Empty<Tag>()),
+                CreateTagVertex(tagDict["famous building"],
+                    Array.Empty<Tag>(),
+                    new[] {tagDict["white house"]}),
+                CreateTagVertex(tagDict["white house"],
+                    new[] {tagDict["politics"], tagDict["usa"], tagDict["famous building"]},
+                    Array.Empty<Tag>())
+            };
 
-            _tagGraph["politics"].AddChild(_tagGraph["usa"]);
-            _tagGraph["politics"].AddChild(_tagGraph["germany"]);
-            _tagGraph["germany"].AddChild(_tagGraph["schwarzenegger"]);
-            _tagGraph["usa"].AddChild(_tagGraph["schwarzenegger"]);
-            _tagGraph["usa"].AddChild(_tagGraph["white house"]);
-            _tagGraph["famous building"].AddChild(_tagGraph["white house"]);
-            _tagGraph.CommitAllChanges();
+            var mediaInstancesDict = new List<MediaInstance>
+            {
+                CreateMediaInstance("1"),
+                CreateMediaInstance("2"),
+                CreateMediaInstance("3"),
+                CreateMediaInstance("11"),
+                CreateMediaInstance("12"),
+                CreateMediaInstance("13"),
+                CreateMediaInstance("14"),
+                CreateMediaInstance("15"),
+                CreateMediaInstance("16")
+            }.ToDictionary(mi => mi.Id);
 
-            AddMediaInstance("11");
-            AddMediaInstance("12");
-            AddMediaInstance("13");
-            AddMediaInstance("14");
-            AddMediaInstance("15");
-            AddMediaInstance("16");
+            CreateMediaTag(mediaInstancesDict["1"], tagDict["books"]);
+            CreateMediaTag(mediaInstancesDict["1"], tagDict["islands"]);
+            CreateMediaTag(mediaInstancesDict["2"], tagDict["islands"]);
+            CreateMediaTag(mediaInstancesDict["2"], tagDict["sport"]);
+            CreateMediaTag(mediaInstancesDict["3"], tagDict["university"]);
+            CreateMediaTag(mediaInstancesDict["11"], tagDict["politics"]);
+            CreateMediaTag(mediaInstancesDict["12"], tagDict["usa"]);
+            CreateMediaTag(mediaInstancesDict["13"], tagDict["germany"]);
+            CreateMediaTag(mediaInstancesDict["14"], tagDict["schwarzenegger"]);
+            CreateMediaTag(mediaInstancesDict["15"], tagDict["famous building"]);
+            CreateMediaTag(mediaInstancesDict["16"], tagDict["white house"]);
 
-            AddMediaTag("11", "politics");
-            AddMediaTag("12", "usa");
-            AddMediaTag("13", "germany");
-            AddMediaTag("14", "schwarzenegger");
-            AddMediaTag("15", "famous building");
-            AddMediaTag("16", "white house");
+            _tagGraph.Setup(graph => graph.Vertices).Returns(vertices);
+            _tagGraph.Setup(graph => graph[It.IsAny<string>()])
+                .Returns((string key) => vertices.Single(tv => tv.Entity.Name == key));
+
+            foreach(var mediaInstance in mediaInstancesDict.Values)
+                _mediaInstances.Add(mediaInstance);
         }
 
-        private void AddMediaInstance(string id)
+        private IVertex<Tag> CreateTagVertex(Tag tag, IEnumerable<Tag> ancestors, IEnumerable<Tag> successors)
+        {
+            var tagMock = new Mock<IVertex<Tag>>();
+            tagMock.Setup(m => m.Entity).Returns(tag);
+            tagMock.Setup(m => m.Ancestors).Returns(ancestors);
+            tagMock.Setup(m => m.Successors).Returns(successors);
+
+            return tagMock.Object;
+        }
+
+        private MediaInstance CreateMediaInstance(string id)
         {
             var newMediaInstance = new MediaInstance()
             {
@@ -249,15 +284,11 @@ namespace Episememe.Application.Tests.Filtering
                 DataType = "png"
             };
 
-            _context.MediaInstances.Add(newMediaInstance);
-            _context.SaveChanges();
+            return newMediaInstance;
         }
 
-        private void AddMediaTag(string mediaInstanceId, string tagName)
+        private void CreateMediaTag(MediaInstance mediaInstance, Tag tag)
         {
-            var mediaInstance = _context.MediaInstances.Single(mi => mi.Id == mediaInstanceId);
-            var tag = _context.Tags.Single(t => t.Name == tagName);
-
             var mediaTag = new MediaTag
             {
                 MediaInstance = mediaInstance,
@@ -267,12 +298,7 @@ namespace Episememe.Application.Tests.Filtering
             };
 
             mediaInstance.MediaTags.Add(mediaTag);
-            _context.SaveChanges();
-        }
-
-        public void Dispose()
-        {
-            _connection?.Dispose();
+            tag.MediaTags.Add(mediaTag);
         }
     }
 }
