@@ -1,4 +1,6 @@
-﻿using Episememe.Domain.Entities;
+﻿using Episememe.Application.Graphs.Interfaces;
+using Episememe.Application.Interfaces;
+using Episememe.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,13 +15,18 @@ namespace Episememe.Application.Filtering.BaseFiltering
         private readonly DateTime? _timeRangeStart;
         private readonly DateTime? _timeRangeEnd;
 
+        private readonly IGraph<Tag> _tagGraph;
+        private readonly IApplicationContext _context;
+
         public MediaFilter(IEnumerable<string>? includedTags, IEnumerable<string>? excludedTags,
-            DateTime? timeRangeStart, DateTime? timeRangeEnd)
+            DateTime? timeRangeStart, DateTime? timeRangeEnd, IGraph<Tag> tagGraph, IApplicationContext context)
         {
             _includedTags = includedTags;
             _excludedTags = excludedTags;
             _timeRangeStart = timeRangeStart;
             _timeRangeEnd = timeRangeEnd;
+            _tagGraph = tagGraph;
+            _context = context;
         }
 
         public ReadOnlyCollection<MediaInstance> Filter(ReadOnlyCollection<MediaInstance> instances)
@@ -32,10 +39,16 @@ namespace Episememe.Application.Filtering.BaseFiltering
             var filteredMedia = mediaInstances;
             if (_includedTags != null)
             {
+                if (_includedTags.Except(_context.Tags.Select(t => t.Name)).Any())
+                    return new List<MediaInstance>().AsReadOnly();
 
                 filteredMedia = mediaInstances
                     .Where(mi =>
-                        !_includedTags.Except(mi.MediaTags.Select(mt => mt.Tag.Name)).Any()
+                        _includedTags.All(it =>
+                            mi.MediaTags.Any(mt =>
+                                    it == mt.Tag.Name || _tagGraph[it].Successors.Contains(mt.Tag)
+                                )
+                            )
                         )
                     .ToList()
                     .AsReadOnly();
@@ -49,9 +62,15 @@ namespace Episememe.Application.Filtering.BaseFiltering
             var filteredMedia = mediaInstances;
             if (_excludedTags != null)
             {
+                var relevantExcludedTags = _excludedTags.Where(et => _context.Tags.Any(t => t.Name == et));
+
                 filteredMedia = mediaInstances
                     .Where(mi =>
-                        !_excludedTags.Intersect(mi.MediaTags.Select(mt => mt.Tag.Name)).Any()
+                        relevantExcludedTags.All(et =>
+                            !mi.MediaTags.Any(mt =>
+                                    et == mt.Tag.Name || _tagGraph[et].Successors.Contains(mt.Tag)
+                                )
+                            )
                         )
                     .ToList()
                     .AsReadOnly();
