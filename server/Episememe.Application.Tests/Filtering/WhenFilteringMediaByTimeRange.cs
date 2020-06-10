@@ -77,7 +77,7 @@ namespace Episememe.Application.Tests.Filtering
         private ISet<MediaInstance> GetFilteredMedia(SearchMediaData searchMedia, DbSet<MediaInstance> mediaInstances)
         {
             var mediaFilter = new MediaFilter(searchMedia.IncludedTags, searchMedia.ExcludedTags,
-                searchMedia.TimeRangeStart, searchMedia.TimeRangeEnd, null, null);
+                searchMedia.TimeRangeStart, searchMedia.TimeRangeEnd, null);
             var filteredMedia = mediaFilter.Filter(mediaInstances.ToList().AsReadOnly())
                 .ToHashSet();
 

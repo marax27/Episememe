@@ -16,17 +16,15 @@ namespace Episememe.Application.Filtering.BaseFiltering
         private readonly DateTime? _timeRangeEnd;
 
         private readonly IGraph<Tag> _tagGraph;
-        private readonly IApplicationContext _context;
 
         public MediaFilter(IEnumerable<string>? includedTags, IEnumerable<string>? excludedTags,
-            DateTime? timeRangeStart, DateTime? timeRangeEnd, IGraph<Tag> tagGraph, IApplicationContext context)
+            DateTime? timeRangeStart, DateTime? timeRangeEnd, IGraph<Tag> tagGraph)
         {
             _includedTags = includedTags;
             _excludedTags = excludedTags;
             _timeRangeStart = timeRangeStart;
             _timeRangeEnd = timeRangeEnd;
             _tagGraph = tagGraph;
-            _context = context;
         }
 
         public ReadOnlyCollection<MediaInstance> Filter(ReadOnlyCollection<MediaInstance> instances)
@@ -39,7 +37,7 @@ namespace Episememe.Application.Filtering.BaseFiltering
             var filteredMedia = mediaInstances;
             if (_includedTags != null)
             {
-                if (_includedTags.Except(_context.Tags.Select(t => t.Name)).Any())
+                if (_includedTags.Except(_tagGraph.Vertices.Select(t => t.Entity.Name)).Any())
                     return new List<MediaInstance>().AsReadOnly();
 
                 filteredMedia = mediaInstances
@@ -62,7 +60,7 @@ namespace Episememe.Application.Filtering.BaseFiltering
             var filteredMedia = mediaInstances;
             if (_excludedTags != null)
             {
-                var relevantExcludedTags = _excludedTags.Where(et => _context.Tags.Any(t => t.Name == et));
+                var relevantExcludedTags = _excludedTags.Where(et => _tagGraph.Vertices.Any(t => t.Entity.Name == et));
 
                 filteredMedia = mediaInstances
                     .Where(mi =>
