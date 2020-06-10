@@ -87,12 +87,10 @@ export default class RevisionPopup extends Mixins(ApiClientService, TagsProvider
   }
 
   submit() {
-    const data = new FormData();
-    data.append('Tags', JSON.stringify(this.tagNames));
     const mediaId = this.currentInstance.id;
     const headers = { 'Content-Type': 'multipart/form-data' };
 
-    this.$api.patch<void>(`media/${mediaId}`, data, headers)
+    this.$api.patch<void>(`media/${mediaId}`, {tags: this.tagNames}, headers)
       .then(_response => {
         this.updateLocalMediaInstance();
         this.refreshTags();
