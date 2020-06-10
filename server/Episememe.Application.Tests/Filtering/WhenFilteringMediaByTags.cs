@@ -196,74 +196,55 @@ namespace Episememe.Application.Tests.Filtering
 
         private void SetupMocks()
         {
-            var tagNames = new[]
+            var tagId = 0;
+            var tagsDict = new[]
             {
                 "books", "islands", "sport", "university",
                 "politics", "usa", "germany", "famous building", "white house", "schwarzenegger"
-            };
-
-            var tagId = 0;
-            var tagDict = tagNames
-                .Select(name => new Tag() { Id = ++tagId, Name = name })
+            }.Select(name => new Tag { Id = ++tagId, Name = name })
                 .ToDictionary(t => t.Name);
 
-            var vertices = new List<IVertex<Tag>>
-            {
-                CreateTagVertex(tagDict["books"], Array.Empty<Tag>(), Array.Empty<Tag>()),
-                CreateTagVertex(tagDict["islands"], Array.Empty<Tag>(), Array.Empty<Tag>()),
-                CreateTagVertex(tagDict["sport"], Array.Empty<Tag>(), Array.Empty<Tag>()),
-                CreateTagVertex(tagDict["university"], Array.Empty<Tag>(), Array.Empty<Tag>()),
-                CreateTagVertex(tagDict["politics"],
-                    Array.Empty<Tag>(),
-                    new[] {tagDict["germany"], tagDict["usa"], tagDict["schwarzenegger"], tagDict["white house"]}),
-                CreateTagVertex(tagDict["germany"],
-                    new[] {tagDict["politics"]},
-                    new[] {tagDict["schwarzenegger"]}),
-                CreateTagVertex(tagDict["usa"],
-                    new[] {tagDict["politics"]},
-                    new[] {tagDict["schwarzenegger"], tagDict["white house"]}),
-                CreateTagVertex(tagDict["schwarzenegger"],
-                    new[] {tagDict["politics"], tagDict["germany"], tagDict["usa"]},
-                    Array.Empty<Tag>()),
-                CreateTagVertex(tagDict["famous building"],
-                    Array.Empty<Tag>(),
-                    new[] {tagDict["white house"]}),
-                CreateTagVertex(tagDict["white house"],
-                    new[] {tagDict["politics"], tagDict["usa"], tagDict["famous building"]},
-                    Array.Empty<Tag>())
-            };
+            var mediaInstancesDict = new List<MediaInstance>(
+                new[] { "1", "2", "3", "11", "12", "13", "14", "15", "16" }.Select(CreateMediaInstance)
+            ).ToDictionary(mi => mi.Id);
 
-            var mediaInstancesDict = new List<MediaInstance>
-            {
-                CreateMediaInstance("1"),
-                CreateMediaInstance("2"),
-                CreateMediaInstance("3"),
-                CreateMediaInstance("11"),
-                CreateMediaInstance("12"),
-                CreateMediaInstance("13"),
-                CreateMediaInstance("14"),
-                CreateMediaInstance("15"),
-                CreateMediaInstance("16")
-            }.ToDictionary(mi => mi.Id);
+            CreateTagGraph(tagsDict);
+            CreateMediaTags(mediaInstancesDict, tagsDict);
 
-            CreateMediaTag(mediaInstancesDict["1"], tagDict["books"]);
-            CreateMediaTag(mediaInstancesDict["1"], tagDict["islands"]);
-            CreateMediaTag(mediaInstancesDict["2"], tagDict["islands"]);
-            CreateMediaTag(mediaInstancesDict["2"], tagDict["sport"]);
-            CreateMediaTag(mediaInstancesDict["3"], tagDict["university"]);
-            CreateMediaTag(mediaInstancesDict["11"], tagDict["politics"]);
-            CreateMediaTag(mediaInstancesDict["12"], tagDict["usa"]);
-            CreateMediaTag(mediaInstancesDict["13"], tagDict["germany"]);
-            CreateMediaTag(mediaInstancesDict["14"], tagDict["schwarzenegger"]);
-            CreateMediaTag(mediaInstancesDict["15"], tagDict["famous building"]);
-            CreateMediaTag(mediaInstancesDict["16"], tagDict["white house"]);
-
-            _tagGraph.Setup(graph => graph.Vertices).Returns(vertices);
-            _tagGraph.Setup(graph => graph[It.IsAny<string>()])
-                .Returns((string key) => vertices.Single(tv => tv.Entity.Name == key));
-
-            foreach(var mediaInstance in mediaInstancesDict.Values)
+            foreach (var mediaInstance in mediaInstancesDict.Values)
                 _mediaInstances.Add(mediaInstance);
+        }
+
+        private void CreateTagGraph(Dictionary<string, Tag> tags)
+        {
+            var tagGraphVertices = new[]
+            {
+                (tags["books"], Array.Empty<Tag>(), Array.Empty<Tag>()),
+                (tags["islands"], Array.Empty<Tag>(), Array.Empty<Tag>()),
+                (tags["sport"], Array.Empty<Tag>(), Array.Empty<Tag>()),
+                (tags["university"], Array.Empty<Tag>(), Array.Empty<Tag>()),
+                (tags["politics"], Array.Empty<Tag>(),
+                    new[] {tags["germany"], tags["usa"], tags["schwarzenegger"], tags["white house"]}),
+                (tags["germany"], new[] {tags["politics"]}, new[] {tags["schwarzenegger"]}),
+                (tags["usa"], new[] {tags["politics"]}, new[] {tags["schwarzenegger"], tags["white house"]}),
+                (tags["schwarzenegger"], new[] {tags["politics"], tags["germany"], tags["usa"]}, Array.Empty<Tag>()),
+                (tags["famous building"], Array.Empty<Tag>(), new[] {tags["white house"]}),
+                (tags["white house"], new[] {tags["politics"], tags["usa"], tags["famous building"]}, Array.Empty<Tag>())
+            }.Select(args => CreateTagVertex(args.Item1, args.Item2, args.Item3)).ToList();
+
+            _tagGraph.Setup(graph => graph.Vertices).Returns(tagGraphVertices);
+            _tagGraph.Setup(graph => graph[It.IsAny<string>()])
+                .Returns((string key) => tagGraphVertices.Single(tv => tv.Entity.Name == key));
+        }
+
+        private void CreateMediaTags(Dictionary<string, MediaInstance> mediaInstances, Dictionary<string, Tag> tags)
+        {
+            var pairsToConnect = new[] { ("1", "books"), ("1", "islands"), ("2", "islands"), ("2", "sport"),
+                ("3", "university"), ("11", "politics"), ("12", "usa"), ("13", "germany"), ("14", "schwarzenegger"),
+                ("15", "famous building"), ("16", "white house") };
+
+            foreach (var (mediaInstanceId, tagName) in pairsToConnect)
+                CreateMediaTag(mediaInstances[mediaInstanceId], tags[tagName]);
         }
 
         private IVertex<Tag> CreateTagVertex(Tag tag, IEnumerable<Tag> ancestors, IEnumerable<Tag> successors)
