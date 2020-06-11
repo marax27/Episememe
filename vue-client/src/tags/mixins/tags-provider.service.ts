@@ -8,20 +8,16 @@ export default class TagsProviderService extends Mixins(ApiClientService) {
 
   created() {
     if (this.$store.state.tags == null) {
-      this._loadTags();
+      this.waitForAuthService()
+        .then(
+          _onSuccess => this._loadTags(),
+          _onFailure => this._reportError('Failed to load data from the server: initialization error.')
+        );
     }
   }
 
   public get allTags(): TagViewModel[] {
-    const tags: ITag[] = this.$store.getters.allTags;
-    return tags.sort((a, b) => a.name.localeCompare(b.name))
-      .map(tag => new TagViewModel(
-        tag.name,
-        `${tag.name} (${tag.description})`,
-        tag.children,
-        tag.parents,
-        tag.description
-      ));
+    return this.$store.getters.allTags;
   }
 
   public refreshTags() {
@@ -30,10 +26,26 @@ export default class TagsProviderService extends Mixins(ApiClientService) {
 
   private _loadTags() {
     this.$api.get<ITag[]>('tags')
-      .then(response => {
-        this.$store.dispatch('updateTags', response.data);
+      .then(response => this._mapTags(response.data))
+      .then((tags: TagViewModel[]) => {
+        this.$store.dispatch('updateTags', tags);
       }).catch(_err => {
-        this.$store.dispatch('reportError', 'Failed to load data from the server.');
+        this._reportError('Failed to load data from the server.');
       });
+  }
+
+  private _mapTags(tags: ITag[]) {
+    return tags.sort((a, b) => a.name.localeCompare(b.name))
+      .map(tag => new TagViewModel(
+        tag.name,
+        `${tag.name}` + (tag.description ? ` (${tag.description})` : ''),
+        tag.children,
+        tag.parents,
+        tag.description
+      ));
+  }
+
+  private _reportError(message: string) {
+    this.$store.dispatch('reportError', message);
   }
 }
