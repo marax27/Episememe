@@ -10,8 +10,19 @@
         Tag Relationships
       </v-card-title>
 
-      <v-card-text>
-        ...
+      <v-card-text class='pa-2'>
+        <SingleTagPicker
+          v-if='isOpen'
+          v-model='selectedTag'
+          hint='Pick one of the existing tags to edit it.' />
+
+        <v-text-field
+          dense
+          label='Description'
+          v-model='description'
+          hide-details='auto'
+          outlined>
+        </v-text-field>
       </v-card-text>
 
       <v-card-actions>
@@ -34,9 +45,15 @@
 </template>
 
 <script lang='ts'>
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue, Watch } from 'vue-property-decorator';
+import SingleTagPicker from './SingleTagPicker.vue';
+import { ITag } from '../../shared/models/ITag';
 
-@Component
+@Component({
+  components: {
+    SingleTagPicker,
+  }
+})
 export default class TagRelationshipsPopup extends Vue {
   get isOpen(): boolean {
     return this.$store.state.popups.tagRelationships.isOpen;
@@ -46,12 +63,20 @@ export default class TagRelationshipsPopup extends Vue {
     this.$store.dispatch(actionName);
   }
 
+  selectedTag: ITag | null = null;
+  description?: string = '';
+
   close() {
     this.isOpen = false;
   }
 
   applyChanges() {
     this.isOpen = false;
+  }
+
+  @Watch('selectedTag')
+  onSelectedTagChange() {
+    this.description = this.selectedTag?.description;
   }
 }
 </script>
