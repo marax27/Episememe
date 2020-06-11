@@ -2,9 +2,17 @@
   <v-app-bar app id="nav-bar">
     <div class="d-flex align-center">
 
-      <NavBarLink link='/' icon='mdi-hexagon-outline' :title='true'>Episememe</NavBarLink>
+      <NavBarLink link='/' icon='mdi-hexagon-outline' :title='true'>
+        Episememe
+      </NavBarLink>
 
-      <NavBarLink link='/upload' icon='mdi-upload'>Upload</NavBarLink>
+      <NavBarLink link='/upload' icon='mdi-upload'>
+        Upload
+      </NavBarLink>
+
+      <NavBarLink @click='openTagRelationships' icon='mdi-tag-multiple-outline'>
+        Tag Relationships
+      </NavBarLink>
     </div>
 
     <v-spacer></v-spacer>
@@ -33,6 +41,10 @@ export default class NavBar extends Vue {
 
   created() {
     this.authorizationEnabled = isAuthorizationEnabled();
+  }
+
+  openTagRelationships() {
+    this.$store.dispatch('popups/openTagRelationships');
   }
 }
 </script>
