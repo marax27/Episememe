@@ -18,6 +18,8 @@ export default class TagsProviderService extends Mixins(ApiClientService) {
       .map(tag => new TagViewModel(
         tag.name,
         `${tag.name} (${tag.description})`,
+        tag.children,
+        tag.parents,
         tag.description
       ));
   }

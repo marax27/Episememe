@@ -54,8 +54,8 @@ namespace Episememe.Application.Tests.FeatureTests.GetTags
             {
                 var tagMock = new Mock<IVertex<Tag>>();
                 tagMock.Setup(m => m.Entity).Returns(tag);
-                tagMock.Setup(m => m.Successors).Returns(Array.Empty<Tag>());
-                tagMock.Setup(m => m.Ancestors).Returns(Array.Empty<Tag>());
+                tagMock.Setup(m => m.Children).Returns(Array.Empty<Tag>());
+                tagMock.Setup(m => m.Parents).Returns(Array.Empty<Tag>());
                 return tagMock.Object;
             });
 

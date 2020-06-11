@@ -32,6 +32,18 @@ namespace Episememe.Application.Graphs.Tags
                 .Select(tc => _context.Tags.Single(x => x.Id == tc.Ancestor))
                 .Distinct();
 
+        public IEnumerable<Tag> Children
+            => _context.TagConnections
+                .Where(tc => tc.Ancestor == Entity.Id && tc.Hops == 0)
+                .Select(tc => _context.Tags.Single(x => x.Id == tc.Successor))
+                .Distinct();
+
+        public IEnumerable<Tag> Parents
+            => _context.TagConnections
+                .Where(tc => tc.Successor == Entity.Id && tc.Hops == 0)
+                .Select(tc => _context.Tags.Single(x => x.Id == tc.Ancestor))
+                .Distinct();
+
         public void AddParent(IVertex<Tag> newParent)
         {
             var parentTag = newParent.Entity;

@@ -2,8 +2,8 @@ import { ITag } from '@/shared/models/ITag';
 
 const EmptyTags: ITag[] = [];
 const SampleTags: ITag[] = [
-  { name: 'Sample Tag', description: '' },
-  { name: 'Another Tag', description: '' }
+  { name: 'Sample Tag', description: '', children: [], parents: [] },
+  { name: 'Another Tag', description: '', children: [], parents: [] }
 ];
 
 export interface BasicTagsDeductionTestContext {
