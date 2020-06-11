@@ -1,10 +1,10 @@
-﻿using System;
-using Episememe.Application.Features.SearchMedia;
+﻿using Episememe.Application.Features.SearchMedia;
 using Episememe.Application.Filtering.BaseFiltering;
 using Episememe.Application.Tests.Helpers.Contexts.Filtering;
 using Episememe.Domain.Entities;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
@@ -76,9 +76,8 @@ namespace Episememe.Application.Tests.Filtering
 
         private ISet<MediaInstance> GetFilteredMedia(SearchMediaData searchMedia, DbSet<MediaInstance> mediaInstances)
         {
-            var mediaFilter = new MediaFilter(searchMedia.IncludedTags, searchMedia.ExcludedTags,
-                searchMedia.TimeRangeStart, searchMedia.TimeRangeEnd, null);
-            var filteredMedia = mediaFilter.Filter(mediaInstances.ToList().AsReadOnly())
+            var timeRangeFilter = new TimeRangeFilter(searchMedia.TimeRangeStart, searchMedia.TimeRangeEnd);
+            var filteredMedia = timeRangeFilter.Filter(mediaInstances.ToList().AsReadOnly())
                 .ToHashSet();
 
             return filteredMedia;

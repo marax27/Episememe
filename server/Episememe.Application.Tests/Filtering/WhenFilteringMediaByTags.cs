@@ -176,9 +176,8 @@ namespace Episememe.Application.Tests.Filtering
 
         private ReadOnlyCollection<MediaInstance> GetFilteredMedia(SearchMediaData searchMedia)
         {
-            var mediaFilter = new MediaFilter(searchMedia.IncludedTags, searchMedia.ExcludedTags,
-                searchMedia.TimeRangeStart, searchMedia.TimeRangeEnd, _tagGraph.Object);
-            var filteredMedia = mediaFilter.Filter(_mediaInstances.ToList().AsReadOnly());
+            var tagFilter = new TagFilter(searchMedia.IncludedTags, searchMedia.ExcludedTags, _tagGraph.Object);
+            var filteredMedia = tagFilter.Filter(_mediaInstances.ToList().AsReadOnly());
 
             return filteredMedia;
         }
