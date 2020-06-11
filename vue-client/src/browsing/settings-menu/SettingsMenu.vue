@@ -52,7 +52,7 @@ export default class SettingsMenu extends Vue {
   }
 
   startRevision() {
-    this.$emit('revise');
+    this.$store.dispatch('popups/openRevision');
   }
 
   toggleVolume() {

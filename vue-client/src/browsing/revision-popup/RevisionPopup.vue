@@ -62,16 +62,14 @@ import TagsProviderService from '../../tags/mixins/tags-provider.service';
 })
 export default class RevisionPopup extends Mixins(ApiClientService, TagsProviderService) {
 
-  @Prop({ default: false })
-  value!: boolean;
-
   tagNames: string[] = [];
 
   get isOpen(): boolean {
-    return this.value;
+    return this.$store.state.popups.revision.isOpen;
   }
   set isOpen(newValue: boolean) {
-    this.$emit('input', newValue);
+    const actionName = newValue ? 'popups/openRevision' : 'popups/closeRevision';
+    this.$store.dispatch(actionName);
   }
 
   get currentInstance(): IMediaInstance {
@@ -100,8 +98,8 @@ export default class RevisionPopup extends Mixins(ApiClientService, TagsProvider
       });
   }
 
-  @Watch('value')
-  private onValueChange(newValue: boolean) {
+  @Watch('isOpen')
+  private onIsOpenChange(newValue: boolean) {
     if (newValue) {
       this.loadInitialTags();
     }
