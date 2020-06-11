@@ -8,13 +8,14 @@
     item-value='name'
     :return-object='false'
     :label='label'
-    :readonly='readonly'>
+    :disabled='disabled'
+    :append-icon='disabled ? "" : "$dropdown"'>
 
     <template v-slot:selection='data'>
       <v-chip
         v-bind='data.attrs'
         :input-value='data.selected'
-        close
+        :close='!disabled'
         small
         color='secondary'
         @click:close='remove(data.item)'>
@@ -56,7 +57,7 @@ export default class BasicTagPicker extends Mixins(TagsProviderService) {
   label!: string;
 
   @Prop({ default: false })
-  readonly!: boolean;
+  disabled!: boolean;
 
   @Prop({ default: () => [] })
   value!: string[];

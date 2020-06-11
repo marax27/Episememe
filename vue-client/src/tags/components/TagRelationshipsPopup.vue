@@ -12,9 +12,14 @@
 
       <v-card-text class='pa-2'>
         <BasicTagPicker
+          v-model='allAncestors'
+          label='All ancestors'
+          :disabled='true' />
+
+        <BasicTagPicker
           v-model='parents'
           label='Parents'
-          :readonly='selectedTag == null' />
+          :disabled='selectedTag == null' />
       </v-card-text>
 
       <v-divider></v-divider>
@@ -40,7 +45,12 @@
         <BasicTagPicker
           v-model='children'
           label='Children'
-          :readonly='selectedTag == null' />
+          :disabled='selectedTag == null' />
+
+        <BasicTagPicker
+          v-model='allSuccessors'
+          label='All successors'
+          :disabled='true' />
       </v-card-text>
 
       <v-card-actions>
@@ -91,6 +101,9 @@ export default class TagRelationshipsPopup extends Mixins(TagsProviderService) {
   children: string[] = [];
   parents: string[] = [];
 
+  allAncestors: string[] = [];
+  allSuccessors: string[] = [];
+
   close() {
     this.isOpen = false;
   }
@@ -104,6 +117,50 @@ export default class TagRelationshipsPopup extends Mixins(TagsProviderService) {
     this.description = this.selectedTag?.description;
     this.children = this.selectedTag?.children ?? [];
     this.parents = this.selectedTag?.parents ?? [];
+    this.allSuccessors = this.findAllSuccessors();
+    this.allAncestors = this.findAllAncestors();
+  }
+
+  @Watch('children')
+  onChildrenChange() {
+    this.allSuccessors = this.findAllSuccessors();
+  }
+
+  @Watch('parents')
+  onParentsChange() {
+    this.allAncestors = this.findAllAncestors();
+  }
+
+  findAllSuccessors(): string[] {
+    const pool = Array.from(this.children);
+    for(let i = 0; i < pool.length; ++i) {
+      const tag = this.findTagByName(pool[i]);
+      this.pushUnique(pool, tag.children);
+    }
+    return pool;
+  }
+
+  findAllAncestors(): string[] {
+    const pool = Array.from(this.parents);
+    for(let i = 0; i < pool.length; ++i) {
+      const tag = this.findTagByName(pool[i]);
+      this.pushUnique(pool, tag.parents);
+    }
+    return pool;
+  }
+
+  private findTagByName(name: string): ITag {
+    const result = this.allTags.find(tag => tag.name === name);
+    if (result == null)
+      throw new Error(`Tag named '${name}' does not exist.`);
+    return result;
+  }
+
+  private pushUnique<T>(collection: T[], newElements: T[]) {
+    newElements.forEach(element => {
+      if (collection.indexOf(element) === -1)
+        collection.push(element);
+    });
   }
 }
 </script>
