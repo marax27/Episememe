@@ -63,10 +63,11 @@
 </template>
 
 <script lang='ts'>
-import { Component, Vue, Watch } from 'vue-property-decorator';
+import { Component, Watch, Mixins } from 'vue-property-decorator';
 import SingleTagPicker from './SingleTagPicker.vue';
 import BasicTagPicker from './BasicTagPicker.vue';
 import { ITag } from '../../shared/models/ITag';
+import TagsProviderService from '../mixins/tags-provider.service';
 
 @Component({
   components: {
@@ -74,13 +75,15 @@ import { ITag } from '../../shared/models/ITag';
     SingleTagPicker,
   }
 })
-export default class TagRelationshipsPopup extends Vue {
+export default class TagRelationshipsPopup extends Mixins(TagsProviderService) {
   get isOpen(): boolean {
     return this.$store.state.popups.tagRelationships.isOpen;
   }
   set isOpen(newValue: boolean) {
     const actionName = newValue ? 'popups/openTagRelationships' : 'popups/closeTagRelationships';
     this.$store.dispatch(actionName);
+    if (newValue)
+      this.refreshTags();
   }
 
   selectedTag: ITag | null = null;
