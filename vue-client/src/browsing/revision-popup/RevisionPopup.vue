@@ -16,8 +16,8 @@
 
       <v-card-text>
         <BasicTagPicker
-          v-model='tagNames'>
-        </BasicTagPicker>
+          v-model='tagNames'
+          label='Media tags' />
       </v-card-text>
 
       <v-divider></v-divider>

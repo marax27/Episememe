@@ -17,7 +17,9 @@
               title='Tags'
               class='secondary-column-field'>
 
-              <BasicTagPicker v-model='tagNames' />
+              <BasicTagPicker
+                v-model='tagNames'
+                label='Media tags' />
             </UploadPanelSecondaryTile>
 
             <UploadPanelSecondaryTile

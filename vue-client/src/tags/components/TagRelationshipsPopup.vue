@@ -11,6 +11,15 @@
       </v-card-title>
 
       <v-card-text class='pa-2'>
+        <BasicTagPicker
+          v-model='parents'
+          label='Parents'
+          :readonly='selectedTag == null' />
+      </v-card-text>
+
+      <v-divider></v-divider>
+
+      <v-card-text class='pa-2'>
         <SingleTagPicker
           v-if='isOpen'
           v-model='selectedTag'
@@ -23,6 +32,15 @@
           hide-details='auto'
           outlined>
         </v-text-field>
+      </v-card-text>
+
+      <v-divider></v-divider>
+
+      <v-card-text class='pa-2'>
+        <BasicTagPicker
+          v-model='children'
+          label='Children'
+          :readonly='selectedTag == null' />
       </v-card-text>
 
       <v-card-actions>
@@ -47,10 +65,12 @@
 <script lang='ts'>
 import { Component, Vue, Watch } from 'vue-property-decorator';
 import SingleTagPicker from './SingleTagPicker.vue';
+import BasicTagPicker from './BasicTagPicker.vue';
 import { ITag } from '../../shared/models/ITag';
 
 @Component({
   components: {
+    BasicTagPicker,
     SingleTagPicker,
   }
 })
@@ -65,6 +85,8 @@ export default class TagRelationshipsPopup extends Vue {
 
   selectedTag: ITag | null = null;
   description?: string = '';
+  children: string[] = [];
+  parents: string[] = [];
 
   close() {
     this.isOpen = false;
@@ -77,6 +99,8 @@ export default class TagRelationshipsPopup extends Vue {
   @Watch('selectedTag')
   onSelectedTagChange() {
     this.description = this.selectedTag?.description;
+    this.children = this.selectedTag?.children ?? [];
+    this.parents = this.selectedTag?.parents ?? [];
   }
 }
 </script>

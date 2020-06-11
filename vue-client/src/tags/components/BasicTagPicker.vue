@@ -7,7 +7,8 @@
     item-text='fullName'
     item-value='name'
     :return-object='false'
-    label='Media tags'>
+    :label='label'
+    :readonly='readonly'>
 
     <template v-slot:selection='data'>
       <v-chip
@@ -50,6 +51,12 @@ import TagsProviderService from '../mixins/tags-provider.service';
 export default class BasicTagPicker extends Mixins(TagsProviderService) {
   selectedItems: string[] = [];
   userInput = '';
+
+  @Prop({ default: 'Items' })
+  label!: string;
+
+  @Prop({ default: false })
+  readonly!: boolean;
 
   @Prop({ default: () => [] })
   value!: string[];
