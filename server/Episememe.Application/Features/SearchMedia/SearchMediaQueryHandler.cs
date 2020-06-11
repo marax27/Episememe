@@ -41,10 +41,10 @@ namespace Episememe.Application.Features.SearchMedia
 
         private IFilter<MediaInstance> ConstructFilter(SearchMediaData searchMediaData, IGraph<Tag> tagGraph)
         {
-            var mediaFilter = new MediaFilter(searchMediaData.IncludedTags, searchMediaData.ExcludedTags,
-                searchMediaData.TimeRangeStart, searchMediaData.TimeRangeEnd, tagGraph);
+            var tagFilter = new TagFilter(searchMediaData.IncludedTags, searchMediaData.ExcludedTags, tagGraph);
+            var timeRangeFilter = new TimeRangeFilter(searchMediaData.TimeRangeStart, searchMediaData.TimeRangeEnd);
             var privateMediaFilter = new PrivateMediaFilter(searchMediaData.UserId);
-            var filterChain = new FilterChain<MediaInstance>(mediaFilter, privateMediaFilter);
+            var filterChain = new FilterChain<MediaInstance>(tagFilter, timeRangeFilter, privateMediaFilter);
 
             return filterChain;
         }
