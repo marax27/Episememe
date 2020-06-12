@@ -88,6 +88,12 @@
           <v-icon left>mdi-close</v-icon> Close
         </v-btn>
 
+        <v-btn
+          color='secondary'
+          @click='reloadPopupData'>
+          <v-icon left>mdi-trash-can-outline</v-icon> Reset
+        </v-btn>
+
         <v-spacer></v-spacer>
 
         <v-btn
@@ -180,14 +186,18 @@ export default class TagRelationshipsPopup extends Mixins(TagsProviderService) {
     this.parents = [];
   }
 
-  @Watch('selectedTag')
-  onSelectedTagChange() {
+  reloadPopupData() {
     this.newName = this.selectedTag?.name ?? null;
     this.description = this.selectedTag?.description ?? null;
     this.children = this.selectedTag?.children ?? [];
     this.parents = this.selectedTag?.parents ?? [];
     this.allSuccessors = this.findAllSuccessors();
     this.allAncestors = this.findAllAncestors();
+  }
+
+  @Watch('selectedTag')
+  onSelectedTagChange() {
+    this.reloadPopupData();
   }
 
   @Watch('children')
