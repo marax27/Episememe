@@ -12,6 +12,10 @@
     persistent-hint
     :hint='hint'>
 
+    <template v-slot:selection='{ item }'>
+      <span>{{ item.name }}</span>
+    </template>
+
     <template v-slot:item='data'>
       <template v-if='typeof data.item !== "object"'>
         <v-list-item-content v-text='data.item'></v-list-item-content>

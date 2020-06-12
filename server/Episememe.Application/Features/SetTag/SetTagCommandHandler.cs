@@ -20,7 +20,7 @@ namespace Episememe.Application.Features.SetTag
             var newChildren = request.NewChildren;
             var newParents = request.NewParents;
 
-            CreateNonexistentTags(newChildren.Concat(newParents).Concat(new[] {request.NewName}));
+            CreateNonexistentTags(newChildren.Concat(newParents));
 
             var vertex = _graph[request.CurrentName];
             UpdateGraphEdges(vertex, newChildren, newParents);

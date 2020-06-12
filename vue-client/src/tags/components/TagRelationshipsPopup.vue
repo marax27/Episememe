@@ -76,6 +76,15 @@
           <v-icon left color='error'>mdi-alert-circle-outline</v-icon>
           <span class='error--text'>{{ item }}</span>
         </p>
+
+        <p v-if='updateStatus === true'>
+          <v-icon left color='success'>mdi-hand-okay</v-icon>
+          <span class='success--text'>Tag updated successfully.</span>
+        </p>
+        <p v-else-if='updateStatus === false'>
+          <v-icon left color='error'>mdi-alert-circle-outline</v-icon>
+          <span class='error--text'>Failed to update a tag.</span>
+        </p>
       </v-card-text>
 
       <v-spacer></v-spacer>
@@ -84,6 +93,7 @@
       <v-card-actions>
         <v-btn
           color='error'
+          class='mr-4'
           @click='close'>
           <v-icon left>mdi-close</v-icon> Close
         </v-btn>
@@ -99,8 +109,9 @@
         <v-btn
           color='primary'
           :disabled='!canSubmit()'
-          @click='applyChanges'>
-          <v-icon left>mdi-arrow-up-circle-outline</v-icon> Apply changes
+          :loading='submittingChanges'
+          @click='submit'>
+          <v-icon left>mdi-arrow-up-circle-outline</v-icon> {{ submitButtonLabel }}
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -114,6 +125,7 @@ import BasicTagPicker from './BasicTagPicker.vue';
 import { ITag } from '../../shared/models/ITag';
 import { pushUnique, intersectionOf } from '../../shared/helpers/collections';
 import TagsProviderService from '../mixins/tags-provider.service';
+import TagsUpdateService, { UpdateTagDto } from '../mixins/tags-update.service';
 
 @Component({
   components: {
@@ -121,7 +133,7 @@ import TagsProviderService from '../mixins/tags-provider.service';
     SingleTagPicker,
   }
 })
-export default class TagRelationshipsPopup extends Mixins(TagsProviderService) {
+export default class TagRelationshipsPopup extends Mixins(TagsProviderService, TagsUpdateService) {
   get isOpen(): boolean {
     return this.$store.state.popups.tagRelationships.isOpen;
   }
@@ -141,12 +153,21 @@ export default class TagRelationshipsPopup extends Mixins(TagsProviderService) {
   allAncestors: string[] = [];
   allSuccessors: string[] = [];
 
+  updateStatus: boolean | null = null;
+  submittingChanges = false;
+
+  get submitButtonLabel(): string {
+    return this.updateStatus === true ? 'Success' : 'Submit';
+  }
+
   isDisabled(): boolean {
     return this.selectedTag == null;
   }
 
   canSubmit(): boolean {
-    return !this.isDisabled() && this.getValidationErrors().length === 0;
+    return !this.isDisabled()
+        && this.getValidationErrors().length === 0
+        && this.updateStatus !== true;
   }
 
   close() {
@@ -154,8 +175,22 @@ export default class TagRelationshipsPopup extends Mixins(TagsProviderService) {
     this.isOpen = false;
   }
 
-  applyChanges() {
-    this.isOpen = false;
+  submit() {
+    const data: UpdateTagDto = {
+      name: this.newName,
+      description: this.description,
+      children: this.children,
+      parents: this.parents
+    };
+    this.submittingChanges = true;
+    this.updateTag(this.selectedTag.name, data)
+      .then(_onSuccess => {
+        this.updateStatus = true;
+        this.submittingChanges = false;
+      }).catch(_err => {
+        this.updateStatus = false;
+        this.submittingChanges = false;
+      });
   }
 
   getValidationErrors(): string[] {
@@ -193,6 +228,8 @@ export default class TagRelationshipsPopup extends Mixins(TagsProviderService) {
     this.parents = this.selectedTag?.parents ?? [];
     this.allSuccessors = this.findAllSuccessors();
     this.allAncestors = this.findAllAncestors();
+
+    this.updateStatus = null;
   }
 
   @Watch('selectedTag')
