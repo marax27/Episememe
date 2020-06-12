@@ -191,6 +191,7 @@ export default class TagRelationshipsPopup extends Mixins(TagsProviderService, T
       .then(_onSuccess => {
         this.updateStatus = true;
         this.submittingChanges = false;
+        this.refreshTags();
       }).catch(_err => {
         this.updateStatus = false;
         this.submittingChanges = false;
