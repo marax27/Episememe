@@ -90,7 +90,7 @@
       <v-card-actions>
         <v-btn
           color='error'
-          class='mr-4'
+          class='mr-6'
           @click='close'>
           <v-icon left>mdi-close</v-icon> Close
         </v-btn>
@@ -111,6 +111,8 @@
           <v-icon left>mdi-arrow-up-circle-outline</v-icon> {{ submitButtonLabel }}
         </v-btn>
       </v-card-actions>
+
+      <v-divider class='pb-8'></v-divider>
     </v-card>
   </v-dialog>
 </template>
