@@ -71,6 +71,13 @@
           :disabled='true' />
       </v-card-text>
 
+      <v-card-text align='left'>
+        <p v-for='item in getValidationErrors()' :key='item'>
+          <v-icon left color='error'>mdi-alert-circle-outline</v-icon>
+          <span class='error--text'>{{ item }}</span>
+        </p>
+      </v-card-text>
+
       <v-spacer></v-spacer>
       <v-divider></v-divider>
 
@@ -133,7 +140,7 @@ export default class TagRelationshipsPopup extends Mixins(TagsProviderService) {
   }
 
   canSubmit(): boolean {
-    return !(this.isDisabled() || this.detectedCycles());
+    return !this.isDisabled() && this.getValidationErrors().length === 0;
   }
 
   close() {
@@ -145,16 +152,32 @@ export default class TagRelationshipsPopup extends Mixins(TagsProviderService) {
     this.isOpen = false;
   }
 
+  getValidationErrors(): string[] {
+    const result = [];
+    if (this.detectedCycles())
+      result.push('Possible cycle detected.');
+    if (this.detectedLoop())
+      result.push('Loop detected: tag is referencing itself.');
+    return result;
+  }
+
+  private detectedCycles(): boolean {
+    return intersectionOf(this.allSuccessors, this.allAncestors).length !== 0;
+  }
+
+  private detectedLoop(): boolean {
+    if (this.selectedTag == null)
+      return false;
+    return this.parents.includes(this.selectedTag.name)
+        || this.children.includes(this.selectedTag.name);
+  }
+
   private clearValues() {
     this.selectedTag = null;
     this.newName = null;
     this.description = null;
     this.children = [];
     this.parents = [];
-  }
-
-  private detectedCycles(): boolean {
-    return intersectionOf(this.allSuccessors, this.allAncestors).length !== 0;
   }
 
   @Watch('selectedTag')
