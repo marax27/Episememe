@@ -72,19 +72,16 @@
       </v-card-text>
 
       <v-card-text align='left'>
-        <p v-for='item in getValidationErrors()' :key='item'>
-          <v-icon left color='error'>mdi-alert-circle-outline</v-icon>
-          <span class='error--text'>{{ item }}</span>
-        </p>
+        <InlineErrorNotification
+          v-for='item in getValidationErrors()' :key='item'
+          :message='item'/>
 
-        <p v-if='updateStatus === true'>
-          <v-icon left color='success'>mdi-hand-okay</v-icon>
-          <span class='success--text'>Tag updated successfully.</span>
-        </p>
-        <p v-else-if='updateStatus === false'>
-          <v-icon left color='error'>mdi-alert-circle-outline</v-icon>
-          <span class='error--text'>Failed to update a tag.</span>
-        </p>
+        <InlineSuccessNotification
+          v-if='updateStatus === true'
+          message='Tag updated successfully.' />
+        <InlineErrorNotification
+          v-else-if='updateStatus === false'
+          message='Failed to update a tag.' />
       </v-card-text>
 
       <v-spacer></v-spacer>
@@ -126,11 +123,15 @@ import { ITag } from '../../shared/models/ITag';
 import { pushUnique, intersectionOf } from '../../shared/helpers/collections';
 import TagsProviderService from '../mixins/tags-provider.service';
 import TagsUpdateService, { UpdateTagDto } from '../mixins/tags-update.service';
+import InlineErrorNotification from '../../shared/components/inline-notifications/InlineErrorNotification.vue';
+import InlineSuccessNotification from '../../shared/components/inline-notifications/InlineSuccessNotification.vue';
 
 @Component({
   components: {
     BasicTagPicker,
     SingleTagPicker,
+    InlineErrorNotification,
+    InlineSuccessNotification,
   }
 })
 export default class TagRelationshipsPopup extends Mixins(TagsProviderService, TagsUpdateService) {
@@ -176,6 +177,9 @@ export default class TagRelationshipsPopup extends Mixins(TagsProviderService, T
   }
 
   submit() {
+    if (this.selectedTag == null || this.newName == null)
+      return;
+
     const data: UpdateTagDto = {
       name: this.newName,
       description: this.description,

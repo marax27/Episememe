@@ -3,7 +3,7 @@ import ApiClientService from '@/shared/mixins/api-client/api-client.service';
 
 export interface UpdateTagDto {
   name: string;
-  description?: string;
+  description: string | null;
   children: string[];
   parents: string[];
 }

@@ -45,10 +45,9 @@
     </v-card-text>
 
     <v-card-text align='left'>
-      <p v-for='item in validationErrors' :key='item'>
-        <v-icon left color='error'>mdi-alert-circle-outline</v-icon>
-        <span class='error--text'>{{ item }}</span>
-      </p>
+      <InlineErrorNotification
+        v-for='item in validationErrors' :key='item'
+        :message='item' />
     </v-card-text>
   </v-card>
 </template>
@@ -58,10 +57,12 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 import { ISearchSpecification } from '../searching/interfaces/ISearchSpecification';
 import MonthPicker from './components/MonthPicker.vue';
 import TagInputField from './components/TagInputField.vue';
+import InlineErrorNotification from '../shared/components/inline-notifications/InlineErrorNotification.vue';
 
 @Component({
   components: {
     MonthPicker,
+    InlineErrorNotification,
     TagInputField
   }
 })
