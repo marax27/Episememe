@@ -83,7 +83,7 @@
 
       <v-card-actions>
         <v-btn
-          color='secondary'
+          color='error'
           @click='close'>
           <v-icon left>mdi-close</v-icon> Close
         </v-btn>
