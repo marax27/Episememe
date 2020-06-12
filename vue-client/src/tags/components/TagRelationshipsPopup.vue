@@ -1,10 +1,10 @@
 <template>
   <v-dialog
     v-model='isOpen'
-    width='80%'
+    fullscreen
     persistent>
 
-    <v-card outlined>
+    <v-card class='d-flex flex-column'>
       <v-card-title>
         <v-icon left>mdi-tag-multiple-outline</v-icon>
         Tag Relationships
@@ -19,24 +19,42 @@
         <BasicTagPicker
           v-model='parents'
           label='Parents'
-          :disabled='selectedTag == null' />
+          :disabled='isDisabled()' />
       </v-card-text>
 
       <v-divider></v-divider>
 
       <v-card-text class='pa-2'>
-        <SingleTagPicker
-          v-if='isOpen'
-          v-model='selectedTag'
-          hint='Pick one of the existing tags to edit it.' />
+        <v-row dense>
+          <v-col cols='6'>
+            <SingleTagPicker
+              v-if='isOpen'
+              v-model='selectedTag'
+              hint='Pick one of the existing tags to edit it.' />
+          </v-col>
 
-        <v-text-field
-          dense
-          label='Description'
-          v-model='description'
-          hide-details='auto'
-          outlined>
-        </v-text-field>
+          <v-col cols='6'>
+            <v-text-field
+              dense
+              label='New name'
+              v-model='newName'
+              hide-details='auto'
+              :disabled='isDisabled()'
+              outlined>
+            </v-text-field>
+          </v-col>
+
+          <v-col cols='12'>
+            <v-text-field
+              dense
+              label='Description'
+              v-model='description'
+              hide-details='auto'
+              :disabled='isDisabled()'
+              outlined>
+            </v-text-field>
+          </v-col>
+        </v-row>
       </v-card-text>
 
       <v-divider></v-divider>
@@ -45,13 +63,16 @@
         <BasicTagPicker
           v-model='children'
           label='Children'
-          :disabled='selectedTag == null' />
+          :disabled='isDisabled()' />
 
         <BasicTagPicker
           v-model='allSuccessors'
           label='All successors'
           :disabled='true' />
       </v-card-text>
+
+      <v-spacer></v-spacer>
+      <v-divider></v-divider>
 
       <v-card-actions>
         <v-btn
@@ -64,6 +85,7 @@
 
         <v-btn
           color='primary'
+          :disabled='isDisabled()'
           @click='applyChanges'>
           <v-icon left>mdi-arrow-up-circle-outline</v-icon> Apply changes
         </v-btn>
@@ -97,7 +119,8 @@ export default class TagRelationshipsPopup extends Mixins(TagsProviderService) {
   }
 
   selectedTag: ITag | null = null;
-  description?: string = '';
+  newName: string | null = null;
+  description: string | null = null;
   children: string[] = [];
   parents: string[] = [];
 
@@ -105,6 +128,7 @@ export default class TagRelationshipsPopup extends Mixins(TagsProviderService) {
   allSuccessors: string[] = [];
 
   close() {
+    this.resetValues();
     this.isOpen = false;
   }
 
@@ -112,8 +136,21 @@ export default class TagRelationshipsPopup extends Mixins(TagsProviderService) {
     this.isOpen = false;
   }
 
+  isDisabled(): boolean {
+    return this.selectedTag == null;
+  }
+
+  private resetValues() {
+    this.selectedTag = null;
+    this.newName = null;
+    this.description = null;
+    this.children = [];
+    this.parents = [];
+  }
+
   @Watch('selectedTag')
   onSelectedTagChange() {
+    this.newName = this.selectedTag?.name;
     this.description = this.selectedTag?.description;
     this.children = this.selectedTag?.children ?? [];
     this.parents = this.selectedTag?.parents ?? [];
