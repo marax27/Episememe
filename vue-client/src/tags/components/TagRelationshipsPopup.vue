@@ -85,7 +85,7 @@
 
         <v-btn
           color='primary'
-          :disabled='isDisabled()'
+          :disabled='!canSubmit()'
           @click='applyChanges'>
           <v-icon left>mdi-arrow-up-circle-outline</v-icon> Apply changes
         </v-btn>
@@ -99,6 +99,7 @@ import { Component, Watch, Mixins } from 'vue-property-decorator';
 import SingleTagPicker from './SingleTagPicker.vue';
 import BasicTagPicker from './BasicTagPicker.vue';
 import { ITag } from '../../shared/models/ITag';
+import { pushUnique, intersectionOf } from '../../shared/helpers/collections';
 import TagsProviderService from '../mixins/tags-provider.service';
 
 @Component({
@@ -127,8 +128,16 @@ export default class TagRelationshipsPopup extends Mixins(TagsProviderService) {
   allAncestors: string[] = [];
   allSuccessors: string[] = [];
 
+  isDisabled(): boolean {
+    return this.selectedTag == null;
+  }
+
+  canSubmit(): boolean {
+    return !(this.isDisabled() || this.detectedCycles());
+  }
+
   close() {
-    this.resetValues();
+    this.clearValues();
     this.isOpen = false;
   }
 
@@ -136,11 +145,7 @@ export default class TagRelationshipsPopup extends Mixins(TagsProviderService) {
     this.isOpen = false;
   }
 
-  isDisabled(): boolean {
-    return this.selectedTag == null;
-  }
-
-  private resetValues() {
+  private clearValues() {
     this.selectedTag = null;
     this.newName = null;
     this.description = null;
@@ -148,10 +153,14 @@ export default class TagRelationshipsPopup extends Mixins(TagsProviderService) {
     this.parents = [];
   }
 
+  private detectedCycles(): boolean {
+    return intersectionOf(this.allSuccessors, this.allAncestors).length !== 0;
+  }
+
   @Watch('selectedTag')
   onSelectedTagChange() {
-    this.newName = this.selectedTag?.name;
-    this.description = this.selectedTag?.description;
+    this.newName = this.selectedTag?.name ?? null;
+    this.description = this.selectedTag?.description ?? null;
     this.children = this.selectedTag?.children ?? [];
     this.parents = this.selectedTag?.parents ?? [];
     this.allSuccessors = this.findAllSuccessors();
@@ -172,7 +181,7 @@ export default class TagRelationshipsPopup extends Mixins(TagsProviderService) {
     const pool = Array.from(this.children);
     for(let i = 0; i < pool.length; ++i) {
       const tag = this.findTagByName(pool[i]);
-      this.pushUnique(pool, tag.children);
+      pushUnique(pool, tag.children);
     }
     return pool;
   }
@@ -181,7 +190,7 @@ export default class TagRelationshipsPopup extends Mixins(TagsProviderService) {
     const pool = Array.from(this.parents);
     for(let i = 0; i < pool.length; ++i) {
       const tag = this.findTagByName(pool[i]);
-      this.pushUnique(pool, tag.parents);
+      pushUnique(pool, tag.parents);
     }
     return pool;
   }
@@ -191,13 +200,6 @@ export default class TagRelationshipsPopup extends Mixins(TagsProviderService) {
     if (result == null)
       throw new Error(`Tag named '${name}' does not exist.`);
     return result;
-  }
-
-  private pushUnique<T>(collection: T[], newElements: T[]) {
-    newElements.forEach(element => {
-      if (collection.indexOf(element) === -1)
-        collection.push(element);
-    });
   }
 }
 </script>
