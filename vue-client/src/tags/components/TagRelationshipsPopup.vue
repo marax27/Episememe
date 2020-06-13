@@ -235,8 +235,7 @@ export default class TagRelationshipsPopup extends Mixins(TagsProviderService, T
     this.parents = this.selectedTag?.parents ?? [];
     this.allSuccessors = this.findAllSuccessors();
     this.allAncestors = this.findAllAncestors();
-
-    this.updateStatus = null;
+    this.unlockSubmitButton();
   }
 
   @Watch('selectedTag')
@@ -244,14 +243,30 @@ export default class TagRelationshipsPopup extends Mixins(TagsProviderService, T
     this.reloadPopupData();
   }
 
+  @Watch('newName')
+  onNewNameChange() {
+    this.unlockSubmitButton();
+  }
+
+  @Watch('description')
+  onDescriptionChange() {
+    this.unlockSubmitButton();
+  }
+
   @Watch('children')
   onChildrenChange() {
+    this.unlockSubmitButton();
     this.allSuccessors = this.findAllSuccessors();
   }
 
   @Watch('parents')
   onParentsChange() {
+    this.unlockSubmitButton();
     this.allAncestors = this.findAllAncestors();
+  }
+
+  private unlockSubmitButton() {
+    this.updateStatus = null;
   }
 
   findAllSuccessors(): string[] {
