@@ -8,9 +8,18 @@ namespace Episememe.Infrastructure.Database.Configuration
     {
         public void Configure(EntityTypeBuilder<TagConnection> builder)
         {
-            builder.Property(tc => tc.Ancestor)
+            builder
+                .HasOne(tc => tc.Successor)
+                .WithMany()
+                .HasForeignKey(tc => tc.SuccessorId);
+            builder
+                .HasOne(tc => tc.Ancestor)
+                .WithMany()
+                .HasForeignKey(tc => tc.AncestorId);
+
+            builder.Property(tc => tc.AncestorId)
                 .IsRequired();
-            builder.Property(tc => tc.Successor)
+            builder.Property(tc => tc.SuccessorId)
                 .IsRequired();
             builder.Property(tc => tc.Hops)
                 .IsRequired();
