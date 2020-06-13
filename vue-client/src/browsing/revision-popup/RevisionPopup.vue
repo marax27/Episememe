@@ -16,15 +16,15 @@
 
       <v-card-text>
         <BasicTagPicker
-          v-model='tagNames'>
-        </BasicTagPicker>
+          v-model='tagNames'
+          label='Media tags' />
       </v-card-text>
 
       <v-divider></v-divider>
 
       <v-card-actions>
         <v-btn
-          color='secondary'
+          color='error'
           @click='close'>
           <v-icon left>mdi-close</v-icon> Close
         </v-btn>
@@ -62,16 +62,14 @@ import TagsProviderService from '../../tags/mixins/tags-provider.service';
 })
 export default class RevisionPopup extends Mixins(ApiClientService, TagsProviderService) {
 
-  @Prop({ default: false })
-  value!: boolean;
-
   tagNames: string[] = [];
 
   get isOpen(): boolean {
-    return this.value;
+    return this.$store.state.popups.revision.isOpen;
   }
   set isOpen(newValue: boolean) {
-    this.$emit('input', newValue);
+    const actionName = newValue ? 'popups/openRevision' : 'popups/closeRevision';
+    this.$store.dispatch(actionName);
   }
 
   get currentInstance(): IMediaInstance {
@@ -100,8 +98,8 @@ export default class RevisionPopup extends Mixins(ApiClientService, TagsProvider
       });
   }
 
-  @Watch('value')
-  private onValueChange(newValue: boolean) {
+  @Watch('isOpen')
+  private onIsOpenChange(newValue: boolean) {
     if (newValue) {
       this.loadInitialTags();
     }

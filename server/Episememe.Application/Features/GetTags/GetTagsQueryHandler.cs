@@ -19,8 +19,8 @@ namespace Episememe.Application.Features.GetTags
             return _graph.Vertices.Select(vertex => new TagInstanceDto(
                 vertex.Entity.Name,
                 vertex.Entity.Description,
-                vertex.Successors.Select(tag => tag.Name),
-                vertex.Ancestors.Select(tag => tag.Name)
+                vertex.Children.Select(tag => tag.Name),
+                vertex.Parents.Select(tag => tag.Name)
             ));
         }
     }

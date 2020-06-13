@@ -7,6 +7,8 @@ namespace Episememe.Application.Graphs.Interfaces
         TEntity Entity { get; }
         IEnumerable<TEntity> Successors { get; }
         IEnumerable<TEntity> Ancestors { get; }
+        IEnumerable<TEntity> Children { get; }
+        IEnumerable<TEntity> Parents { get; }
 
         void AddParent(IVertex<TEntity> newParent);
         void AddChild(IVertex<TEntity> newChild)

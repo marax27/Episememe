@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import { gallery } from './modules/gallery.module';
 import { favorite } from './modules/favorite.module';
+import { popups } from './modules/popups.module';
 
 Vue.use(Vuex);
 
@@ -44,5 +45,6 @@ export default new Vuex.Store({
   modules: {
     gallery,
     favorite,
+    popups,
   }
 })

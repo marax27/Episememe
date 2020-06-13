@@ -6,16 +6,16 @@ namespace Episememe.Application.DataTransfer
     {
         public string Name { get; }
         public string? Description { get; }
-        public IEnumerable<string> Successors { get; }
-        public IEnumerable<string> Ancestors { get; }
+        public IEnumerable<string> Children { get; }
+        public IEnumerable<string> Parents { get; }
 
         public TagInstanceDto(string name, string? description,
-            IEnumerable<string> successors, IEnumerable<string> ancestors)
+            IEnumerable<string> children, IEnumerable<string> parents)
         {
             Name = name;
             Description = description;
-            Successors = successors;
-            Ancestors = ancestors;
+            Children = children;
+            Parents = parents;
         }
     }
 }

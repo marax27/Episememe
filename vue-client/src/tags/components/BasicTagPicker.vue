@@ -7,13 +7,15 @@
     item-text='fullName'
     item-value='name'
     :return-object='false'
-    label='Media tags'>
+    :label='label'
+    :disabled='disabled'
+    :append-icon='disabled ? "" : "$dropdown"'>
 
     <template v-slot:selection='data'>
       <v-chip
         v-bind='data.attrs'
         :input-value='data.selected'
-        close
+        :close='!disabled'
         small
         color='secondary'
         @click:close='remove(data.item)'>
@@ -50,6 +52,12 @@ import TagsProviderService from '../mixins/tags-provider.service';
 export default class BasicTagPicker extends Mixins(TagsProviderService) {
   selectedItems: string[] = [];
   userInput = '';
+
+  @Prop({ default: 'Items' })
+  label!: string;
+
+  @Prop({ default: false })
+  disabled!: boolean;
 
   @Prop({ default: () => [] })
   value!: string[];

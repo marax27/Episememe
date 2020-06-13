@@ -7,12 +7,8 @@
       <v-progress-circular indeterminate></v-progress-circular>
     </div>
 
-    <SettingsMenu
-      @revise='isOpen = true'>
-    </SettingsMenu>
-    <RevisionPopup
-      v-model='isOpen'>
-    </RevisionPopup>
+    <SettingsMenu />
+    <RevisionPopup />
   </div>
 </template>
 
@@ -35,7 +31,6 @@ export default class Gallery extends Mixins(ApiClientService) {
 
   mediaInstances: IMediaInstance[] = [];
 
-  isOpen = false;
   isLoading = true;
 
   created() {

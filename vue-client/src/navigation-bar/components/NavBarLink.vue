@@ -2,7 +2,8 @@
   <router-link
     :to='link'
     class='nav-link white--text'
-    v-bind:class='{ "title": title }'>
+    v-bind:class='{ "title": title }'
+    @click.native='$emit("click")'>
 
     <v-icon v-if='!!icon'
             :left='!isSmall'
@@ -23,7 +24,7 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 
 @Component
 export default class NavBarLink extends Vue {
-  @Prop()
+  @Prop({ default: '' })
   link!: string;
 
   @Prop({ default: '' })
