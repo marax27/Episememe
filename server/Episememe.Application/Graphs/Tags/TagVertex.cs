@@ -22,26 +22,26 @@ namespace Episememe.Application.Graphs.Tags
 
         public IEnumerable<Tag> Successors
             => _context.TagConnections
-                .Where(tc => tc.Ancestor == Entity.Id)
-                .Select(tc => _context.Tags.Single(x => x.Id == tc.Successor))
+                .Where(tc => tc.AncestorId == Entity.Id)
+                .Select(tc => _context.Tags.Single(x => x.Id == tc.SuccessorId))
                 .Distinct();
 
         public IEnumerable<Tag> Ancestors
             => _context.TagConnections
-                .Where(tc => tc.Successor == Entity.Id)
-                .Select(tc => _context.Tags.Single(x => x.Id == tc.Ancestor))
+                .Where(tc => tc.SuccessorId == Entity.Id)
+                .Select(tc => _context.Tags.Single(x => x.Id == tc.AncestorId))
                 .Distinct();
 
         public IEnumerable<Tag> Children
             => _context.TagConnections
-                .Where(tc => tc.Ancestor == Entity.Id && tc.Hops == 0)
-                .Select(tc => _context.Tags.Single(x => x.Id == tc.Successor))
+                .Where(tc => tc.AncestorId == Entity.Id && tc.Hops == 0)
+                .Select(tc => _context.Tags.Single(x => x.Id == tc.SuccessorId))
                 .Distinct();
 
         public IEnumerable<Tag> Parents
             => _context.TagConnections
-                .Where(tc => tc.Successor == Entity.Id && tc.Hops == 0)
-                .Select(tc => _context.Tags.Single(x => x.Id == tc.Ancestor))
+                .Where(tc => tc.SuccessorId == Entity.Id && tc.Hops == 0)
+                .Select(tc => _context.Tags.Single(x => x.Id == tc.AncestorId))
                 .Distinct();
 
         public void AddParent(IVertex<Tag> newParent)
@@ -75,8 +75,8 @@ namespace Episememe.Application.Graphs.Tags
             // 1. Direct edge.
             var newDirectEdge = new TagConnection
             {
-                Successor = child.Id,
-                Ancestor = parent.Id,
+                SuccessorId = child.Id,
+                AncestorId = parent.Id,
                 Hops = 0
             };
             _context.TagConnections.Add(newDirectEdge);
@@ -90,14 +90,14 @@ namespace Episememe.Application.Graphs.Tags
             // 2. A's incoming edges to B.
             _context.TagConnections.AddRange(
                 _context.TagConnections
-                    .Where(tc => tc.Ancestor == child.Id)
+                    .Where(tc => tc.AncestorId == child.Id)
                     .Select(tc => new TagConnection
                     {
                         EntryEdgeId = tc.Id,
                         DirectEdgeId = newDirectEdgeId,
                         ExitEdgeId = newDirectEdgeId,
-                        Successor = tc.Successor,
-                        Ancestor = parent.Id,
+                        SuccessorId = tc.SuccessorId,
+                        AncestorId = parent.Id,
                         Hops = tc.Hops + 1
                     })
             );
@@ -105,14 +105,14 @@ namespace Episememe.Application.Graphs.Tags
             // 3. A to B's outgoing edges.
             _context.TagConnections.AddRange(
                 _context.TagConnections
-                    .Where(tc => tc.Successor == parent.Id)
+                    .Where(tc => tc.SuccessorId == parent.Id)
                     .Select(tc => new TagConnection
                     {
                         EntryEdgeId = newDirectEdgeId,
                         DirectEdgeId = newDirectEdgeId,
                         ExitEdgeId = tc.Id,
-                        Successor = child.Id,
-                        Ancestor = tc.Ancestor,
+                        SuccessorId = child.Id,
+                        AncestorId = tc.AncestorId,
                         Hops = tc.Hops + 1
                     })
             );
@@ -121,8 +121,8 @@ namespace Episememe.Application.Graphs.Tags
             var joinResult =
                 from start in _context.TagConnections
                 from end in _context.TagConnections
-                where start.Ancestor == child.Id
-                      && end.Successor == parent.Id
+                where start.AncestorId == child.Id
+                      && end.SuccessorId == parent.Id
                 select new { A = start, B = end };
 
             _context.TagConnections.AddRange(
@@ -131,8 +131,8 @@ namespace Episememe.Application.Graphs.Tags
                     EntryEdgeId = x.A.Id,
                     DirectEdgeId = newDirectEdgeId,
                     ExitEdgeId = x.B.Id,
-                    Successor = x.A.Successor,
-                    Ancestor = x.B.Ancestor,
+                    SuccessorId = x.A.SuccessorId,
+                    AncestorId = x.B.AncestorId,
                     Hops = x.A.Hops + x.B.Hops + 1
                 })
             );
@@ -174,13 +174,13 @@ namespace Episememe.Application.Graphs.Tags
 
         private TagConnection? GetDirectConnection(Tag child, Tag parent)
             => _context.TagConnections.SingleOrDefault(tc =>
-                    tc.Successor == child.Id
-                    && tc.Ancestor == parent.Id
+                    tc.SuccessorId == child.Id
+                    && tc.AncestorId == parent.Id
                     && tc.Hops == 0);
 
         private bool WillConnectionCreateCycle(int childId, int parentId)
             => _context.TagConnections
-                .Any(tc => tc.Successor == parentId && tc.Ancestor == childId);
+                .Any(tc => tc.SuccessorId == parentId && tc.AncestorId == childId);
 
         private void EnsureTransactionIsOpen()
         {
