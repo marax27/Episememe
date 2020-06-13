@@ -20,12 +20,16 @@ export default class TagsProviderService extends Mixins(ApiClientService) {
     return this.$store.getters.allTags;
   }
 
-  public refreshTags() {
-    this._loadTags();
+  public refreshTags(): Promise<void> {
+    return this._loadTags();
   }
 
-  private _loadTags() {
-    this.$api.get<ITag[]>('tags')
+  public findTagByName(name: string): TagViewModel | null {
+    return this.allTags.find(tag => tag.name === name) ?? null;
+  }
+
+  private _loadTags(): Promise<void> {
+    return this.$api.get<ITag[]>('tags')
       .then(response => this._mapTags(response.data))
       .then((tags: TagViewModel[]) => {
         this.$store.dispatch('updateTags', tags);

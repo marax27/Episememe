@@ -118,7 +118,7 @@
 </template>
 
 <script lang='ts'>
-import { Component, Watch, Mixins } from 'vue-property-decorator';
+import { Vue, Component, Watch, Mixins } from 'vue-property-decorator';
 import SingleTagPicker from './SingleTagPicker.vue';
 import BasicTagPicker from './BasicTagPicker.vue';
 import { ITag } from '../../shared/models/ITag';
@@ -181,9 +181,10 @@ export default class TagRelationshipsPopup extends Mixins(TagsProviderService, T
   submit() {
     if (this.selectedTag == null || this.newName == null)
       return;
+    const newName: string = this.newName;
 
     const data: UpdateTagDto = {
-      name: this.newName,
+      name: newName,
       description: this.description,
       children: this.children,
       parents: this.parents
@@ -193,7 +194,12 @@ export default class TagRelationshipsPopup extends Mixins(TagsProviderService, T
       .then(_onSuccess => {
         this.updateStatus = true;
         this.submittingChanges = false;
-        this.refreshTags();
+        this.refreshTags()
+          .then(_onSuccess => {
+            // Change of selectedTag will make the watchers set updateStatus to false.
+            this.selectedTag = this.findTagByName(newName);
+            Vue.nextTick(() => this.updateStatus = true);
+          });
       }).catch(_err => {
         this.updateStatus = false;
         this.submittingChanges = false;
@@ -235,8 +241,7 @@ export default class TagRelationshipsPopup extends Mixins(TagsProviderService, T
     this.parents = this.selectedTag?.parents ?? [];
     this.allSuccessors = this.findAllSuccessors();
     this.allAncestors = this.findAllAncestors();
-
-    this.updateStatus = null;
+    this.unlockSubmitButton();
   }
 
   @Watch('selectedTag')
@@ -244,21 +249,37 @@ export default class TagRelationshipsPopup extends Mixins(TagsProviderService, T
     this.reloadPopupData();
   }
 
+  @Watch('newName')
+  onNewNameChange() {
+    this.unlockSubmitButton();
+  }
+
+  @Watch('description')
+  onDescriptionChange() {
+    this.unlockSubmitButton();
+  }
+
   @Watch('children')
   onChildrenChange() {
+    this.unlockSubmitButton();
     this.allSuccessors = this.findAllSuccessors();
   }
 
   @Watch('parents')
   onParentsChange() {
+    this.unlockSubmitButton();
     this.allAncestors = this.findAllAncestors();
+  }
+
+  private unlockSubmitButton() {
+    this.updateStatus = null;
   }
 
   findAllSuccessors(): string[] {
     const pool = Array.from(this.children);
     for(let i = 0; i < pool.length; ++i) {
       const tag = this.findTagByName(pool[i]);
-      pushUnique(pool, tag.children);
+      pushUnique(pool, tag?.children ?? []);
     }
     return pool;
   }
@@ -267,16 +288,9 @@ export default class TagRelationshipsPopup extends Mixins(TagsProviderService, T
     const pool = Array.from(this.parents);
     for(let i = 0; i < pool.length; ++i) {
       const tag = this.findTagByName(pool[i]);
-      pushUnique(pool, tag.parents);
+      pushUnique(pool, tag?.parents ?? []);
     }
     return pool;
-  }
-
-  private findTagByName(name: string): ITag {
-    const result = this.allTags.find(tag => tag.name === name);
-    if (result == null)
-      throw new Error(`Tag named '${name}' does not exist.`);
-    return result;
   }
 }
 </script>
