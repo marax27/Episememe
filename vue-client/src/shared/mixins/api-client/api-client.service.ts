@@ -11,14 +11,18 @@ export default class ApiClientService extends Vue {
   $auth: any;  // it's necessary, as API calls require a token
 
   public waitForAuthService(): Promise<void> {
-    return new Promise(resolve => {
-      if (this.$auth.loading === false)
-        resolve();
-      this.$auth.$watch('loading', (loading: boolean) => {
-        if (loading === false)
+    if (isAuthorizationEnabled()) {
+      return new Promise(resolve => {
+        if (this.$auth.loading === false)
           resolve();
+        this.$auth.$watch('loading', (loading: boolean) => {
+          if (loading === false)
+            resolve();
+        });
       });
-    })
+    }
+    else
+      return Promise.resolve();
   }
 
   created() {
