@@ -12,9 +12,6 @@
     </template>
 
     <RevisionMenuButton @click='startRevision' />
-    <BaseSettingsMenuButton
-      v-for='item in menuButtons' :key='item.name'
-      :label='item.name' :icon='item.icon' />
     <VolumeMenuButton @click='toggleVolume' />
     <AutoloopMenuButton @click='toggleAutoloop' />
     <FavoriteMenuButton />
@@ -40,11 +37,6 @@ import FavoriteMenuButton from './buttons/FavoriteMenuButton.vue';
   }
 })
 export default class SettingsMenu extends Vue {
-  menuButtons = [
-    { name: 'Hide', icon: 'mdi-eye-off', callback: this.foo },
-    { name: 'Fill space', icon: 'mdi-arrow-expand', callback: this.foo },
-  ];
-
   speedDialIsOpen = false;
 
   foo() {
