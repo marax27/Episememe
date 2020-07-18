@@ -8,7 +8,7 @@ export const gallery: Module<any, any> = {
     currentMediaInstance: null,
     isMuted: false,
     autoloop: true,
-    layoutMode: LayoutModes.AspectFit,
+    layoutMode: LayoutModes.OriginalOrFit,
   }),
   mutations: {
     setCurrentMediaInstance(state, newInstance: IMediaInstance) {
@@ -35,8 +35,13 @@ export const gallery: Module<any, any> = {
       commit('setAutoloop', !state.autoloop);
     },
     toggleLayoutMode({ commit, state }) {
-      const newValue = state.layoutMode === LayoutModes.AspectFit
-        ? LayoutModes.AspectFill : LayoutModes.AspectFit;
+      const map: { [key in LayoutModes]: LayoutModes } = {
+        [LayoutModes.OriginalOrFit]: LayoutModes.AspectFit,
+        [LayoutModes.AspectFit]: LayoutModes.AspectFill,
+        [LayoutModes.AspectFill]: LayoutModes.OriginalOrFit,
+      };
+
+      const newValue = map[state.layoutMode as LayoutModes];
       commit('setLayoutMode', newValue);
     },
   },

@@ -26,6 +26,10 @@ export default class MediaLayoutMenuButton extends Vue {
   }
 
   private states: ButtonStates = {
+    [LayoutModes.OriginalOrFit]: {
+      label: 'Original or shrink to fit',
+      icon: 'mdi-arrow-collapse-all'
+    },
     [LayoutModes.AspectFit]: {
       label: 'Aspect fit',
       icon: 'mdi-aspect-ratio'
