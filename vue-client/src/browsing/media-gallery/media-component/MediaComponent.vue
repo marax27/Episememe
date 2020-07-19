@@ -55,7 +55,7 @@ export default class MediaComponent extends Mixins(ApiClientService) {
     const dataType = this.instance?.dataType.toLowerCase() ?? '';
     if (['jpg', 'png', 'bmp', 'svg', 'jpeg', 'gif', 'webp'].includes(dataType))
       return 'image';
-    else if (['mp4', 'ogg', 'avi', 'mpeg'].includes(dataType))
+    else if (['mp4', 'ogg', 'avi', 'mpeg', 'webm'].includes(dataType))
       return 'video';
     else
       return 'download';
