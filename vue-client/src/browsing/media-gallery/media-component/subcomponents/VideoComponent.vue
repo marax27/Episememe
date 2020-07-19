@@ -8,7 +8,7 @@
 <script lang='ts'>
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { IHasResolution } from '../../../interfaces/IHasResolution';
-import { ResolutionModes } from '../../../types/ResolutionModes';
+import { IResolution } from '../../../interfaces/IResolution';
 
 @Component
 export default class VideoComponent extends Vue implements IHasResolution {
@@ -24,28 +24,28 @@ export default class VideoComponent extends Vue implements IHasResolution {
   @Prop()
   active?: boolean;
 
-  private resolutionMode: ResolutionModes = ResolutionModes.Unknown;
+  private resolution: IResolution | null = null;
 
   mounted() {
     this.updateIsMuted();
     this.updateAutoloop();
   }
 
-  public getResolution(): Promise<ResolutionModes> {
+  public getResolution(): Promise<IResolution> {
     const video = this.video;
-    if (this.resolutionMode !== ResolutionModes.Unknown) {
+    if (this.resolution != null) {
       // Resolution has been requested before.
-      return Promise.resolve(this.resolutionMode);
+      return Promise.resolve(this.resolution as IResolution);
     } else if (video.videoWidth !== 0 && video.videoWidth != undefined) {
       // Video metadata loaded, but this is the 1st time resolution is requested.
-      this.updateResolutionMode(video.videoWidth, video.videoHeight);
-      return Promise.resolve(this.resolutionMode);
+      const result = this.updateResolution(video.videoWidth, video.videoHeight);
+      return Promise.resolve(result);
     } else {
       // Video metadata not yet loaded.
       return new Promise((resolve, reject) => {
         video.addEventListener('loadedmetadata', () => {
-          this.updateResolutionMode(video.videoWidth, video.videoHeight);
-          resolve(this.resolutionMode);
+          const result = this.updateResolution(video.videoWidth, video.videoHeight);
+          resolve(result);
         });
       });
     }
@@ -85,15 +85,10 @@ export default class VideoComponent extends Vue implements IHasResolution {
     return this.$refs.videoRef as HTMLVideoElement;
   }
 
-  private updateResolutionMode(width: number, height: number) {
-    let value: ResolutionModes;
-    if (width > height)
-      value = ResolutionModes.Landscape;
-    else if (height > width)
-      value = ResolutionModes.Portrait;
-    else
-      value = ResolutionModes.Unknown;
-    this.resolutionMode = value;
+  private updateResolution(width: number, height: number): IResolution {
+    const result = { width: width, height: height };
+    this.resolution = result;
+    return result;
   }
 }
 </script>

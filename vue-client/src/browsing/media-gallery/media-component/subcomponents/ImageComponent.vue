@@ -5,7 +5,7 @@
 <script lang='ts'>
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { IHasResolution } from '../../../interfaces/IHasResolution';
-import { ResolutionModes } from '../../../types/ResolutionModes';
+import { IResolution } from '../../../interfaces/IResolution';
 
 @Component
 export default class ImageComponent extends Vue implements IHasResolution {
@@ -15,20 +15,20 @@ export default class ImageComponent extends Vue implements IHasResolution {
   @Prop()
   alt?: string;
 
-  private resolutionMode: ResolutionModes = ResolutionModes.Unknown;
+  private resolution: IResolution | null = null;
 
-  public getResolution(): Promise<ResolutionModes> {
+  public getResolution(): Promise<IResolution> {
     const image = this.image;
     if (image.complete) {
-      this.updateResolutionMode(image.naturalWidth, image.naturalHeight);
-      return Promise.resolve(this.resolutionMode);
+      const result = this.updateResolution(image.naturalWidth, image.naturalHeight);
+      return Promise.resolve(result);
     } else {
       // Note: might potentially cause issues if the function
       // is called 2 times while an image is not yet loaded.
       return new Promise((resolve, reject) => {
         image.onload = () => {
-          this.updateResolutionMode(image.naturalWidth, image.naturalHeight);
-          resolve(this.resolutionMode);
+          const result = this.updateResolution(image.naturalWidth, image.naturalHeight);
+          resolve(result);
         }
         image.onerror = reject;
       });
@@ -39,15 +39,10 @@ export default class ImageComponent extends Vue implements IHasResolution {
     return this.$refs.imageRef as HTMLImageElement;
   }
 
-  private updateResolutionMode(width: number, height: number) {
-    let value: ResolutionModes;
-    if (width > height)
-      value = ResolutionModes.Landscape;
-    else if (height > width)
-      value = ResolutionModes.Portrait;
-    else
-      value = ResolutionModes.Unknown;
-    this.resolutionMode = value;
+  private updateResolution(width: number, height: number): IResolution {
+    const result = { width: width, height: height };
+    this.resolution = result;
+    return result;
   }
 }
 </script>

@@ -31,6 +31,7 @@ import DownloadLinkComponent from './subcomponents/DownloadLinkComponent.vue';
 import ApiClientService from '../../../shared/mixins/api-client/api-client.service';
 import { ResolutionModes } from '../../types/ResolutionModes';
 import { IHasResolution } from '../../interfaces/IHasResolution';
+import { IResolution } from '../../interfaces/IResolution';
 
 @Component({
   components: {
@@ -88,8 +89,19 @@ export default class MediaComponent extends Mixins(ApiClientService) {
     } else
       return;
 
-    resolutionProvider.getResolution()
-      .then(response => this.$emit('resolution', response));
+    resolutionProvider.getResolution().then(response =>
+      this.$emit('resolution', this.computeResolutionMode(response))
+    );
+  }
+
+  private computeResolutionMode(resolution: IResolution): ResolutionModes {
+    const res = resolution;
+    if (res.width > res.height)
+      return ResolutionModes.Landscape;
+    else if (res.height > res.width)
+      return ResolutionModes.Portrait;
+    else
+      return ResolutionModes.Unknown;
   }
 }
 </script>

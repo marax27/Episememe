@@ -1,5 +1,5 @@
-import { ResolutionModes } from '../types/ResolutionModes';
+import { IResolution } from './IResolution';
 
 export interface IHasResolution {
-  getResolution(): Promise<ResolutionModes>;
+  getResolution(): Promise<IResolution>;
 }
