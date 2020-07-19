@@ -127,8 +127,8 @@ export default class MediaGallery extends Mixins(FavoriteMediaProvider) {
 }
 
 .show-tags {
-  position: absolute;
-  top: 0;
+  position: fixed;
+  top: 64px;
   right: 0;
 }
 </style>

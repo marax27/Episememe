@@ -1,6 +1,6 @@
 <template>
   <v-speed-dial
-    absolute
+    fixed
     v-model='speedDialIsOpen'
     :right='true' :bottom='true'
     :open-on-hover='true'>
