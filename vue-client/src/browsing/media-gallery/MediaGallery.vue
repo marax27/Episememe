@@ -9,7 +9,9 @@
         v-for='(item, index) in instances' :key='item.id'
         :active='index === currentlyBrowsedIndex'
         :instance='item'
-        class='media-instance'>
+        class='media-instance'
+        :class='additionalMediaInstanceClasses'
+        @resolution='resolutionMode = $event'>
       </MediaComponent>
     </div>
 
@@ -41,6 +43,8 @@ import MediaComponent from './media-component/MediaComponent.vue';
 import MediaSidebar from './media-sidebar/MediaSidebar.vue';
 import FavoriteMediaProvider from '../mixins/favorite-media-provider.service';
 import { IMediaInstance } from '../../shared/models/IMediaInstance';
+import { ResolutionModes } from '../types/ResolutionModes';
+import { LayoutModes } from '../types/LayoutModes';
 
 @Component({
   components: {
@@ -54,8 +58,18 @@ export default class MediaGallery extends Mixins(FavoriteMediaProvider) {
 
   sidebarOpen = false;
 
+  resolutionMode = ResolutionModes.Unknown;
+
   public get isQueryEmpty(): boolean {
     return this.instances == null || this.instances.length === 0;
+  }
+
+  public get additionalMediaInstanceClasses(): {[key: string]: boolean} {
+    return {
+      'landscape': this.resolutionMode === ResolutionModes.Landscape,
+      'portrait': this.resolutionMode === ResolutionModes.Portrait,
+      'aspect-fill': this.layoutMode === LayoutModes.AspectFill,
+    };
   }
 
   private updateInstance() {
@@ -63,6 +77,10 @@ export default class MediaGallery extends Mixins(FavoriteMediaProvider) {
       const currentInstance = this.instances[this.currentlyBrowsedIndex];
       this.$store.dispatch('gallery/updateCurrentMediaInstance', currentInstance);
     }
+  }
+
+  private get layoutMode() {
+    return this.$store.state.gallery.layoutMode as LayoutModes;
   }
 
   currentlyBrowsedIndex = 0;
@@ -112,6 +130,16 @@ export default class MediaGallery extends Mixins(FavoriteMediaProvider) {
 .media-gallery .media-instance {
   object-fit: contain;
   max-height: 90vh;
+}
+
+.media-gallery .media-instance.aspect-fill.portrait {
+  width: 100%;
+  max-height: 95%;
+}
+
+.media-gallery .media-instance.aspect-fill.landscape {
+  height: calc(100vh - 96px);
+  max-height: calc(100vh - 96px);
 }
 
 .previous-instance, .next-instance {

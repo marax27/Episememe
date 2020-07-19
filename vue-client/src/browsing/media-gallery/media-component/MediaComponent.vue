@@ -2,7 +2,8 @@
   <ImageComponent v-if='getComponentType() === "image"'
     v-show='active'
     :url='mediaUrl'
-    :alt='altMessage'>
+    :alt='altMessage'
+    ref='imageRef'>
   </ImageComponent>
 
   <VideoComponent v-else-if='getComponentType() === "video"'
@@ -10,7 +11,8 @@
     :url='mediaUrl'
     :type='instance.dataType'
     :alt='altMessage'
-    :active='active'>
+    :active='active'
+    ref='videoRef'>
   </VideoComponent>
 
   <DownloadLinkComponent v-else
@@ -21,12 +23,14 @@
 </template>
 
 <script lang='ts'>
-import { Component, Prop, Mixins } from 'vue-property-decorator';
+import { Component, Prop, Mixins, Watch } from 'vue-property-decorator';
 import { IMediaInstance } from '../../../shared/models/IMediaInstance';
 import ImageComponent from './subcomponents/ImageComponent.vue';
 import VideoComponent from './subcomponents/VideoComponent.vue';
 import DownloadLinkComponent from './subcomponents/DownloadLinkComponent.vue';
 import ApiClientService from '../../../shared/mixins/api-client/api-client.service';
+import { ResolutionModes } from '../../types/ResolutionModes';
+import { IHasResolution } from '../../interfaces/IHasResolution';
 
 @Component({
   components: {
@@ -41,6 +45,11 @@ export default class MediaComponent extends Mixins(ApiClientService) {
 
   @Prop({ default: true })
   active!: boolean;
+
+  mounted() {
+    if (this.active)
+      this.updateResolution();
+  }
 
   public get mediaUrl(): string {
     const browseToken = this.$store.state.browseToken;
@@ -59,6 +68,28 @@ export default class MediaComponent extends Mixins(ApiClientService) {
       return 'video';
     else
       return 'download';
+  }
+
+  @Watch('active')
+  onActiveChanged(active: boolean) {
+    if (active)
+      this.updateResolution();
+  }
+
+  private updateResolution() {
+    let resolutionProvider: IHasResolution;
+
+    if (this.getComponentType() === 'image') {
+      const img = this.$refs.imageRef as ImageComponent;
+      resolutionProvider = img;
+    } else if (this.getComponentType() === 'video') {
+      const video = this.$refs.videoRef as VideoComponent;
+      resolutionProvider = video;
+    } else
+      return;
+
+    resolutionProvider.getResolution()
+      .then(response => this.$emit('resolution', response));
   }
 }
 </script>
