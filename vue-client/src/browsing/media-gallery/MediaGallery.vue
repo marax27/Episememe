@@ -69,6 +69,7 @@ export default class MediaGallery extends Mixins(FavoriteMediaProvider) {
       'landscape': this.resolutionMode === ResolutionModes.Landscape,
       'portrait': this.resolutionMode === ResolutionModes.Portrait,
       'aspect-fill': this.layoutMode === LayoutModes.AspectFill,
+      'aspect-fit': this.layoutMode === LayoutModes.AspectFit,
     };
   }
 
@@ -120,6 +121,7 @@ export default class MediaGallery extends Mixins(FavoriteMediaProvider) {
 }
 
 .media-gallery {
+  overflow-x: auto;
   background-color: black;
 
   display: flex;
@@ -130,6 +132,11 @@ export default class MediaGallery extends Mixins(FavoriteMediaProvider) {
 .media-gallery .media-instance {
   object-fit: contain;
   max-height: 90vh;
+}
+
+.media-gallery .media-instance.aspect-fit {
+  width: 100%;
+  height: 100%;
 }
 
 .media-gallery .media-instance.aspect-fill.portrait {
