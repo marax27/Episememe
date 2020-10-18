@@ -86,8 +86,10 @@ export default class MediaComponent extends Mixins(ApiClientService) {
     } else if (this.getComponentType() === 'video') {
       const video = this.$refs.videoRef as VideoComponent;
       resolutionProvider = video;
-    } else
+    } else {
+      this.$emit('resolution', ResolutionModes.Unknown);
       return;
+    }
 
     resolutionProvider.getResolution().then(response =>
       this.$emit('resolution', this.computeResolutionMode(response))
