@@ -1,6 +1,9 @@
 # Episememe
 A media (pictures, memes, videos, texts) repository
 
+## *Project "on hold" until 2021*
+*Episememe started as a small university project, and it has already reached a bare minimum of usability - you can upload, browse and tag media, the tag graph system also works. However, there's plenty more to do here ([project boards](https://github.com/marax27/Episememe/projects)), and hopefully the project will gain some traction in 2021 once we find some time between studying and working.*
+
 ## Getting started
 Windows:
 1. Install Node.js from https://nodejs.org/en/download/
