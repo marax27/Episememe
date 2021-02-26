@@ -44,6 +44,8 @@ namespace Episememe.Api
                 services.AddJwtAuthentication(Configuration);
             }
 
+            services.ConfigureFileUploadLimits();
+
             services.AddControllers()
                 .AddJsonOptions(options =>
                 {

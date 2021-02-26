@@ -1,6 +1,6 @@
 <template>
   <v-speed-dial
-    absolute
+    fixed
     v-model='speedDialIsOpen'
     :right='true' :bottom='true'
     :open-on-hover='true'>
@@ -12,6 +12,7 @@
     </template>
 
     <RevisionMenuButton @click='startRevision' />
+    <MediaLayoutMenuButton @click='toggleLayoutMode' />
     <VolumeMenuButton @click='toggleVolume' />
     <AutoloopMenuButton @click='toggleAutoloop' />
     <FavoriteMenuButton />
@@ -26,6 +27,7 @@ import RevisionMenuButton from './buttons/RevisionMenuButton.vue';
 import VolumeMenuButton from './buttons/VolumeMenuButton.vue';
 import AutoloopMenuButton from './buttons/AutoloopMenuButton.vue';
 import FavoriteMenuButton from './buttons/FavoriteMenuButton.vue';
+import MediaLayoutMenuButton from './buttons/MediaLayoutMenuButton.vue';
 
 @Component({
   components: {
@@ -34,6 +36,7 @@ import FavoriteMenuButton from './buttons/FavoriteMenuButton.vue';
     VolumeMenuButton,
     AutoloopMenuButton,
     FavoriteMenuButton,
+    MediaLayoutMenuButton,
   }
 })
 export default class SettingsMenu extends Vue {
@@ -53,6 +56,10 @@ export default class SettingsMenu extends Vue {
 
   toggleAutoloop() {
     this.$store.dispatch('gallery/toggleAutoloop');
+  }
+
+  toggleLayoutMode() {
+    this.$store.dispatch('gallery/toggleLayoutMode');
   }
 }
 </script>

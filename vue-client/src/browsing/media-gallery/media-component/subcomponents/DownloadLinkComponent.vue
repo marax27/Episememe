@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card class='card'>
     <v-card-title>{{ "#" + identifier }}</v-card-title>
 
     <v-card-text>
@@ -25,3 +25,10 @@ export default class DownloadLinkComponent extends Vue {
   identifier?: string;
 }
 </script>
+
+<style scoped>
+.card {
+  width: auto !important;
+  height: auto !important;
+}
+</style>
