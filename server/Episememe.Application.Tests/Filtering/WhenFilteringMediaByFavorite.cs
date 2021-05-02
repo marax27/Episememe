@@ -29,7 +29,8 @@ namespace Episememe.Application.Tests.Filtering
             var givenMediaInstances = new FavoriteMediaTestsDbSet().Instances;
             var givenSearchMediaData = new SearchMediaData()
             {
-                UserId = givenUserId
+                UserId = givenUserId,
+                FavoritesOnly = true
             };
 
             var filteredMedia = GetFilteredMedia(givenSearchMediaData, givenMediaInstances);
@@ -39,9 +40,28 @@ namespace Episememe.Application.Tests.Filtering
             filteredMedia.Should().Contain(mi => mi.Id == "2");
         }
 
+        [Fact]
+        public void GivenUserAndMediaDataSet_AllMediaAreReturned()
+        {
+            var givenUserId = "user1";
+            var givenMediaInstances = new FavoriteMediaTestsDbSet().Instances;
+            var givenSearchMediaData = new SearchMediaData()
+            {
+                UserId = givenUserId,
+                FavoritesOnly = false
+            };
+
+            var filteredMedia = GetFilteredMedia(givenSearchMediaData, givenMediaInstances);
+
+            filteredMedia.Should().HaveCount(3);
+            filteredMedia.Should().Contain(mi => mi.Id == "1");
+            filteredMedia.Should().Contain(mi => mi.Id == "2");
+            filteredMedia.Should().Contain(mi => mi.Id == "3");
+        }
+
         private ISet<MediaInstance> GetFilteredMedia(SearchMediaData searchMedia, DbSet<MediaInstance> mediaInstances)
         {
-            var favoriteMediaFilter = new FavoriteMediaFilter(searchMedia.UserId, true);
+            var favoriteMediaFilter = new FavoriteMediaFilter(searchMedia.UserId, searchMedia.FavoritesOnly);
             var filteredMedia = favoriteMediaFilter.Filter(mediaInstances.ToList().AsReadOnly())
                 .ToHashSet();
 
