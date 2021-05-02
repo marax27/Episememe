@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Episememe.Application.Features.SearchMedia
 {
@@ -11,5 +10,6 @@ namespace Episememe.Application.Features.SearchMedia
         public DateTime? TimeRangeStart { get; set; }
         public DateTime? TimeRangeEnd { get; set; }
         public string? UserId { get; set; }
+        public bool FavoritesOnly { get; set; }
     }
 }

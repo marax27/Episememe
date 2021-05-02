@@ -26,7 +26,7 @@ namespace Episememe.Application.Features.GetFavoriteMedia
                 .ToList()
                 .AsReadOnly();
 
-            var filter = new FavoriteMediaFilter(request.UserId);
+            var filter = new FavoriteMediaFilter(request.UserId, true);
 
             var filteredMedia = filter.Filter(mediaInstances)
                 .Select(mi =>

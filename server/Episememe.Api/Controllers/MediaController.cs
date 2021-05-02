@@ -38,6 +38,7 @@ namespace Episememe.Api.Controllers
                 ExcludedTags = searchMediaDto.ExcludedTags,
                 TimeRangeStart = searchMediaDto.TimeRangeStart,
                 TimeRangeEnd = searchMediaDto.TimeRangeEnd,
+                FavoritesOnly = searchMediaDto.FavoritesOnly,
                 UserId = User.GetUserId()
             };
             var query = SearchMediaQuery.Create(searchMediaData);

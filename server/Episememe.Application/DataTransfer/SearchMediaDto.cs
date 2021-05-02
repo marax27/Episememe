@@ -9,5 +9,6 @@ namespace Episememe.Application.DataTransfer
         public IEnumerable<string>? ExcludedTags { get; set; }
         public DateTime? TimeRangeStart { get; set; }
         public DateTime? TimeRangeEnd { get; set; }
+        public bool FavoritesOnly { get; set; }
     }
 }
