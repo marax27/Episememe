@@ -6,11 +6,13 @@ namespace Episememe.Application.Filtering.BaseFiltering
 {
     public class FavoriteMediaFilter : IFilter<MediaInstance>
     {
-        private readonly string _userId;
+        private readonly string? _userId;
+        private readonly bool _favoritesOnly;
 
-        public FavoriteMediaFilter(string userId)
+        public FavoriteMediaFilter(string? userId, bool favoritesOnly)
         {
             _userId = userId;
+            _favoritesOnly = favoritesOnly;
         }
 
         public ReadOnlyCollection<MediaInstance> Filter(ReadOnlyCollection<MediaInstance> instances)
@@ -21,7 +23,7 @@ namespace Episememe.Application.Filtering.BaseFiltering
         private ReadOnlyCollection<MediaInstance> ConsiderFavorite(ReadOnlyCollection<MediaInstance> mediaInstances)
         {
             var filteredMedia = mediaInstances;
-            if (_userId != null)
+            if (_userId != null && _favoritesOnly)
             {
                 filteredMedia = mediaInstances.Where(mi =>
                         mi.FavoriteMedia.Select(fm => fm.UserId).Contains(_userId)

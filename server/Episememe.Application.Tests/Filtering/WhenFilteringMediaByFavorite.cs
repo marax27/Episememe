@@ -41,7 +41,7 @@ namespace Episememe.Application.Tests.Filtering
 
         private ISet<MediaInstance> GetFilteredMedia(SearchMediaData searchMedia, DbSet<MediaInstance> mediaInstances)
         {
-            var favoriteMediaFilter = new FavoriteMediaFilter(searchMedia.UserId);
+            var favoriteMediaFilter = new FavoriteMediaFilter(searchMedia.UserId, true);
             var filteredMedia = favoriteMediaFilter.Filter(mediaInstances.ToList().AsReadOnly())
                 .ToHashSet();
 

@@ -44,7 +44,8 @@ namespace Episememe.Application.Features.SearchMedia
             var tagFilter = new TagFilter(searchMediaData.IncludedTags, searchMediaData.ExcludedTags, tagGraph);
             var timeRangeFilter = new TimeRangeFilter(searchMediaData.TimeRangeStart, searchMediaData.TimeRangeEnd);
             var privateMediaFilter = new PrivateMediaFilter(searchMediaData.UserId);
-            var filterChain = new FilterChain<MediaInstance>(tagFilter, timeRangeFilter, privateMediaFilter);
+            var favoriteMediaFilter = new FavoriteMediaFilter(searchMediaData.UserId, searchMediaData.FavoritesOnly);
+            var filterChain = new FilterChain<MediaInstance>(tagFilter, timeRangeFilter, privateMediaFilter, favoriteMediaFilter);
 
             return filterChain;
         }
