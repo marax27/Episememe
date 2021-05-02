@@ -42,6 +42,15 @@
         </v-btn>
       </v-row>
 
+      <v-row dense>
+        <v-col cols='6' sm='3'>
+          <v-checkbox
+            @change='favoritesOnly = $event;'
+            label='Favourites only'>
+          </v-checkbox>
+        </v-col>
+      </v-row>
+
     </v-card-text>
 
     <v-card-text align='left'>
@@ -73,6 +82,7 @@ export default class SearchPanel extends Vue {
 
   timeFrom: Date | null = null;
   timeTo: Date | null = null;
+  favoritesOnly = false;
 
   includeTags: string[] = [];
   excludeTags: string[] = [];
@@ -82,7 +92,8 @@ export default class SearchPanel extends Vue {
       && (this.includeTags.length > 0
       || this.excludeTags.length > 0
       || this.timeFrom != null
-      || this.timeTo != null);
+      || this.timeTo != null
+      || this.favoritesOnly);
   }
 
   get validationErrors(): string[] {
@@ -97,7 +108,8 @@ export default class SearchPanel extends Vue {
       includeTags: this.includeTags,
       excludeTags: this.excludeTags,
       timeFrom: this.timeFrom,
-      timeTo: this.timeTo
+      timeTo: this.timeTo,
+      favoritesOnly: this.favoritesOnly
     };
     this.$emit('submit', specification);
   }

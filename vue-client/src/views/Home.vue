@@ -49,7 +49,8 @@ export default class Home extends Mixins(ApiClientService) {
       includedTags: specification.includeTags,
       excludedTags: specification.excludeTags,
       timeRangeStart: specification.timeFrom,
-      timeRangeEnd: specification.timeTo
+      timeRangeEnd: specification.timeTo,
+      favoritesOnly: specification.favoritesOnly
     };
     return JSON.stringify(obj);
   }
